@@ -1,0 +1,154 @@
+#portfolios{
+    margin-top: 3rem;
+    position: relative;
+}
+.portfolio-slider{
+    background-color: antiquewhite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    width: 80%;
+    margin: auto;
+    overflow-x: hidden;
+}
+.color-titles{
+    margin-left: 7.5%;
+    margin-bottom: 2rem;
+    font-size: 3rem;
+    font-weight: 600;
+       background: linear-gradient(to bottom, #1B2B41 , #6A2E2A );
+     background-clip: text;
+     -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.port-card{
+    background-color: white;
+    width: 15rem;
+    height: 22rem;
+    border-top-left-radius: 8rem;
+    border-top-right-radius: 8rem;
+    position: relative;
+    border: 3px solid #1B2B41;
+    transition: all 0.4s ease;
+
+}
+.port-card.current{
+    background-color: #5B7E98;
+    transform: scale(1.2);
+}
+
+.user-pic{
+    position: absolute;
+    height:35%;
+    top: 15%; /* controls how high it sits (adjust as needed) */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+
+.portfolio-cover{
+    height:35%;
+    background-color: lightgray;
+    border-top-left-radius: 8rem;
+    border-top-right-radius: 8rem;
+}
+.portfolio-info{
+    height: 65%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #1B2B41;
+    
+}
+
+.user-name{
+    margin-top: 1.5rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+    transform: translateY(2rem);
+    transition: all 0.4s ease;
+
+}
+.user-name.current{
+    transform: translateY(-1.5rem);
+}
+.numb{
+    display: flex;
+    margin-top: 1.3rem;
+    margin-bottom: 1.3rem;
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.numb.current{
+    opacity: 1;
+    color: white;
+}
+.num-projects{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 4rem;
+    
+}
+.num-years{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-left: 1px #1B2B41 solid;
+    width: 4rem;
+}
+
+.num-projects p:first-child,.num-years p:first-child{
+    font-size: 0.8rem;
+}
+
+.num-projects p:last-child,.num-years p:last-child{
+    font-size: 1.5rem;
+}
+
+.see-more{
+    background-color:#1B2B41 ;
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 1.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    
+}
+.see-more.current{
+    background-color: white;
+    color: #1B2B41;
+}
+.nav-lign{
+    display: flex;
+    align-items: center;
+    justify-content:center;
+    column-gap: 0.55rem;
+    margin-top:10px;
+}
+.nav-arrow{
+    position: absolute;
+    color: white;
+    background-color: #5B7E98;
+    text-align: center;
+    padding: 4px;
+    border-radius: 20px;
+    font-size: 18px ;
+    font-weight: 700;
+}
+
+.left{
+    left: 3%;
+    top:55%;
+}
+.right{
+    right: 3%;
+    top: 55%;
+}

@@ -1,0 +1,64 @@
+.agencies-area1{
+    background-image: linear-gradient(80deg, #1B2B41, #6A2E2A);
+    margin-left: 5%;
+    margin-right: 10%;
+    border-radius: 30px;
+    padding: 10px;
+    height: 80vh;
+    position: relative;
+}
+.agencies-area2{
+    margin: 10px;
+    border: 1px #6A2E2A solid;
+    border-radius: 25px;
+    height: 95%;
+    
+}
+
+.white-titles{
+    font-size: 3rem;
+    font-weight: 500;
+    color: white;
+    margin: 1.5rem;
+}
+.age-desc{
+    margin-left: 1.5rem;
+    color: white;
+}
+#i1,#i2,#i3,#i4,#i5,#i6,#i7{
+    position: absolute;
+}
+#i1{
+    right: 4%;
+    max-width: 18rem;
+}
+#i2{
+    left: 60%;
+    top:30%;
+    max-width: 12rem ;
+    
+}
+#i3{
+    left: 40%;
+    bottom: 10%;
+    max-width: 15rem;
+}
+#i4{
+    left: 17%;
+    top:30%;
+    max-width: 16rem;
+}
+#i5{
+    top:60%;
+    left: 6%;
+    max-width: 13rem ;
+}
+
+
+
+@media(max-width: px){
+    .agencies-area1{
+    height: 70vh;
+    }
+    
+}

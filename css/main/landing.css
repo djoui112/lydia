@@ -1,0 +1,151 @@
+#landingPage {
+  width: 100%;
+  height: 85vh;
+  background-image: linear-gradient(80deg, #1B2B41, #6A2E2A);
+  margin: 0;
+  padding: 50px;
+  position: relative;
+}
+
+.name{
+    margin-top: 50px;
+    margin-bottom: 20px;
+    font-size: 3rem;
+    font-weight: 500;
+    color: white;
+}
+.slogan{
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-bottom: 30px;
+}
+
+#signUp{
+    padding: 0.65rem 0.85rem;
+    border:0.07px #c7cacbd2 solid;
+    border-radius: 50px;
+    background-color: #6A2E2A;
+    color:white;
+    font-size: 1.01rem;
+    transition: background-color 0.2s linear;
+
+}
+
+#signUp:hover{
+    cursor: pointer;
+    background-color: #7b3431;
+}
+
+#agenciesBtn{
+     padding: 0.65rem 1.2rem;
+    border:0.1px #c7cacbd2 solid;
+    border-radius: 50px;
+    background-color: transparent;
+    color:white;
+    margin-left: 0.8rem;
+    font-size: 1.01rem;
+    transition: border-color 0.2s linear;
+}
+#agenciesBtn:hover{
+    cursor: pointer;
+    border-color: white;
+}
+.logo{
+    position: absolute;
+    top: 8px;
+    left: 2.5%;
+    height: 3rem;
+}
+
+.menu {  
+    position: absolute;
+    right: 2.5%;
+    top: 3.5%;
+    height: 1.75rem;
+    transition: all 0.4s ease;
+}
+.menu:hover{
+    cursor: pointer;
+    filter: drop-shadow(0 0 3px #5B7E98 );
+}
+.menu.cancel{
+  content: url("/assets/main/cancel.png");
+  height: 3rem;
+}
+
+.landing-text{
+    margin-left: 2.5%;
+    transition: transform 0.9s ease;
+}
+.landing-pic{
+    position: absolute;
+    height: 35rem;
+    top: 11%;
+    right: 5%;
+    filter: drop-shadow(0 0 5px #615757 );
+    transition: height 0.3s linear,transform 0.9s ease;
+}
+.main-menu{
+    position: absolute;
+    top: 8vw;
+    right: 20vw;
+    transform: translateX(100vw);
+    transition: transform 0.9s ease;
+}
+
+.main-menu.active{
+  transform: translateX(-2vw);
+}
+
+.landing-text.active{
+  transform: translateX(-100vw);
+}
+
+.landing-pic.active{
+  transform: translateX(-50vw);
+}
+
+.main-menu li{
+    list-style: none;
+    margin-top: 2rem;
+    font-size: 2rem;
+     text-align: center;
+}
+.main-menu li a{
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    transition: transform 0.2s ease;
+   
+}
+.main-menu li:hover{
+    transform: scale(1.02);
+}
+
+
+
+
+
+
+
+
+@media (max-width:701px){
+    .landing-pic{
+    opacity: 0;
+  }
+  .main-menu.active{
+  transform: translateX(-15vw);
+}
+}
+@media(min-width:702px) and (max-width:798px){
+    .landing-pic{
+    height: 20rem;
+  }
+}
+@media (min-width: 799px) and (max-width: 1056px) { 
+  .landing-pic{
+    height: 29rem;
+  }
+ }
+
