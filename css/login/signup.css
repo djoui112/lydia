@@ -1,0 +1,45 @@
+.back:hover{
+    filter: drop-shadow(0 0 3px #7D97AA);
+}
+
+.h-signup{
+    font-weight: 700;
+    font-size: 3rem;
+    color:white;
+    margin-bottom: 0.5rem;
+}
+.form-shape p{
+    font-weight: 300;
+    color:white;
+     margin-top: 1rem;
+     font-size: 1.5rem;
+}
+.form-shape p:last-of-type{
+    font-size: 0.9rem;
+}
+.form-shape a{
+     text-decoration: none;
+    color: #1B2B41; 
+    font-weight: 600;
+}
+input[type="radio"] {
+    display: none;
+}
+
+#role-form label{
+    display: block;
+    text-align: center;
+    padding: 0.6rem 3rem;
+    width:100%;
+    border:2px #1B2B41 solid;
+    border-radius: 50px;
+    margin-top: 0.6rem;
+    font-weight: 600;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
+}
+#role-form label:hover{
+   background-color: #1B2B41;
+   color: white;
+   cursor: pointer;
+}

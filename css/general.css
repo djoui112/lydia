@@ -39,7 +39,7 @@ html {
   font-weight: 700;
   font-style: normal;
 }
-@media (max-width:600){
+@media (max-width:600px){
   html{
     font-size: 10px;
   }
