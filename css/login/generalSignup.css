@@ -15,8 +15,7 @@
 }
 .form-shape{
     width: 30rem;
-    height: 37rem;
-    background-color: #7D97AA;
+    height: fit-content;
     position: absolute;
     top: 11vh;
     left: 50%;
@@ -44,4 +43,21 @@
     .form-shape{
         width:27rem;
     }
+}
+
+button{
+    display: block;
+    margin: auto;
+    margin-top: 3rem;
+    border-radius: 50px;
+    padding: 0.7rem 2.75rem 0.7rem 2.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border:none;
+    color: white;
+    transition: box-shadow 0.2s ease;
+}
+ button:hover{
+    cursor: pointer;
+    box-shadow: 0 0 5px #203757;
 }
