@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Appliance form</title>
+  <link rel="stylesheet" href="ArchiForm.css" />
+</head>
+<body>
+
+  <div class="page-container" >
+  <header class="form-header">
+    <button class="back-btn" onclick="window.location.href='appliancestyle.html'"><</button>
+    <h1>Apply for this agency</h1>
+  </header>
+
+  <div class="progress-bar">
+    <div class="step completed">1</div>
+    <div class="line completed"></div>
+    <div class="step completed">2</div>
+    <div class="line completed"></div>
+    <div class="step active">3</div>
+    <div class="line active"></div>
+    <div class="step">4</div>
+  </div>
+
+  <form class="application-form">
+    
+
+    <label>Portfolio</label>
+    <input type="url" placeholder="https://portfolio.com" required>
+
+    <label>LinkedIn</label>
+    <input type="url" placeholder="https://LinkedIn.com" required>
+
+    <label>Email</label>
+    <input type="email" placeholder="contact@gmail.com" required>
+
+    <label>Motivation Letter</label>
+    <textarea name="motivationLetter" placeholder="your motivation letter" rows="5" required></textarea>
+
+    <button type="button" class="next-btn" onclick="handleNextClick(event, 'appliance-success.html')"> Submit </button>
+  </form>
+  </div>
+  <script src="form-persistence.js"></script>
+  <script src="form-validation.js"></script>
+</body>
+</html>

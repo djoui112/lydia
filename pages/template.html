@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Request Form</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Vectors -->
+    <div class="background-vectors">
+        <img src="../assts/Vector 4.png" alt="Decorative vector" class="vector vector-1">
+        <img src="../assts/Vector 6.png" alt="Decorative vector" class="vector vector-2">
+        <img src="../assts/Vector 7.png" alt="Decorative vector" class="vector vector-3">
+        <img src="../assts/Vector 8.png" alt="Decorative vector" class="vector vector-4">
+    </div>
+
+    <!-- Main Container -->
+    <div class="form-container">
+        <!-- Form Card -->
+        <div class="form-card">
+            <!-- Form Title -->
+            <h1 class="form-title">Project's Details</h1>
+            
+            <!-- Project Request Form -->
+            <form id="projectForm" class="project-form" novalidate>
+                <!-- Project Name Field -->
+                <div class="form-group">
+                    <label for="projectName" class="form-label">Project name</label>
+                    <input 
+                        type="text" 
+                        id="projectName" 
+                        name="projectName" 
+                        class="form-input" 
+                        placeholder="example: modern house"
+                    >
+                </div>
+
+                <!-- Project Type Field -->
+                <div class="form-group">
+                    <label for="projectType" class="form-label">Project type</label>
+                    <select 
+                        id="projectType" 
+                        name="projectType" 
+                        class="form-select"
+                    >
+                        <option value="">Select project type</option>
+                        <option value="residential">Residential</option>
+                        <option value="commercial">Commercial</option>
+                        <option value="landscape">Landscape</option>
+                        <option value="interior-design">Interior Design</option>
+                    </select>
+                </div>
+
+                <!-- Project Description Field -->
+                <div class="form-group">
+                    <label for="projectDescription" class="form-label">Project description</label>
+                    <textarea 
+                        id="projectDescription" 
+                        name="projectDescription" 
+                        class="form-textarea" 
+                        rows="5"
+                        placeholder="I want to build a house with 5 rooms with ...."
+                    ></textarea>
+                </div>
+
+                <!-- Service(s) Requested Field -->
+                <div class="form-group">
+                    <label for="serviceRequested" class="form-label">Service(s) requested</label>
+                    <select 
+                        id="serviceRequested" 
+                        name="serviceRequested" 
+                        class="form-select"
+                    >
+                        <option value="">Select service</option>
+                        <option value="architecture">Architecture</option>
+                        <option value="interior-design">Interior Design</option>
+                        <option value="landscape-design">Landscape Design</option>
+                        <option value="consultation">Consultation</option>
+                    </select>
+                </div>
+
+                <!-- Project Photos Field -->
+                <div class="form-group">
+                    <label for="projectPhotos" class="form-label">Upload project photos</label>
+                    <input 
+                        type="file" 
+                        id="projectPhotos" 
+                        name="projectPhotos" 
+                        class="form-file-input" 
+                        multiple 
+                        accept="image/*"
+                    >
+                    <!-- File Names Display -->
+                    <div id="fileNamesDisplay" class="file-names-display"></div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-group form-group-submit">
+                    <button type="submit" class="submit-btn">Submit Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

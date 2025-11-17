@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mimaria - Agency Dashboard</title>
+    <link rel="stylesheet" href="../css/agency-interface.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="mobile-overlay"></div>
+    <div class="container">
+      <!-- Left Navigation Sidebar -->
+      <nav class="sidebar">
+        <button class="header-icon-btn sidebar-profile-btn" aria-label="Profile">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <div class="sidebar-content">
+          <div class="nav-icons">
+            <div class="nav-icon" data-section="data-section">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3 3V21H21"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M7 16L12 11L16 15L21 10"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M21 10H17V14"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <div class="nav-icon" data-section="team-management">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45768C17.623 10.1593 16.8604 10.6597 16 10.88"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <div class="nav-icon" data-section="project-management">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M18.5 2.5C18.8978 2.10218 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10218 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10218 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main Content Area -->
+      <main class="main-content">
+        <!-- Header -->
+        <header class="page-header">
+          <h1 class="header-title">
+            <span class="text-hi">Hi</span>
+            <span class="text-agency">Agency !</span>
+          </h1>
+        </header>
+
+        <!-- Data Cards Section -->
+        <section class="data-section" id="data-section">
+          <div class="data-card recent-data">
+            <h3>Recent data</h3>
+            <div class="bubble-chart">
+              <div class="bubble bubble-1">28</div>
+              <div class="bubble bubble-2">45</div>
+              <div class="bubble bubble-3">67</div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <div class="legend-bar dark-blue"></div>
+                <span>clients</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-bar medium-blue"></div>
+                <span>architects</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-bar light-blue"></div>
+                <span>projects</span>
+              </div>
+            </div>
+          </div>
+          <div class="data-card deadlines">
+            <h3>Deadlines</h3>
+            <div class="calendar-container">
+              <div class="calendar-header">
+                <button
+                  class="calendar-nav prev-month"
+                  aria-label="Previous month"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M15 18L9 12L15 6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+                <div class="calendar-month-year">
+                  <span class="month-name"></span>
+                  <span class="year"></span>
+                </div>
+                <button class="calendar-nav next-month" aria-label="Next month">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M9 18L15 12L9 6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div class="calendar-weekdays">
+                <div class="weekday">S</div>
+                <div class="weekday">M</div>
+                <div class="weekday">T</div>
+                <div class="weekday">W</div>
+                <div class="weekday">T</div>
+                <div class="weekday">F</div>
+                <div class="weekday">S</div>
+              </div>
+              <div class="calendar-days">
+                <!-- Calendar days will be generated dynamically by JavaScript -->
+              </div>
+              <div class="calendar-legend">
+                <div class="legend-item-calendar">
+                  <div class="legend-dot today-dot"></div>
+                  <span>Today</span>
+                </div>
+                <div class="legend-item-calendar">
+                  <div class="legend-dot deadline-dot"></div>
+                  <span>Deadline</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deadline Modal -->
+          <div class="deadline-modal" id="deadlineModal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Add Deadline</h4>
+                <button class="modal-close" aria-label="Close modal">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M18 6L6 18M6 6L18 18"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="deadlineDate">Date</label>
+                  <input
+                    type="text"
+                    id="deadlineDate"
+                    class="form-input"
+                    readonly
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="deadlineTitle">Title</label>
+                  <input
+                    type="text"
+                    id="deadlineTitle"
+                    class="form-input"
+                    placeholder="Enter deadline title"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="deadlineDescription"
+                    >Description (Optional)</label
+                  >
+                  <textarea
+                    id="deadlineDescription"
+                    class="form-textarea"
+                    rows="3"
+                    placeholder="Add any additional details"
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="deadlineTime">Time (Optional)</label>
+                  <input type="time" id="deadlineTime" class="form-input" />
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  class="btn-delete"
+                  id="deleteDeadline"
+                  style="display: none"
+                >
+                  Delete
+                </button>
+                <div class="modal-actions">
+                  <button class="btn-cancel">Cancel</button>
+                  <button class="btn-save">Save Deadline</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Team Management Section -->
+        <section class="team-management" id="team-management">
+          <h2>Team Management</h2>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Appliance</h3>
+            <div class="profile-cards appliance-cards">
+              <div class="profile-card appliance-card">
+                <div class="appliance-background"></div>
+                <div class="appliance-profile-picture">
+                  <img
+                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"
+                    alt="Badri Lydia"
+                  />
+                </div>
+                <div class="profile-info">
+                  <h4>badri lydia</h4>
+                  <button class="btn-see-more">See more</button>
+                </div>
+              </div>
+              <div class="profile-card appliance-card">
+                <div class="appliance-background"></div>
+                <div class="appliance-profile-picture">
+                  <img
+                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop"
+                    alt="Profile"
+                  />
+                </div>
+                <div class="profile-info">
+                  <h4>badri lydia</h4>
+                  <button class="btn-see-more">See more</button>
+                </div>
+              </div>
+              <div class="profile-card appliance-card">
+                <div class="appliance-background"></div>
+                <div class="appliance-profile-picture">
+                  <img
+                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop"
+                    alt="Profile"
+                  />
+                </div>
+                <div class="profile-info">
+                  <h4>badri lydia</h4>
+                  <button class="btn-see-more">See more</button>
+                </div>
+              </div>
+              <div class="profile-card appliance-card">
+                <div class="appliance-background"></div>
+                <div class="appliance-profile-picture">
+                  <img
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+                    alt="Profile"
+                  />
+                </div>
+                <div class="profile-info">
+                  <h4>badri lydia</h4>
+                  <button class="btn-see-more">See more</button>
+                </div>
+              </div>
+            </div>
+            <button class="btn-see-all">See all</button>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Members</h3>
+            <div class="profile-cards members-cards">
+              <div class="profile-card member-card">
+                <div class="member-avatar">
+                  <svg
+                    width="60"
+                    height="60"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle cx="12" cy="8" r="4" fill="#E0E0E0" />
+                    <path
+                      d="M6 21C6 17.6863 8.68629 15 12 15C15.3137 15 18 17.6863 18 21"
+                      fill="#E0E0E0"
+                    />
+                  </svg>
+                </div>
+                <h4>badri lydia</h4>
+              </div>
+              <div class="profile-card member-card">
+                <div class="member-avatar">
+                  <svg
+                    width="60"
+                    height="60"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle cx="12" cy="8" r="4" fill="#E0E0E0" />
+                    <path
+                      d="M6 21C6 17.6863 8.68629 15 12 15C15.3137 15 18 17.6863 18 21"
+                      fill="#E0E0E0"
+                    />
+                  </svg>
+                </div>
+                <h4>badri lydia</h4>
+              </div>
+              <div class="profile-card member-card">
+                <div class="member-avatar">
+                  <svg
+                    width="60"
+                    height="60"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle cx="12" cy="8" r="4" fill="#E0E0E0" />
+                    <path
+                      d="M6 21C6 17.6863 8.68629 15 12 15C15.3137 15 18 17.6863 18 21"
+                      fill="#E0E0E0"
+                    />
+                  </svg>
+                </div>
+                <h4>badri lydia</h4>
+              </div>
+              <div class="profile-card member-card">
+                <div class="member-avatar">
+                  <svg
+                    width="60"
+                    height="60"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle cx="12" cy="8" r="4" fill="#E0E0E0" />
+                    <path
+                      d="M6 21C6 17.6863 8.68629 15 12 15C15.3137 15 18 17.6863 18 21"
+                      fill="#E0E0E0"
+                    />
+                  </svg>
+                </div>
+                <h4>badri lydia</h4>
+              </div>
+              <div class="profile-card member-card">
+                <div class="member-avatar">
+                  <svg
+                    width="60"
+                    height="60"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle cx="12" cy="8" r="4" fill="#E0E0E0" />
+                    <path
+                      d="M6 21C6 17.6863 8.68629 15 12 15C15.3137 15 18 17.6863 18 21"
+                      fill="#E0E0E0"
+                    />
+                  </svg>
+                </div>
+                <h4>badri lydia</h4>
+              </div>
+            </div>
+            <button class="btn-see-all">See all</button>
+          </div>
+        </section>
+
+        <!-- Project Management Section -->
+        <section class="project-management" id="project-management">
+          <div class="project-management-header">
+            <h2>Project Management</h2>
+            <a href="projectmanagement.html" class="btn-add-project" aria-label="Add New Project">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 5V19M5 12H19"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+          <div class="project-slider-container">
+            <div class="project-slider-track" id="projectSliderTrack">
+              <div class="project-slider-card" data-index="0">
+                <div class="project-content">
+                  <div class="project-info">
+                    <h3 class="project-name">Project name</h3>
+                    <div class="project-details">
+                      <p class="project-agency">Agency: BuildBig</p>
+                      <p class="project-architect">Architect: Ahmed Ahmed</p>
+                      <p class="project-tags">exterior, residential, modern</p>
+                      <div class="project-date">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="3"
+                            y="4"
+                            width="18"
+                            height="18"
+                            rx="2"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          />
+                          <line
+                            x1="16"
+                            y1="2"
+                            x2="16"
+                            y2="6"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                          <line
+                            x1="8"
+                            y1="2"
+                            x2="8"
+                            y2="6"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                          <line
+                            x1="3"
+                            y1="10"
+                            x2="21"
+                            y2="10"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <span>12/03/2026</span>
+                      </div>
+                    </div>
+                    <button class="btn-view-project">view project</button>
+                  </div>
+                  <div class="project-image">
+                    <img
+                      src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&h=600&fit=crop"
+                      alt="Modern Building"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="project-slider-card" data-index="1">
+                <div class="project-content">
+                  <div class="project-info">
+                    <h3 class="project-name">Project name</h3>
+                    <div class="project-details">
+                      <p class="project-agency">Agency: DesignStudio</p>
+                      <p class="project-architect">Architect: Sarah Johnson</p>
+                      <p class="project-tags">
+                        office, commercial, sustainable
+                      </p>
+                      <div class="project-date">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="3"
+                            y="4"
+                            width="18"
+                            height="18"
+                            rx="2"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          />
+                          <line
+                            x1="16"
+                            y1="2"
+                            x2="16"
+                            y2="6"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                          <line
+                            x1="8"
+                            y1="2"
+                            x2="8"
+                            y2="6"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                          <line
+                            x1="3"
+                            y1="10"
+                            x2="21"
+                            y2="10"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <span>15/04/2026</span>
+                      </div>
+                    </div>
+                    <button class="btn-view-project">view project</button>
+                  </div>
+                  <div class="project-image">
+                    <img
+                      src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"
+                      alt="Office Building"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="project-slider-card" data-index="2">
+                <div class="project-content">
+                  <div class="project-info">
+                    <h3 class="project-name">Project name</h3>
+                    <div class="project-details">
+                      <p class="project-agency">Agency: UrbanArch</p>
+                      <p class="project-architect">Architect: Michael Chen</p>
+                      <p class="project-tags">luxury, residential, high-rise</p>
+                      <div class="project-date">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="3"
+                            y="4"
+                            width="18"
+                            height="18"
+                            rx="2"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          />
+                          <line
+                            x1="16"
+                            y1="2"
+                            x2="16"
+                            y2="6"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                          <line
+                            x1="8"
+                            y1="2"
+                            x2="8"
+                            y2="6"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                          <line
+                            x1="3"
+                            y1="10"
+                            x2="21"
+                            y2="10"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <span>20/05/2026</span>
+                      </div>
+                    </div>
+                    <button class="btn-view-project">view project</button>
+                  </div>
+                  <div class="project-image">
+                    <img
+                      src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop"
+                      alt="Luxury Building"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="project-slider-card" data-index="3">
+                <div class="project-content">
+                  <div class="project-info">
+                    <h3 class="project-name">Project name</h3>
+                    <div class="project-details">
+                      <p class="project-agency">Agency: EcoBuild</p>
+                      <p class="project-architect">Architect: Emma Wilson</p>
+                      <p class="project-tags">
+                        sustainable, eco-friendly, green
+                      </p>
+                      <div class="project-date">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="3"
+                            y="4"
+                            width="18"
+                            height="18"
+                            rx="2"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          />
+                          <line
+                            x1="16"
+                            y1="2"
+                            x2="16"
+                            y2="6"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                          <line
+                            x1="8"
+                            y1="2"
+                            x2="8"
+                            y2="6"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                          <line
+                            x1="3"
+                            y1="10"
+                            x2="21"
+                            y2="10"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <span>10/06/2026</span>
+                      </div>
+                    </div>
+                    <button class="btn-view-project">view project</button>
+                  </div>
+                  <div class="project-image">
+                    <img
+                      src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop"
+                      alt="Eco Building"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+          <div class="footer-content">
+            <div class="footer-section">
+              <div class="footer-logo">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2L2 7V17L12 22L22 17V7L12 2Z"
+                    stroke="white"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M12 22V12"
+                    stroke="white"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M2 7L12 12L22 7"
+                    stroke="white"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <span>mimaria</span>
+              </div>
+              <p class="footer-tagline">
+                Design, Build, Network all in one place
+              </p>
+            </div>
+            <div class="footer-section">
+              <nav class="footer-nav">
+                <a href="#data-section">Recent Data & Deadlines</a>
+                <a href="#team-management">Team Management</a>
+                <a href="#project-management">Project Management</a>
+              </nav>
+            </div>
+            <div class="footer-section">
+              <div class="footer-contact">
+                <div class="contact-item">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.6056 8.7 3.90003C9.87812 3.30496 11.1801 2.99659 12.5 3.00003H13C15.0843 3.11502 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91568 21 11V11.5Z"
+                      stroke="white"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>+21355000053</span>
+                </div>
+                <div class="contact-item">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect
+                      x="2"
+                      y="2"
+                      width="20"
+                      height="20"
+                      rx="5"
+                      stroke="white"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M16 11.37C16.1234 12.2022 15.9813 13.0522 15.5938 13.799C15.2063 14.5458 14.5931 15.1514 13.8416 15.5297C13.0901 15.908 12.2384 16.0396 11.4078 15.9059C10.5771 15.7723 9.80976 15.3801 9.21484 14.7851C8.61993 14.1901 8.22768 13.4229 8.09402 12.5922C7.96035 11.7616 8.09202 10.9099 8.47032 10.1584C8.84862 9.40686 9.45419 8.7937 10.201 8.40624C10.9478 8.01878 11.7978 7.87665 12.63 8.00003C13.4789 8.12594 14.2648 8.52152 14.8717 9.12836C15.4785 9.73521 15.8741 10.5211 16 11.37Z"
+                      stroke="white"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M17.5 6.5H17.51"
+                      stroke="white"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>Mimaria_platform</span>
+                </div>
+                <div class="contact-item">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M16 8C17.5913 8 19.1174 8.63214 20.2426 9.75736C21.3679 10.8826 22 12.4087 22 14V21H18V14C18 13.4696 17.7893 12.9609 17.4142 12.5858C17.0391 12.2107 16.5304 12 16 12C15.4696 12 14.9609 12.2107 14.5858 12.5858C14.2107 12.9609 14 13.4696 14 14V21H10V14C10 12.4087 10.6321 10.8826 11.7574 9.75736C12.8826 8.63214 14.4087 8 16 8Z"
+                      stroke="white"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M6 9H2V21H6V9Z"
+                      stroke="white"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M4 6C5.10457 6 6 5.10457 6 4C6 2.89543 5.10457 2 4 2C2.89543 2 2 2.89543 2 4C2 5.10457 2.89543 6 4 6Z"
+                      stroke="white"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>Mimaria official</span>
+                </div>
+                <div class="contact-item">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z"
+                      stroke="white"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="L22 6L12 13L2 6"
+                      stroke="white"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>Mimaria.platform@gmail.com</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <script src="../js/agency-interface.js"></script>
+  </body>
+</html>
