@@ -1,19 +1,29 @@
 #portfolios {
   margin-top: 3rem;
-  overflow: hidden;
-  position: relative;
   width: 100%;
 }
 
-.portfolio-slider {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  height: 70vh;
-  transition: transform 0.6s ease;
-  will-change: transform;
-  width: max-content; /* allows centering by transform */
-}
+    .portfolio-slider-wrapper {
+            position: relative;
+            width: 85%;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin: auto;
+            border: 3px solid #1B2B41;
+            border-radius: 30px;
+        }
+
+        .portfolio-slider {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            transition: transform 0.6s ease;
+            position: absolute;
+            left: 0;
+        }
 .color-titles{
     margin-left: 7.5%;
     margin-bottom: 2rem;
@@ -31,6 +41,7 @@
     height: 22rem;
     border-top-left-radius: 8rem;
     border-top-right-radius: 8rem;
+    box-shadow: 0 3px 6px rgb(141, 141, 141);
     position: relative;
     border: 3px solid #1B2B41;
      flex-shrink: 0;
@@ -130,21 +141,39 @@
     background-color: white;
     color: #1B2B41;
 }
-.nav-arrow{
-    position: absolute;
-    color: white;
-    background-color: #5B7E98;
-    text-align: center;
-    width: 34.4px;
-    border-radius: 2rem;
-    font-size: 1.6rem;
+.see-more.current:hover{
+    box-shadow: 0 0 3px white;
+    cursor: pointer;
 }
+.nav-lign {
+            position: absolute;
+            width: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            justify-content: space-between;
+            padding: 0 3%;
+            pointer-events: none;
+            z-index: 20;
+        }
 
-.next{
-    right: 3%;
-    top:55%;
-}
-.prev{
-    left: 3%;
-    top: 55%;
-}
+        .nav-arrow {
+            color: white;
+            background-color: #5B7E98;
+            text-align: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 2rem;
+            font-size: 1.6rem;
+            cursor: pointer;
+            pointer-events: all;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+            user-select: none;
+        }
+
+        .nav-arrow:hover {
+            background-color: #1B2B41;
+        }

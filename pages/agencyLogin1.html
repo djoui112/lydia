@@ -21,44 +21,58 @@
 
 
         <div class="form-shape ag">
-            <div class="pfp-container">
-                <div class="pfp">
-            <img src="../assets/create-account/Profile.png">
-            <div class="pfp-mdf">
-                <img src="../assets/create-account/Edit Image.png">
+        <div class="pfp-container">
+            <div class="pfp">
+                <img src="../assets/create-account/Profile.png" id="profile-preview-agency">
+                <input type="file" id="profile-upload-agency" accept="image/*" style="display: none;">
+                <div class="pfp-mdf" onclick="document.getElementById('profile-upload-agency').click()">
+                    <img src="../assets/create-account/Edit Image.png">
+                </div>
             </div>
-          </div>
-            </div>
-          
-            <form id="login-agency">
-                <label for="email">Email</label>
-                <div>
-                        <input type="email" id="email" placeholder="example@gmail.com" required>
-                        <img src="/assets/create-account/Email.png" class="label-icon" >
-                </div>
-                <label for="password">Password</label>
-                <div>
-                        <input type="password" id="password" placeholder="********" required>
-                        <img src="/assets/create-account/Lock.png" class="label-icon">
-                </div>
-                <label for="cpassword">confirm password</label>
-                <div>
-                        <input type="password" id="cpassword" placeholder="********" required>
-                        <img src="/assets/create-account/Lock.png" class="label-icon">
-                </div>
-                <label for="agencyname">agency name</label>
-                <div>
-                        <input type="text" id="fname" placeholder="first name" required>
-                        <img src="/assets/create-account/Profile.png" class="label-icon">
-                </div>
-                <label for="phone">phone/office number</label>
-                <div>
-                        <input type="tel" id="phone" placeholder="+213******" >
-                        <img src="/assets/create-account/Phone.png" class="label-icon" >
-                </div>
-
-                <button type="submit">next</button>
-            </form>
         </div>
+      
+        <form id="login-agency-1">
+            <label for="agency-name">Agency name</label>
+            <div>
+                <input type="text" id="agency-name" name="agencyname" placeholder="agency name" required>
+                <img src="/assets/create-account/Profile.png" class="label-icon">
+            </div>
+            <span class="error-message" id="name-error"></span>
+            
+            <label for="agency-email">Email</label>
+            <div>
+                <input type="email" id="agency-email" name="email" placeholder="example@gmail.com" required>
+                <img src="/assets/create-account/Email.png" class="label-icon">
+            </div>
+            <span class="error-message" id="email-error"></span>
+
+            <label for="agency-password">Password</label>
+            <div>
+                <input type="password" id="agency-password" name="password" placeholder="********" required>
+                <img src="/assets/create-account/Lock.png" class="label-icon">
+            </div>
+            <span class="error-message" id="password-error"></span>
+
+            <label for="agency-cpassword">Confirm password</label>
+            <div>
+                <input type="password" id="agency-cpassword" name="cpassword" placeholder="********" required>
+                <img src="/assets/create-account/Lock.png" class="label-icon">
+            </div>
+            <span class="error-message" id="cpassword-error"></span>
+
+            
+
+            <label for="agency-phone">Phone/office number</label>
+            <div>
+                <input type="tel" id="agency-phone" name="phone" placeholder="+213******" required>
+                <img src="/assets/create-account/Phone.png" class="label-icon">
+            </div>
+            <span class="error-message" id="phone-error"></span>
+
+            <button type="submit">Next</button>
+        </form>
+    </div>
+
+        <script src="../js/agency.js"></script>
     </body>
 </html>

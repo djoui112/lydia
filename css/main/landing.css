@@ -1,11 +1,14 @@
 #landingPage {
   width: 100%;
-  height: 85vh;
+  height: auto;
   background-image: linear-gradient(80deg, #1B2B41, #6A2E2A);
   margin: 0;
   padding: 50px;
+  padding-bottom: 18rem;
   position: relative;
+  overflow: hidden;
 }
+
 
 .name{
     margin-top: 50px;
@@ -61,7 +64,7 @@
 .menu {  
     position: absolute;
     right: 2.5%;
-    top: 3.5%;
+    top: 4%;
     height: 1.75rem;
     transition: all 0.4s ease;
 }
@@ -76,8 +79,10 @@
 
 .landing-text{
     margin-left: 2.5%;
+    max-width:60vw;
     transition: transform 0.9s ease;
 }
+
 .landing-pic{
     position: absolute;
     height: 35rem;
@@ -90,7 +95,7 @@
     position: absolute;
     top: 8vw;
     right: 20vw;
-    transform: translateX(100vw);
+    transform: translateX(100rem);
     transition: transform 0.9s ease;
 }
 
@@ -128,17 +133,36 @@
 
 
 
+@media(max-width: 485px){
+  .name{
+    font-size: 2rem;
+  }
+  .slogan{
+    font-size: 1rem;
+  }
+  .landing-text{
+    max-width: 90%;
+  }
+  #signUp,#agenciesBtn{
+    font-size: 0.9rem;
+  }
+  
+}
 
-
-@media (max-width:701px){
+@media (max-width:720px){
     .landing-pic{
-    opacity: 0;
+    display: none;
+    
   }
   .main-menu.active{
   transform: translateX(-15vw);
 }
+#landing-page{
+  padding: 20px;
+  overflow-x: hidden;
 }
-@media(min-width:702px) and (max-width:798px){
+}
+@media(min-width:705px) and (max-width:798px){
     .landing-pic{
     height: 20rem;
   }

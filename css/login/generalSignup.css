@@ -1,3 +1,8 @@
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset; /* Replace white with your background color */
+    -webkit-text-fill-color: black; /* Replace black with your text color */
+    transition: background-color 5000s ease-in-out; /* Prevents flash on autofill */
+}
 
 .vector1{
     position: absolute;
@@ -7,34 +12,33 @@
 }
 
 .vector2{
-    bottom: 0;
+    bottom: -3rem;
     left:0;
     height: 20vw;
     position: absolute;
 
 }
 .form-shape{
-    width: 30rem;
+    width: 32rem;
     height: fit-content;
-    position: absolute;
-    top: 11vh;
-    left: 50%;
-    transform: translateX(-50%);
+    margin: 8vh auto 5vh auto; 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     border-top-left-radius: 30rem;
     border-top-right-radius: 30rem;
-    box-shadow: 0 0 10px #5c6d79;
-    margin-bottom: 3rem;
+    box-shadow: 0 0 10px #75797c;
+    padding: 1rem;
 }
+
 .back{
     position: absolute;
     left: 1vh;
     top:1vh;
     height: 4rem;
 }
+
 .logo{
     height: 20%;
 }

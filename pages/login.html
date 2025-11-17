@@ -24,21 +24,24 @@
             <img src="/assets/create-account/Department.png" class="logo" alt="mimaria">
             <h1 class="h-signup">Log in</h1>
             <form id="login-form">
-                <label for="email">Email</label>
-                <div>
-                        <input type="email" id="email" placeholder="example@gmail.com">
-                        <img src="/assets/create-account/Email.png" class="label-icon">
-                </div>
-                
-                <label for="password">Password</label>
-                <div>
-                        <input type="password" id="password" placeholder="********">
-                        <img src="/assets/create-account/Lock.png" class="label-icon">
-                </div>
+            <label for="email">Email</label>
+            <div>
+                <input type="email" id="email" placeholder="example@gmail.com" required>
+                <img src="/assets/create-account/Email.png" class="label-icon">
+            </div>
+            <span class="error-message" id="email-error"></span>
+            
+            <label for="password">Password</label>
+            <div>
+                <input type="password" id="password" placeholder="********" required>
+                <img src="/assets/create-account/Lock.png" class="label-icon">
+            </div>
+            <span class="error-message" id="password-error"></span>
+            
             <a href="/pages/resetpass.html">Forgot password?</a>
-
-                <button type="submit">Log in</button>
-            </form>
+            <button type="submit">Log in</button>
+        </form>
         </div>
+        <script src="../js/login.js"></script>
     </body>
 </html>

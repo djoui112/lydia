@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Log in-architect 2</title>
+        <title>Log in-architect 1</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="UTF-8">
         <meta name="keywords" content="architecture,architect,agency,client,login">
@@ -15,15 +15,44 @@
         <link rel="icon" href="assets/main/Department.png" type="image/png">     
     </head>
     <body>
-        <a href="../pages/archiLogin1.html"><img src="/assets/create-account/Back Arrow r.png" class="back red"></a>
+        <a href="../pages/signUp.html"><img src="/assets/create-account/Back Arrow r.png" class="back red"></a>
         <img src="/assets/create-account/Vector 5.png "class="vector1">
         <img src="/assets/create-account/Vector 6.png "class="vector2">
 
 
-        <div class="form-shape ar">
-        <img src="/assets/create-account/Department r.png" class="logo" alt="mimaria">
-        <form id="login-architect-2">
-            <label for="architect-phone">Phone number</label>
+       <div class="form-shape ar">
+        <div class="pfp-container">
+            <div class="pfp">
+                <img src="../assets/create-account/Profile.png" id="profile-preview-arch">
+                <input type="file" id="profile-upload-arch" accept="image/*" style="display: none;">
+                <div class="pfp-mdf" onclick="document.getElementById('profile-upload-arch').click()">
+                    <img src="../assets/create-account/Edit Image.png">
+                </div>
+            </div>
+        </div>
+      
+        <form id="login-architect-1">
+            <label for="architect-fname">First name</label>
+            <div>
+                <input type="text" id="architect-fname" name="fname" placeholder="first name" required>
+                <img src="/assets/create-account/Profile.png" class="label-icon">
+            </div>
+            <span class="error-message" id="fname-error"></span>
+
+            <label for="architect-lname">Last name</label>
+            <div>
+                <input type="text" id="architect-lname" name="lname" placeholder="last name" required>
+                <img src="/assets/create-account/Profile.png" class="label-icon">
+            </div>
+            <span class="error-message" id="lname-error"></span>
+
+            <label for="architect-email">Email</label>
+            <div>
+                <input type="email" id="architect-email" name="email" placeholder="example@gmail.com" required>
+                <img src="/assets/create-account/Email.png" class="label-icon">
+            </div>
+            <span class="error-message" id="email-error"></span>
+<label for="architect-phone">Phone number</label>
             <div>
                 <input type="tel" id="architect-phone" name="phone" placeholder="+213******" required>
                 <img src="/assets/create-account/Phone.png" class="label-icon">
@@ -109,8 +138,12 @@
                 <label class="gender"><input type="radio" name="gender" value="female" checked><p>Female</p></label>
                 <label class="gender"><input type="radio" name="gender" value="male"><p>Male</p></label>
             </section>
+            <a href="/pages/resetpass.html">Forgot password?</a>
+            
+                <button type="submit">
+                    <span>✓</span> Save changes
+                </button>
 
-            <button type="submit">Create account</button>
         </form>
     </div>
         <script src="../js/architect.js"></script>

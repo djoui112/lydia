@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Log in-architect 2</title>
+        <title>edit profile-agency</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="UTF-8">
         <meta name="keywords" content="architecture,architect,agency,client,login">
@@ -15,24 +15,47 @@
         <link rel="icon" href="assets/main/Department.png" type="image/png">     
     </head>
     <body>
-        <a href="../pages/archiLogin1.html"><img src="/assets/create-account/Back Arrow r.png" class="back red"></a>
-        <img src="/assets/create-account/Vector 5.png "class="vector1">
-        <img src="/assets/create-account/Vector 6.png "class="vector2">
+        <a href="../pages/signUp.html"><img src="/assets/create-account/Back Arrow b.png" class="back blue"></a>
+        <img src="/assets/create-account/Vector 4.png "class="vector1">
+        <img src="/assets/create-account/Vector 7.png "class="vector2">
 
 
-        <div class="form-shape ar">
-        <img src="/assets/create-account/Department r.png" class="logo" alt="mimaria">
-        <form id="login-architect-2">
-            <label for="architect-phone">Phone number</label>
+        <div class="form-shape ag">
+        <div class="pfp-container">
+            <div class="pfp">
+                <img src="../assets/create-account/Profile.png" id="profile-preview-agency">
+                <input type="file" id="profile-upload-agency" accept="image/*" style="display: none;">
+                <div class="pfp-mdf" onclick="document.getElementById('profile-upload-agency').click()">
+                    <img src="../assets/create-account/Edit Image.png">
+                </div>
+            </div>
+        </div>
+      
+        <form id="login-agency-1">
+            <label for="agency-name">Agency name</label>
             <div>
-                <input type="tel" id="architect-phone" name="phone" placeholder="+213******" required>
+                <input type="text" id="agency-name" name="agencyname" placeholder="agency name" required>
+                <img src="/assets/create-account/Profile.png" class="label-icon">
+            </div>
+            <span class="error-message" id="name-error"></span>
+
+            <label for="agency-email">Email</label>
+            <div>
+                <input type="email" id="agency-email" name="email" placeholder="example@gmail.com" required>
+                <img src="/assets/create-account/Email.png" class="label-icon">
+            </div>
+            <span class="error-message" id="email-error"></span>
+
+            <label for="agency-phone">Phone/office number</label>
+            <div>
+                <input type="tel" id="agency-phone" name="phone" placeholder="+213******" required>
                 <img src="/assets/create-account/Phone.png" class="label-icon">
             </div>
             <span class="error-message" id="phone-error"></span>
 
-            <label for="architect-city">City</label>
+            <label for="agency-city">City</label>
             <div class="select-wrapper">
-                <select id="architect-city" name="city" required>
+                <select id="agency-city" name="city" required>
                     <option value="01 - Adrar">01 - Adrar</option>
                     <option value="02 - Chlef">02 - Chlef</option>
                     <option value="03 - Laghouat">03 - Laghouat</option>
@@ -96,24 +119,21 @@
             </div>
             <span class="error-message" id="city-error"></span>
 
-            <label for="architect-birth">Date of birth</label>
-            <div class="date-wrapper">
-                <input type="text" id="architect-birth-display" placeholder="DD/MM/YYYY" readonly required>
-                <input type="date" id="architect-birth" name="birth" required>
-                <img src="/assets/create-account/Calendar.png" class="label-icon date-icon" onclick="document.getElementById('architect-birth').showPicker()">
+            <label for="agency-address">Office address</label>
+            <div>
+                <input type="text" id="agency-address" name="address" placeholder="e.g: bab ezzouar" required>
+                <img src="/assets/create-account/Address.png" class="label-icon">
             </div>
-            <span class="error-message" id="birth-error"></span>
+            <span class="error-message" id="address-error"></span>
 
-            <label>Gender</label>
-            <section class="gender">
-                <label class="gender"><input type="radio" name="gender" value="female" checked><p>Female</p></label>
-                <label class="gender"><input type="radio" name="gender" value="male"><p>Male</p></label>
-            </section>
+             <a href="/pages/resetpass.html">Forgot password?</a>
 
-            <button type="submit">Create account</button>
+            <button type="submit">
+                    <span>✓</span> Save changes
+                </button>
         </form>
     </div>
-        <script src="../js/architect.js"></script>
 
+        <script src="../js/agency.js"></script>
     </body>
 </html>

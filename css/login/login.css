@@ -1,4 +1,5 @@
 /*Genral login*/
+
 .blue:hover{
     filter: drop-shadow(0 0 3px #7D97AA);
 }
@@ -97,7 +98,7 @@ text-decoration: underline;
     border: 2px solid white;
     border-radius: 50px;
     padding: 0.3rem 1rem 0.3rem 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     margin-top: 0.3rem;
 }
 #login-client div img{
@@ -107,8 +108,9 @@ text-decoration: underline;
   border-color: #595F34; 
 }
 #login-client{
-   width: 80%;
+    width: 80%;
     font-weight: 600;
+    margin-top: 1rem;
     
 }
 
@@ -116,7 +118,7 @@ text-decoration: underline;
     color: #595F34;
 }
 #login-client button{
-margin-top: 0.3rem;
+margin-top: 0.4rem;
 margin-bottom: 0.7rem;
 background-color: #595F34;
 }
@@ -126,7 +128,7 @@ background-color: #595F34;
 }
 .pfp-container{
     position: relative;
-    margin-top: 0.5rem;
+    margin-top: 0.6rem;
 }
 .pfp{
     border: 3px #595F34 solid;
@@ -162,7 +164,7 @@ background-color: #595F34;
 }
 
 /*architect login css*/
-.back .red:hover{
+.red:hover{
     filter: drop-shadow(0 0 3px #6A2E2A);
 }
 
@@ -179,40 +181,40 @@ background-color: #595F34;
 .ar .logo{
     margin-bottom: 2rem;
 }
-#login-architect div{
+#login-architect-1 div,#login-architect-2 div{
     display: flex;
     border: 2px solid white;
     border-radius: 50px;
     padding: 0.3rem 1rem 0.3rem 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.6rem;
     margin-top: 0.3rem;
 }
-#login-architect div img{
+#login-architect-1 div img,#login-architect-2 div img{
     height: 1.7rem;
 }
-#login-architect div:focus-within {
+#login-architect-1 div:focus-within,#login-architect-2 div:focus-within {
   border-color: #6A2E2A; 
 }
-#login-architect{
+#login-architect-1,#login-architect-2{
    width: 80%;
     font-weight: 600;
     
 }
 
-#login-architect label{
+#login-architect-1 label,#login-architect-2 label{
     color: #6A2E2A;
 }
-#login-architect input{
+#login-architect-1 input{
     font-size: 1REM;
     color: white;
 }
-#login-architect button{
-margin-top: 1rem;
-margin-bottom: 1.4rem;
+#login-architect-1 button,#login-architect-2 button{
+margin-top: 1.5rem;
+margin-bottom: 1.5rem;
 background-color: #6A2E2A;
 }
 
- #login-architect button:hover{
+ #login-architect-1 button:hover ,#login-architect-2 button:hover{
     box-shadow: 0 0 5px #6A2E2A;
     
 }
@@ -256,7 +258,7 @@ input[type="date"]{
 .ag .logo{
     margin-bottom: 2rem;
 }
-#login-agency div{
+#login-agency-1 div,#login-agency-2 div{
     display: flex;
     border: 2px solid white;
     border-radius: 50px;
@@ -264,44 +266,213 @@ input[type="date"]{
     margin-bottom: 1rem;
     margin-top: 0.3rem;
 }
-#login-agency div img{
+#login-agency-1 div img,#login-agency-2 div img{
     height: 1.7rem;
 }
-#login-agency div:focus-within {
+#login-agency-1 div:focus-within ,#login-agency-2 div:focus-within{
   border-color: #2e496e; 
 }
-#login-agency{
+#login-agency-1,#login-agency-2{
    width: 80%;
     font-weight: 600;
     
 }
 
-#login-agency label{
+#login-agency-1 label,#login-agency-2 label{
     color: #2e496e;
 }
-#login-agency input{
+#login-agency-1 input,#login-agency-2 input{
     font-size: 1REM;
     color: white;
 }
-#login-agency button{
+#login-agency-1 button,#login-agency-2 button{
 margin-top: 1rem;
 margin-bottom: 1rem;
 background-color: #2e496e;
 }
 
- #login-agency button:hover{
+ #login-agency-1 button:hover, #login-agency-2 button:hover{
     box-shadow: 0 0 5px #2e496e;
     
 }
-/*
-input[type="file"] {
-  -webkit-appearance: none; 
-  -moz-appearance: none;    
-  appearance: none;        
+/*reset password */
+#reset-form {
+    width: 80%;
+    font-weight: 600;
+    margin-top: 1.5rem;
 }
-input[type="file"] {
-  background: url('../../assets/create-account/Add File.png') no-repeat right center;
-  background-size: 1rem; 
-  padding-right: 20px;   
+
+#reset-form div{
+    display: flex;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 0.5rem 1rem 0.5rem 1.5rem;
+    margin-bottom: 4rem;
+    margin-top: 0.3rem;
 }
-*/
+#reset-form div img{
+    height: 2rem;
+}
+
+
+#reset-form div:focus-within {
+  border-color: #1B2B41; 
+   
+}
+
+#reset-form a{
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 1.8rem;
+    margin-top:  -0.7rem;
+    font-size: 0.9rem ;
+    color: #2e496e;
+    transition: text-decoration 0.4s ease;
+}
+
+#reset-form a:hover{
+text-decoration: underline;
+}
+
+#reset-form button{
+    background-color: #1B2B41;
+    margin-bottom: 1rem;
+}
+
+.reset-info{
+text-align: center;
+
+}
+
+
+/* Error styling */
+.error-message {
+    display: block;
+    color: #bf3030;
+    font-size: 0.85rem;
+    margin-left: 1.8rem;
+    margin-top: -0.8rem;
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+}
+
+form div.error {
+    border-color: #bf3030 !important;
+}
+
+/* Reset password info text */
+.reset-info {
+    color: white !important;
+    font-size: 1rem !important;
+    margin: 1rem 1.8rem !important;
+    text-align: center;
+}
+
+/* Select dropdown styling */
+.select-wrapper {
+    position: relative;
+    display: flex;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 0.3rem 1rem 0.3rem 1.5rem;
+    margin-bottom: 1rem;
+    margin-top: 0.3rem;
+}
+
+.select-wrapper.error {
+    border-color: #bf3030 !important;
+}
+
+.select-wrapper select {
+    background-color: transparent;
+    border: none;
+    width: 90%;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+}
+
+.select-wrapper select option {
+    background-color: #1B2B41;
+    color: white;
+}
+
+.select-wrapper img {
+    height: 1.7rem;
+}
+
+/* Date input styling */
+.date-wrapper {
+    position: relative;
+    display: flex;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 0.3rem 1rem 0.3rem 1.5rem;
+    margin-bottom: 1rem;
+    margin-top: 0.3rem;
+}
+
+.date-wrapper.error {
+    border-color: #bf3030 !important;
+}
+
+.date-wrapper input[type="text"] {
+    background-color: transparent;
+    border: none;
+    width: 90%;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.date-wrapper input[type="date"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.date-wrapper .date-icon {
+    cursor: pointer;
+    height: 1.7rem;
+}
+
+/* File input styling */
+.file-input-wrapper {
+    position: relative;
+    display: flex;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 0.3rem 1rem 0.3rem 1.5rem;
+    margin-bottom: 1rem;
+    margin-top: 0.3rem;
+}
+
+.file-input-wrapper.error {
+    border-color: #bf3030 !important;
+}
+
+.file-input-wrapper input[type="text"] {
+    background-color: transparent;
+    border: none;
+    width: 90%;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.file-input-wrapper .file-icon {
+    cursor: pointer;
+    height: 1.7rem;
+}
+
+/* Profile upload */
+.pfp-mdf {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.pfp-mdf:hover {
+    transform: scale(1.1);
+}

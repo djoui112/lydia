@@ -1,4 +1,4 @@
-.back .blue:hover{
+.blue:hover{
     filter: drop-shadow(0 0 3px #7D97AA);
 }
 .l{
@@ -10,6 +10,7 @@
     color:white;
     margin-bottom: 0.5rem;
 }
+
 .form-shape p{
     font-weight: 300;
     color:white;
@@ -18,41 +19,35 @@
      margin-bottom: 1rem;
 }
 .form-shape p:last-of-type{
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
+
+.form-shape a:hover{
+    text-shadow: 0 0 3px #1B2B41;
+}
+
 .form-shape a{
     text-decoration: none;
     color: #1B2B41; 
     font-weight: 600;
 }
-input[type="radio"] {
-    display: none;
-}
 
-#role-form label{
+
+.role{
     display: block;
     text-align: center;
-    padding: 0.6rem 3rem;
+    padding: 0.8rem 3rem;
     width:100%;
     border:2px #1B2B41 solid;
     border-radius: 50px;
-    margin-top: 0.6rem;
+    margin-top: 1rem;
     font-weight: 600;
     font-size: 1.2rem;
     transition: background-color 0.3s ease;
 }
-#role-form label:hover{
+.role:hover{
    background-color: #1B2B41;
    color: white;
    cursor: pointer;
 }
-.next{
-    margin-top: 2rem;
-    margin-bottom: 0.5rem;
-    background-color: #1B2B41;
-}
-#role-form  input[type="radio"]:checked + label {
-  background-color: #4a90e2;
-  color: white;
-  border-color: #4a90e2;
-}
+
