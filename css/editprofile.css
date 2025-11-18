@@ -1,100 +1,139 @@
 /*client ---------------------------------------------------*/
-.edit-title {
-    font-weight: 700;
-    font-size: 2rem;
-    color: #1B2B41;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    text-align: center;
-}
-
-/* Client edit profile */
-.c .edit-title {
-    color: #595F34;
-}
-
-/* Architect edit profile */
-.ar .edit-title {
-    color: #6A2E2A;
-}
-
-/* Agency edit profile */
-.ag .edit-title {
-    color: #2e496e;
-}
-
-/* Reset link styling */
-.reset-link {
-    text-decoration: none;
-    font-weight: 500;
-    margin-left: 1.8rem;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-    display: block;
-    font-size: 0.9rem;
-    color: inherit;
-    transition: text-decoration 0.4s ease;
-}
-
-.reset-link:hover {
-    text-decoration: underline;
-}
-
-/* Button with checkmark */
-button span {
-    margin-right: 0.3rem;
-    font-size: 1.1rem;
-}
-
-/* Green back button for agency */
-.back.green-circle {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    background-color: #4CAF50;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem;
-}
-
-.back.green-circle:hover {
-    filter: drop-shadow(0 0 5px #4CAF50);
-}
-
-/* Adjust form spacing for edit profiles */
-#edit-client-form,
-#edit-architect-form,
-#edit-agency-form {
-    width: 80%;
-    font-weight: 600;
-}
-
-#edit-client-form label,
-#edit-architect-form label,
-#edit-agency-form label {
-    margin-top: 0.3rem;
-}
-
-/* Date and select wrapper adjustments */
-.date-wrapper:focus-within,
-.select-wrapper:focus-within {
-    border-color: inherit;
-}
-
-.ar .date-wrapper:focus-within,
-.ar .select-wrapper:focus-within {
-    border-color: #6A2E2A;
-}
-
-.ag .date-wrapper:focus-within,
-.ag .select-wrapper:focus-within {
-    border-color: #2e496e;
-}
-
-.c .date-wrapper:focus-within,
-.c .select-wrapper:focus-within {
-    border-color: #595F34;
-}
+ #edit-profile-client {
+                width: 80%;
+                font-weight: 600;
+                margin-top: 1rem;
+            }
+            #edit-profile-client div {
+                display: flex;
+                border: 2px solid white;
+                border-radius: 50px;
+                padding: 0.3rem 1rem 0.3rem 1.5rem;
+                margin-bottom: 2rem;
+                margin-top: 0.3rem;
+            }
+            #edit-profile-client div img {
+                height: 1.7rem;
+            }
+            #edit-profile-client div:focus-within {
+                border-color: #595F34;
+            }
+            #edit-profile-client label {
+                color: #595F34;
+            }
+            #edit-profile-client button {
+                margin-top: 0.4rem;
+                margin-bottom: 0.7rem;
+                background-color: #595F34;
+            }
+            #edit-profile-client button:hover {
+                box-shadow: 0 0 5px #595F34;
+            }
+            #edit-profile-client .forget-link{
+                color: #595F34;
+            }
+            .edit-title-client {
+                font-weight: 700;
+                font-size: 2.5rem;
+                color: #595F34;
+                text-align: center;
+                margin-bottom: 0.3rem;
+                margin-top: 1.5rem;
+            }
 /*architect ---------------------------------------------------*/
+            #edit-profile-architect {
+                width: 80%;
+                font-weight: 600;
+            }
+            #edit-profile-architect div {
+                display: flex;
+                border: 2px solid white;
+                border-radius: 50px;
+                padding: 0.3rem 1rem 0.3rem 1.5rem;
+                margin-bottom: 1.6rem;
+                margin-top: 0.3rem;
+            }
+            #edit-profile-architect div img {
+                height: 1.7rem;
+            }
+            #edit-profile-architect div:focus-within {
+                border-color: #6A2E2A;
+            }
+            #edit-profile-architect label {
+                color: #6A2E2A;
+            }
+            #edit-profile-architect input {
+                font-size: 1rem;
+                color: white;
+            }
+            #edit-profile-architect button {
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+                background-color: #6A2E2A;
+            }
+            #edit-profile-architect button:hover {
+                box-shadow: 0 0 5px #6A2E2A;
+            }
+            #edit-profile-architect .forget-link{
+                color: #6A2E2A;
+            }
+            .edit-title-architect {
+                font-weight: 700;
+                font-size: 2.5rem;
+                color: #6A2E2A;
+                text-align: center;
+                margin-bottom: 0.5rem;
+            }
 /*agency ---------------------------------------------------*/
+            #edit-profile-agency {
+                width: 80%;
+                font-weight: 600;
+                padding-top: 2rem;
+            }
+            #edit-profile-agency div {
+                display: flex;
+                border: 2px solid white;
+                border-radius: 50px;
+                padding: 0.3rem 1rem 0.3rem 1.5rem;
+                margin-bottom: 1.5rem;
+                margin-top: 0.4rem;
+            }
+            #edit-profile-agency div img {
+                height: 1.7rem;
+            }
+            #edit-profile-agency div:focus-within {
+                border-color: #2e496e;
+            }
+            #edit-profile-agency label {
+                color: #2e496e;
+            }
+            #edit-profile-agency input {
+                font-size: 1rem;
+                color: white;
+            }
+            #edit-profile-agency button {
+                margin-top: 1.7rem;
+                margin-bottom: 1.7rem;
+                background-color: #2e496e;
+            }
+            #edit-profile-agency button:hover {
+                box-shadow: 0 0 5px #2e496e;
+            }
+            #edit-profile-agency .forget-link{
+                color: #2e496e;
+            }
+            .edit-title-agency {
+                font-weight: 700;
+                font-size: 2.5rem;
+                color: #2e496e;
+                text-align: center;
+                margin-bottom: 0.5rem;
+            }
+
+
+            .forget-link{
+                text-decoration: none;
+                margin-left: 1.5rem;
+                margin-top: 2rem;
+                font-weight: 500;
+            }

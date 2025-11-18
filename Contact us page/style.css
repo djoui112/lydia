@@ -1,0 +1,428 @@
+/* ============================================
+   Reset and Base Styles
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ============================================
+   Header Override for Contact Page
+   ============================================ */
+/* White text when header is transparent (before scrolling) */
+.site-header:not(.is-scrolled) .header-brand,
+.site-header:not(.is-scrolled) .header-link,
+.site-header:not(.is-scrolled) .header-cta {
+    color: #FFFFFF !important;
+}
+
+/* White mobile menu icon when header is transparent */
+.site-header:not(.is-scrolled) .mobile-menu-toggle .menu-icon-line {
+    background-color: #FFFFFF !important;
+}
+
+/* Ensure hover effects work with white text */
+.site-header:not(.is-scrolled) .header-link::after {
+    background-color: #FFFFFF !important;
+}
+
+.site-header:not(.is-scrolled) .header-link:hover,
+.site-header:not(.is-scrolled) .header-link:focus-visible {
+    color: #FFFFFF !important;
+    opacity: 0.8;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', 'Open Sans', 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: #FFFFFF;
+    background: linear-gradient(180deg, #1a2b3d 0%, #2d4a5f 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ============================================
+   Main Contact Section
+   ============================================ */
+.contact-main {
+    padding: 150px 5% 150px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-container {
+    max-width: 1400px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+/* ============================================
+   Left Side: Text and Contact Cards
+   ============================================ */
+.contact-left {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.contact-header {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.contact-header.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.contact-title {
+    font-size: 64px;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+    line-height: 1.2;
+}
+
+.contact-subtitle {
+    font-size: 18px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.7;
+    max-width: 600px;
+}
+
+/* ============================================
+   Contact Cards Grid
+   ============================================ */
+.contact-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+.contact-card {
+    background-color: #d9d9d9;
+    border-radius: 20px;
+    padding: 30px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(30px);
+    cursor: pointer;
+}
+
+.contact-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.contact-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.contact-card-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #1a2b3d 0%, #2d4a5f 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.contact-card-icon i {
+    font-size: 28px;
+    color: #FFFFFF;
+}
+
+.contact-card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a2b3d;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
+
+.contact-card-subtitle {
+    font-size: 15px;
+    font-weight: 500;
+    color: #2d4a5f;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.contact-card-btn {
+    background-color: #FFFFFF;
+    color: #1a2b3d;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.3px;
+}
+
+.contact-card-btn:hover {
+    background-color: #1a2b3d;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   Right Side: Rounded-Arch Image
+   ============================================ */
+.contact-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.contact-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.contact-image-wrapper {
+    width: 566.676025390625px;
+    height: 763.884033203125px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    /* Exact border-radius values from design */
+    border-top-left-radius: 280.96px;
+    border-top-right-radius: 280.96px;
+    border-bottom-right-radius: 13.07px;
+    border-bottom-left-radius: 13.07px;
+}
+
+.contact-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    object-position: center;
+}
+
+/* ============================================
+   Responsive Design - Tablet
+   ============================================ */
+@media (max-width: 1024px) {
+    .contact-container {
+        gap: 40px;
+    }
+
+    .contact-title {
+        font-size: 56px;
+    }
+
+    .contact-subtitle {
+        font-size: 17px;
+    }
+
+    .contact-cards-grid {
+        gap: 20px;
+    }
+
+    .contact-card {
+        padding: 25px 20px;
+    }
+
+    .contact-image-wrapper {
+        width: 100%;
+        max-width: 566.676025390625px;
+        height: auto;
+        aspect-ratio: 566.676025390625 / 763.884033203125;
+    }
+    
+    .contact-image {
+        height: 100%;
+    }
+}
+
+/* ============================================
+   Responsive Design - Mobile
+   ============================================ */
+@media (max-width: 768px) {
+    .contact-main {
+        padding: 100px 4% 60px;
+    }
+
+    .contact-container {
+        grid-template-columns: 1fr;
+        gap: 50px;
+    }
+
+    .contact-left {
+        gap: 40px;
+    }
+
+    .contact-title {
+        font-size: 42px;
+    }
+
+    .contact-subtitle {
+        font-size: 16px;
+    }
+
+    .contact-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .contact-card {
+        padding: 30px 25px;
+    }
+
+    .contact-right {
+        order: -1;
+        margin-bottom: 20px;
+    }
+
+    .contact-image-wrapper {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        aspect-ratio: 566.676025390625 / 763.884033203125;
+    }
+
+    .contact-image {
+        height: 100%;
+    }
+}
+
+/* ============================================
+   Responsive Design - Small Mobile
+   ============================================ */
+@media (max-width: 480px) {
+    .contact-main {
+        padding: 90px 3% 50px;
+    }
+
+    .contact-title {
+        font-size: 36px;
+    }
+
+    .contact-subtitle {
+        font-size: 15px;
+    }
+
+    .contact-card {
+        padding: 25px 20px;
+    }
+
+    .contact-card-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .contact-card-icon i {
+        font-size: 24px;
+    }
+
+    .contact-card-title {
+        font-size: 20px;
+    }
+
+    .contact-card-subtitle {
+        font-size: 14px;
+    }
+
+    .contact-image-wrapper {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 566.676025390625 / 763.884033203125;
+    }
+    
+    .contact-image {
+        height: 100%;
+    }
+}
+
+/* ============================================
+   Animation Keyframes
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ============================================
+   Footer Override for Contact Page
+   ============================================ */
+.footer {
+    background: #FFFFFF !important;
+}
+
+.footer-column {
+    color: #2E2E2E !important;
+}
+
+.footer-logo {
+    color: #2E2E2E !important;
+}
+
+.footer-heading {
+    color: #2E2E2E !important;
+}
+
+.footer-links li,
+.footer-contact li {
+    color: #2E2E2E !important;
+}
+
+.footer-tagline {
+    color: #666666 !important;
+}
+
+.footer-links a {
+    color: #2E2E2E !important;
+}
+
+.footer-links a:hover {
+    color: #5b6140 !important;
+}
+

@@ -1,7 +1,31 @@
 /*Genral login*/
 
-.blue:hover{
-    filter: drop-shadow(0 0 3px #7D97AA);
+
+label{
+    margin-left: 1.8rem;
+    font-weight: 500;
+    color: #1B2B41;
+    font-size: 1.2rem;
+}
+input{
+    background-color: transparent;
+    border: none;
+    width:90%;
+    font-size: 1rem;
+    color: white;
+    font-weight: 500;
+}
+
+input:focus {
+  outline: none;       
+  border: none;        
+  box-shadow: none;
+  font-size: 1rem ; 
+  font-weight: 500;    
+}
+
+input:focus::placeholder{
+    opacity: 0;
 }
 
 #login-form {
@@ -9,6 +33,10 @@
     font-weight: 600;
     margin-top: 1.5rem;
 }
+.blue:hover{
+    filter: drop-shadow(0 0 3px #7D97AA);
+}
+
 .l{
     background-color: #7D97AA;
 }
@@ -27,36 +55,14 @@
     border: 2px solid white;
     border-radius: 50px;
     padding: 0.5rem 1rem 0.5rem 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     margin-top: 0.3rem;
 }
 #login-form div img{
     height: 2rem;
 }
 
-label{
-    margin-left: 1.8rem;
-    font-weight: 500;
-    color: #1B2B41;
-    font-size: 1.2rem;
-}
-input{
-    background-color: transparent;
-    border: none;
-    width:90%;
-}
 
-input:focus {
-  outline: none;       
-  border: none;        
-  box-shadow: none;
-  font-size: 1rem ; 
-  font-weight: 500;    
-}
-
-input:focus::placeholder{
-    opacity: 0;
-}
 #login-form div:focus-within {
   border-color: #1B2B41; 
    
@@ -70,7 +76,7 @@ input::placeholder{
     text-decoration: none;
     font-weight: 500;
     margin-left: 1.8rem;
-    margin-top:  -0.7rem;
+    margin-top:  -0.4rem;
     font-size: 0.9rem ;
     color: #2e496e;
     transition: text-decoration 0.4s ease;
@@ -131,16 +137,20 @@ background-color: #595F34;
     margin-top: 0.6rem;
 }
 .pfp{
+    width: 10rem;
+    height: 10rem;
     border: 3px #595F34 solid;
-    border-radius: 10rem;
+    border-radius: 20rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
 .pfp img{
-    height: 10rem;
-    margin:-0.8rem;
+    height: auto;
+    object-fit: cover;
+    border-radius: 50%; 
 }
 
 .pfp-mdf{
@@ -169,7 +179,7 @@ background-color: #595F34;
 }
 
 .ar{
-    background-color: #98605C;
+    background-color: #b07570;
     margin-bottom: 1.5rem;
 }
 .ar .pfp{
@@ -227,19 +237,35 @@ background-color: #6A2E2A;
 .gender{
     display: flex;
     margin-top: 0.6rem;
+    margin-bottom: 0.6rem;
 }
 .gender p{
     color: white;
     margin-left: 0.2rem;
 }
- input[type="radio"]:checked {
-      border-color: #6A2E2A;
-      background-color: #6A2E2A;
-    }
-input[type="date"]{
-    width: 96.5%;
-    margin-top:0.3rem ;
-    margin-bottom:0.3rem ;
+.gender input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #6A2E2A; 
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Circle inside when checked */
+.gender input[type="radio"]:checked::before {
+    content: '';
+    width: 0.6rem;
+    height: 0.6rem;
+    background-color: #6A2E2A;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 
@@ -258,13 +284,18 @@ input[type="date"]{
 .ag .logo{
     margin-bottom: 2rem;
 }
+
+#login-agency-1 ,#login-agency-2{
+    margin-top: 1.2rem;
+}
+
 #login-agency-1 div,#login-agency-2 div{
     display: flex;
     border: 2px solid white;
     border-radius: 50px;
     padding: 0.3rem 1rem 0.3rem 1.5rem;
-    margin-bottom: 1rem;
-    margin-top: 0.3rem;
+    margin-bottom: 1.5rem;
+    margin-top: 0.4rem;
 }
 #login-agency-1 div img,#login-agency-2 div img{
     height: 1.7rem;
@@ -275,6 +306,7 @@ input[type="date"]{
 #login-agency-1,#login-agency-2{
    width: 80%;
     font-weight: 600;
+    padding-top: 2rem;
     
 }
 
@@ -286,8 +318,8 @@ input[type="date"]{
     color: white;
 }
 #login-agency-1 button,#login-agency-2 button{
-margin-top: 1rem;
-margin-bottom: 1rem;
+margin-top: 1.7rem;
+margin-bottom: 1.7rem;
 background-color: #2e496e;
 }
 
@@ -345,134 +377,3 @@ text-align: center;
 }
 
 
-/* Error styling */
-.error-message {
-    display: block;
-    color: #bf3030;
-    font-size: 0.85rem;
-    margin-left: 1.8rem;
-    margin-top: -0.8rem;
-    margin-bottom: 0.8rem;
-    font-weight: 500;
-}
-
-form div.error {
-    border-color: #bf3030 !important;
-}
-
-/* Reset password info text */
-.reset-info {
-    color: white !important;
-    font-size: 1rem !important;
-    margin: 1rem 1.8rem !important;
-    text-align: center;
-}
-
-/* Select dropdown styling */
-.select-wrapper {
-    position: relative;
-    display: flex;
-    border: 2px solid white;
-    border-radius: 50px;
-    padding: 0.3rem 1rem 0.3rem 1.5rem;
-    margin-bottom: 1rem;
-    margin-top: 0.3rem;
-}
-
-.select-wrapper.error {
-    border-color: #bf3030 !important;
-}
-
-.select-wrapper select {
-    background-color: transparent;
-    border: none;
-    width: 90%;
-    color: white;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    outline: none;
-}
-
-.select-wrapper select option {
-    background-color: #1B2B41;
-    color: white;
-}
-
-.select-wrapper img {
-    height: 1.7rem;
-}
-
-/* Date input styling */
-.date-wrapper {
-    position: relative;
-    display: flex;
-    border: 2px solid white;
-    border-radius: 50px;
-    padding: 0.3rem 1rem 0.3rem 1.5rem;
-    margin-bottom: 1rem;
-    margin-top: 0.3rem;
-}
-
-.date-wrapper.error {
-    border-color: #bf3030 !important;
-}
-
-.date-wrapper input[type="text"] {
-    background-color: transparent;
-    border: none;
-    width: 90%;
-    color: white;
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.date-wrapper input[type="date"] {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.date-wrapper .date-icon {
-    cursor: pointer;
-    height: 1.7rem;
-}
-
-/* File input styling */
-.file-input-wrapper {
-    position: relative;
-    display: flex;
-    border: 2px solid white;
-    border-radius: 50px;
-    padding: 0.3rem 1rem 0.3rem 1.5rem;
-    margin-bottom: 1rem;
-    margin-top: 0.3rem;
-}
-
-.file-input-wrapper.error {
-    border-color: #bf3030 !important;
-}
-
-.file-input-wrapper input[type="text"] {
-    background-color: transparent;
-    border: none;
-    width: 90%;
-    color: white;
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.file-input-wrapper .file-icon {
-    cursor: pointer;
-    height: 1.7rem;
-}
-
-/* Profile upload */
-.pfp-mdf {
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.pfp-mdf:hover {
-    transform: scale(1.1);
-}

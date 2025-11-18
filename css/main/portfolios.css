@@ -6,13 +6,12 @@
     .portfolio-slider-wrapper {
             position: relative;
             width: 85%;
-            height: 80vh;
+            height: 60vh;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             margin: auto;
-            border: 3px solid #1B2B41;
             border-radius: 30px;
         }
 
@@ -27,7 +26,7 @@
 .color-titles{
     margin-left: 7.5%;
     margin-bottom: 2rem;
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 600;
        background: linear-gradient(to bottom, #1B2B41 , #6A2E2A );
      background-clip: text;
@@ -177,3 +176,8 @@
         .nav-arrow:hover {
             background-color: #1B2B41;
         }
+@media (min-height: 900px){
+    .portfolio-slider-wrapper{
+        height: 40vh;
+    }
+}

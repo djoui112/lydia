@@ -1,5 +1,5 @@
 //login
-document.getElementById('login-form').addEventListener('submit', function(e) {
+           document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const email = document.getElementById('email');
@@ -30,7 +30,6 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
             }
 
             if (isValid) {
-                // Store login data
                 sessionStorage.setItem('loginData', JSON.stringify({
                     email: email.value,
                     userType: 'general'
@@ -43,3 +42,4 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
             input.parentElement.classList.add('error');
             document.getElementById(errorId).textContent = message;
         }
+        

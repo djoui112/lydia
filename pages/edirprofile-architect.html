@@ -1,68 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Log in-architect 1</title>
+        <title>Edit Profile - Architect</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="UTF-8">
-        <meta name="keywords" content="architecture,architect,agency,client,login">
-        <meta name="description" content="connect architects and clients- make an account">
-        <meta name="author" content="Mimaria team" >
-        <meta http-equiv="refresh" content="60">
         <link rel="icon" href="assets/main/Department.png" type="image/png">
         <link rel="stylesheet" href="/css/general.css">    
         <link rel="stylesheet" href="/css/login/generalSignup.css">  
-        <link rel="stylesheet" href="/css/login/login.css">  
-        <link rel="icon" href="assets/main/Department.png" type="image/png">     
+        <link rel="stylesheet" href="/css/login/login.css">
+        <link rel="stylesheet" href="/css/editprofile.css">
     </head>
     <body>
-        <a href="../pages/signUp.html"><img src="/assets/create-account/Back Arrow r.png" class="back red"></a>
-        <img src="/assets/create-account/Vector 5.png "class="vector1">
-        <img src="/assets/create-account/Vector 6.png "class="vector2">
+        <a href="javascript:history.back()"><img src="/assets/create-account/Back Arrow r.png" class="back red"></a>
+        <img src="/assets/create-account/Vector 5.png" class="vector1">
+        <img src="/assets/create-account/Vector 6.png" class="vector2">
 
-
-       <div class="form-shape ar">
-        <div class="pfp-container">
-            <div class="pfp">
-                <img src="../assets/create-account/Profile.png" id="profile-preview-arch">
-                <input type="file" id="profile-upload-arch" accept="image/*" style="display: none;">
-                <div class="pfp-mdf" onclick="document.getElementById('profile-upload-arch').click()">
-                    <img src="../assets/create-account/Edit Image.png">
+        <div class="form-shape ar">
+            
+            
+            <div class="pfp-container">
+                <div class="pfp">
+                    <img src="../assets/create-account/Profile.png" id="edit-architect-profile-preview">
+                    <input type="file" id="edit-architect-profile-upload" accept="image/*" style="display: none;">
+                    <div class="pfp-mdf" onclick="document.getElementById('edit-architect-profile-upload').click()">
+                        <img src="../assets/create-account/Edit Image.png">
+                    </div>
                 </div>
             </div>
-        </div>
-      
-        <form id="login-architect-1">
-            <label for="architect-fname">First name</label>
-            <div>
-                <input type="text" id="architect-fname" name="fname" placeholder="first name" required>
-                <img src="/assets/create-account/Profile.png" class="label-icon">
-            </div>
-            <span class="error-message" id="fname-error"></span>
+            <h1 class="edit-title-architect">Edit profile:</h1>
+          
+            <form id="edit-profile-architect" novalidate>
+                <label for="edit-architect-fname">First name:</label>
+                <div>
+                    <input type="text" id="edit-architect-fname" name="fname" placeholder="first name" required>
+                    <img src="/assets/create-account/Profile.png" class="label-icon">
+                </div>
+                <span class="error-message" id="edit-architect-fname-error"></span>
 
-            <label for="architect-lname">Last name</label>
-            <div>
-                <input type="text" id="architect-lname" name="lname" placeholder="last name" required>
-                <img src="/assets/create-account/Profile.png" class="label-icon">
-            </div>
-            <span class="error-message" id="lname-error"></span>
+                <label for="edit-architect-lname">Last name:</label>
+                <div>
+                    <input type="text" id="edit-architect-lname" name="lname" placeholder="last name" required>
+                    <img src="/assets/create-account/Profile.png" class="label-icon">
+                </div>
+                <span class="error-message" id="edit-architect-lname-error"></span>
 
-            <label for="architect-email">Email</label>
-            <div>
-                <input type="email" id="architect-email" name="email" placeholder="example@gmail.com" required>
-                <img src="/assets/create-account/Email.png" class="label-icon">
-            </div>
-            <span class="error-message" id="email-error"></span>
-<label for="architect-phone">Phone number</label>
-            <div>
-                <input type="tel" id="architect-phone" name="phone" placeholder="+213******" required>
-                <img src="/assets/create-account/Phone.png" class="label-icon">
-            </div>
-            <span class="error-message" id="phone-error"></span>
+                <label for="edit-architect-email">email:</label>
+                <div>
+                    <input type="email" id="edit-architect-email" name="email" placeholder="example@gmail.com" required>
+                    <img src="/assets/create-account/Email.png" class="label-icon">
+                </div>
+                <span class="error-message" id="edit-architect-email-error"></span>
 
-            <label for="architect-city">City</label>
-            <div class="select-wrapper">
-                <select id="architect-city" name="city" required>
-                    <option value="01 - Adrar">01 - Adrar</option>
+                <label for="edit-architect-phone">Phone number:</label>
+                <div>
+                    <input type="tel" id="edit-architect-phone" name="phone" placeholder="+213******" required>
+                    <img src="/assets/create-account/Phone.png" class="label-icon">
+                </div>
+                <span class="error-message" id="edit-architect-phone-error"></span>
+
+                <label for="edit-architect-city">City:</label>
+                <div class="select-wrapper">
+                    <select id="edit-architect-city" name="city" required>
+                        <option value="01 - Adrar">01 - Adrar</option>
                     <option value="02 - Chlef">02 - Chlef</option>
                     <option value="03 - Laghouat">03 - Laghouat</option>
                     <option value="04 - Oum El Bouaghi">04 - Oum El Bouaghi</option>
@@ -120,33 +119,34 @@
                     <option value="56 - Djanet">56 - Djanet</option>
                     <option value="57 - El M'Ghair">57 - El M'Ghair</option>
                     <option value="58 - El Meniaa">58 - El Meniaa</option>
-                </select>
-                <img src="/assets/create-account/Address.png" class="label-icon">
-            </div>
-            <span class="error-message" id="city-error"></span>
+                    </select>
+                    <img src="/assets/create-account/Address.png" class="label-icon">
+                </div>
+                <span class="error-message" id="edit-architect-city-error"></span>
 
-            <label for="architect-birth">Date of birth</label>
-            <div class="date-wrapper">
-                <input type="text" id="architect-birth-display" placeholder="DD/MM/YYYY" readonly required>
-                <input type="date" id="architect-birth" name="birth" required>
-                <img src="/assets/create-account/Calendar.png" class="label-icon date-icon" onclick="document.getElementById('architect-birth').showPicker()">
-            </div>
-            <span class="error-message" id="birth-error"></span>
+                 <label for="edit-architect-birth">Date of birth</label>
+                <div class="date-wrapper">
+                    <input type="text" id="edit-architect-birth-display" placeholder="DD/MM/YYYY" readonly required>
+                    <input type="date" id="edit-architect-birth" name="birth" required>
+                    <img src="/assets/create-account/Calendar.png" class="label-icon date-icon" onclick="document.getElementById('edit-architect-birth').showPicker()">
+                </div>
+                <span class="error-message" id="birth-error"></span>
 
-            <label>Gender</label>
-            <section class="gender">
-                <label class="gender"><input type="radio" name="gender" value="female" checked><p>Female</p></label>
-                <label class="gender"><input type="radio" name="gender" value="male"><p>Male</p></label>
-            </section>
-            <a href="/pages/resetpass.html">Forgot password?</a>
-            
+                <label>Gender:</label>
+                <section class="gender">
+                    <label class="gender"><input type="radio" name="edit-architect-gender" value="female" checked><p>Female</p></label>
+                    <label class="gender"><input type="radio" name="edit-architect-gender" value="male"><p>Male</p></label>
+                </section>
+
+                <a href="/pages/resetpass.html" class="forget-link">reset password?</a>
+                
                 <button type="submit">
                     <span>✓</span> Save changes
                 </button>
+            </form>
+        </div>
 
-        </form>
-    </div>
-        <script src="../js/architect.js"></script>
-
+        <script src="../js/editarchi.js"></script>
     </body>
 </html>
+

@@ -1,0 +1,1189 @@
+/* ============================================
+   Reset and Base Styles
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ============================================
+   Header Override for About Us Page
+   ============================================ */
+/* White text when header is transparent (before scrolling) */
+.site-header:not(.is-scrolled) .header-brand,
+.site-header:not(.is-scrolled) .header-link,
+.site-header:not(.is-scrolled) .header-cta {
+    color: #FFFFFF !important;
+}
+
+/* White mobile menu icon when header is transparent */
+.site-header:not(.is-scrolled) .mobile-menu-toggle .menu-icon-line {
+    background-color: #FFFFFF !important;
+}
+
+/* Ensure hover effects work with white text */
+.site-header:not(.is-scrolled) .header-link::after {
+    background-color: #FFFFFF !important;
+}
+
+.site-header:not(.is-scrolled) .header-link:hover,
+.site-header:not(.is-scrolled) .header-link:focus-visible {
+    color: #FFFFFF !important;
+    opacity: 0.8;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', 'Open Sans', 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: #2E2E2E;
+    background-color: #F5F5F5;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5%;
+}
+
+/* ============================================
+   Right-Side Vertical Progress Timeline
+   ============================================ */
+.progress-timeline {
+    position: fixed;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.timeline-line {
+    position: absolute;
+    width: 2px;
+    height: calc(100% - 40px);
+    background: linear-gradient(to bottom, #8B0000, #1a1a3e);
+    top: 20px;
+}
+
+.timeline-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: transparent;
+    border: 2px solid #8B0000;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.timeline-dot.active {
+    background-color: #8B0000;
+    border-color: #1B2B41;
+    box-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+    transform: scale(1.3);
+}
+
+/* ============================================
+   Hero Section
+   ============================================ */
+.hero-section {
+    min-height: 100vh;
+    background: linear-gradient(200deg, #6A2E2A 40%, #1B2B41 100%);
+    display: flex;
+    align-items: center;
+    padding: 120px 5% 60px;
+    position: relative;
+    margin-top: 0;
+}
+
+.hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+/* Left Column: Text and Buttons */
+.hero-left {
+    color: #FFFFFF;
+}
+
+.hero-title {
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 24px;
+    letter-spacing: -1px;
+}
+
+.hero-brand {
+    display: block;
+    
+    font-size: 64px;
+    margin-bottom: 8px;
+}
+
+.hero-tagline {
+    display: block;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.hero-subtext {
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 40px;
+    line-height: 1.6;
+    opacity: 0.95;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background-color: #8B0000;
+    color: #FFFFFF;
+    border: none;
+    padding: 16px 40px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-primary:hover {
+    background-color: #A00000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-secondary {
+    background-color: #E0E0E0;
+    color: #2E2E2E;
+    border: 2px solid #CCCCCC;
+    padding: 16px 40px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-secondary:hover {
+    background-color: #D0D0D0;
+    border-color: #BBBBBB;
+    transform: translateY(-2px);
+}
+
+/* Right Column: Image with Rounded Arch */
+.hero-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-image-wrapper {
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    /* Rounded arch shape - creates arch at the top */
+    clip-path: ellipse(85% 100% at 50% 0%);
+    border-radius: 0 0 30px 30px;
+}
+
+.hero-image {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    display: block;
+}
+
+/* ============================================
+   About Us Section
+   ============================================ */
+.about-section {
+    padding: 100px 5%;
+    background-color: #F5F5F5;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.about-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.section-title {
+    font-size: 56px;
+    font-weight: 800;
+    margin-bottom: 40px;
+    letter-spacing: -1px;
+}
+
+.title-text-black {
+    color: #2E2E2E;
+}
+
+.title-text-maroon {
+    color: #8B0000;
+}
+
+.about-text {
+    max-width: 800px;
+    margin: 0 auto;
+    font-size: 18px;
+    line-height: 1.8;
+    color: #4A4A4A;
+    text-align: center;
+}
+
+/* ============================================
+   Features Section
+   ============================================ */
+.features-section {
+    padding: 100px 5%;
+    background-color: #F5F5F5;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin-top: 60px;
+}
+
+.feature-card {
+    background-color: #FFFFFF;
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.feature-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.feature-icon {
+    font-size: 48px;
+    color: #8B0000;
+    margin-bottom: 24px;
+}
+
+.feature-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #2E2E2E;
+}
+
+.feature-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #666666;
+}
+
+/* ============================================
+   Reviews Section
+   ============================================ */
+.reviews-section {
+    padding: 100px 5%;
+    background-color: #F5F5F5;
+}
+
+.reviews-title {
+    font-size: 56px;
+    font-weight: 800;
+    color: #8B0000;
+    text-align: center;
+    margin-bottom: 60px;
+    letter-spacing: -1px;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.review-card {
+    background-color: #FFFFFF;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E0E0E0;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.review-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.review-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2E2E2E;
+}
+
+.review-stars {
+    display: flex;
+    gap: 4px;
+}
+
+.star {
+    color: #FFD700;
+    font-size: 20px;
+}
+
+.review-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #4A4A4A;
+}
+/* ============================================
+   Responsive Design - Tablet
+   ============================================ */
+@media (max-width: 1024px) {
+    .hero-title {
+        font-size: 48px;
+    }
+
+    .hero-brand {
+        font-size: 48px;
+    }
+
+    .hero-tagline {
+        font-size: 36px;
+    }
+
+    .hero-image {
+        height: 400px;
+    }
+
+    .features-grid {
+        gap: 30px;
+    }
+
+    .reviews-grid {
+        gap: 25px;
+    }
+
+    .progress-timeline {
+        right: 20px;
+    }
+}
+
+/* ============================================
+   Responsive Design - Mobile
+   ============================================ */
+@media (max-width: 768px) {
+    .progress-timeline {
+        display: none; /* Hide on mobile for better UX */
+    }
+
+    .hero-section {
+        
+        padding: 100px 5% 40px;
+        min-height: auto;
+    }
+
+    .hero-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .hero-title {
+        font-size: 36px;
+    }
+
+    .hero-brand {
+        font-size: 36px;
+    }
+
+    .hero-tagline {
+        font-size: 28px;
+    }
+
+    .hero-subtext {
+        font-size: 18px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+
+    .hero-image {
+        height: 300px;
+    }
+
+    .about-section,
+    .features-section,
+    .reviews-section {
+        padding: 60px 5%;
+    }
+
+    .section-title,
+    .reviews-title {
+        font-size: 40px;
+    }
+
+    .about-text {
+        font-size: 16px;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .reviews-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .feature-card {
+        padding: 30px 25px;
+    }
+}
+
+/* ============================================
+   Responsive Design - Small Mobile
+   ============================================ */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 28px;
+    }
+
+    .hero-brand {
+        font-size: 28px;
+    }
+
+    .hero-tagline {
+        font-size: 22px;
+    }
+
+    .hero-subtext {
+        font-size: 16px;
+    }
+
+    .section-title,
+    .reviews-title {
+        font-size: 32px;
+    }
+
+    .about-text {
+        font-size: 15px;
+    }
+
+    .feature-icon {
+        font-size: 40px;
+    }
+
+    .feature-title {
+        font-size: 20px;
+    }
+
+    .feature-text {
+        font-size: 15px;
+    }
+
+    .review-card {
+        padding: 25px 20px;
+    }
+
+    .review-name {
+        font-size: 16px;
+    }
+
+    .review-text {
+        font-size: 15px;
+    }
+}
+
+/* ============================================
+   Animation Keyframes
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+/* ============================================
+   Our Agencies Section
+   ============================================ */
+.agencies-section {
+    padding: 100px 5%;
+    background: linear-gradient(135deg, #8B3A3A 0%, #1a1a3e 100%);
+    position: relative;
+    min-height: 600px;
+    overflow: hidden;
+    border-radius: 20px;
+    margin: 40px 5%;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.agencies-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.agencies-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    height: 100%;
+    min-height: 500px;
+}
+
+.agencies-content {
+    position: relative;
+    z-index: 20;
+    padding: 40px 0;
+    pointer-events: auto;
+}
+
+.agencies-title {
+    font-size: 64px;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+}
+
+.agencies-description {
+    font-size: 18px;
+    color: #FFFFFF;
+    opacity: 0.95;
+    max-width: 600px;
+    line-height: 1.6;
+}
+
+.agencies-logos {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.agency-logo {
+    position: absolute;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: transform 0.3s ease, z-index 0s;
+    opacity: 1;
+    transform: none;
+}
+
+.agency-logo:hover {
+    z-index: 100 !important;
+}
+
+.agency-logo-small {
+    width: 120px;
+    height: 120px;
+}
+
+.agency-logo-medium {
+    width: 160px;
+    height: 160px;
+}
+
+.agency-logo-large {
+    width: 220px;
+    height: 220px;
+}
+
+.agency-logo-center {
+    transform: translateX(-50%);
+}
+
+.agency-logo-center-vertical {
+    transform: translate(-50%, -50%);
+}
+
+.agency-logo-center:hover {
+    transform: translateX(-50%) scale(1.05);
+}
+
+.agency-logo-center-vertical:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+}
+
+.agency-logo:hover:not(.agency-logo-center):not(.agency-logo-center-vertical) {
+    transform: scale(1.05);
+}
+
+.logo-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    transition: box-shadow 0.3s ease;
+    overflow: hidden;
+    background-color: #FFFFFF;
+    position: relative;
+    pointer-events: auto;
+}
+
+.agency-logo:hover .logo-circle {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.logo-red {
+    background-color: #8B0000;
+    color: #FFFFFF;
+}
+
+.logo-red h3 {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    line-height: 1.2;
+}
+
+.logo-red p {
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.logo-blue {
+    background: linear-gradient(135deg, #1a1a3e 0%, #2a3a5e 100%);
+    color: #FFFFFF;
+}
+
+.logo-blue .logo-icon {
+    font-size: 40px;
+    margin-bottom: 8px;
+}
+
+.logo-blue p {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.logo-image {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    border-radius: 50%;
+}
+
+/* Overlay removed for cleaner logo display - logos have their own backgrounds */
+
+.logo-content {
+    position: relative;
+    z-index: 2;
+    color: #FFFFFF;
+    text-align: center;
+}
+
+.logo-m,
+.logo-l {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.logo-building {
+    font-size: 40px;
+    margin-bottom: 8px;
+}
+
+.logo-content p {
+    font-size: 12px;
+    font-weight: 600;
+    margin: 2px 0;
+}
+
+.logo-slogan {
+    font-size: 10px;
+    opacity: 0.8;
+}
+
+/* ============================================
+   Portfolios Section
+   ============================================ */
+.portfolios-section {
+    padding: 100px 5%;
+    background-color: #F5F5F5;
+}
+
+.portfolios-title {
+    font-size: 56px;
+    font-weight: 800;
+    color: #1a1a3e;
+    margin-bottom: 60px;
+    letter-spacing: -1px;
+}
+
+.portfolio-carousel-wrapper {
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.portfolios-carousel {
+    display: flex;
+    transition: transform 0.6s ease-in-out;
+    will-change: transform;
+}
+
+.portfolio-slide {
+    min-width: 100%;
+    flex-shrink: 0;
+}
+
+.portfolios-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+
+.portfolio-card {
+    background-color: #FFFFFF;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.portfolio-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.portfolio-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.portfolio-arch {
+    position: relative;
+    height: 280px;
+    background-image: url(../assts/1575ab82aa5e194ecd0a95d542d9f2989692226f.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    clip-path: ellipse(100% 100% at 50% 0%);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 40px;
+    overflow: hidden;
+}
+
+.portfolio-arch-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+.portfolio-photo-wrapper {
+    position: relative;
+    z-index: 2;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.portfolio-photo {
+    width: 100%;
+    height: 100%;
+    object-position: top;
+    object-fit: cover;
+}
+
+.portfolio-content {
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.portfolio-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a3e;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+.portfolio-stats {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1a1a3e;
+    border-radius: 12px;
+    padding: 20px 15px;
+    margin-bottom: 20px;
+    gap: 0;
+}
+
+.portfolio-stat-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.portfolio-stat-number {
+    font-size: 32px;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.2;
+    margin-bottom: 5px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.portfolio-stat-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFFFFF;
+    line-height: 1.2;
+    opacity: 0.9;
+    font-family: 'Poppins', sans-serif;
+}
+
+.portfolio-stat-divider {
+    width: 1px;
+    height: 50px;
+    background-color: #FFFFFF;
+    opacity: 0.3;
+    margin: 0 10px;
+}
+
+.portfolio-btn {
+    background-color: #1a1a3e;
+    color: #FFFFFF;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.portfolio-btn:hover {
+    background-color: #2a3a5e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(26, 26, 62, 0.3);
+}
+
+.portfolio-scroll-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 40px;
+}
+
+.scroll-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: transparent;
+    border: 2px solid #CCCCCC;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.scroll-dot.active {
+    background-color: #1a1a3e;
+    border-color: #1a1a3e;
+    transform: scale(1.2);
+}
+
+
+
+/* ============================================
+   Responsive Design - Agencies & Portfolios
+   ============================================ */
+@media (max-width: 1024px) {
+    .agencies-title {
+        font-size: 48px;
+    }
+
+    .agencies-description {
+        font-size: 16px;
+    }
+
+    .agency-logo-small {
+        width: 100px;
+        height: 100px;
+    }
+
+    .agency-logo-medium {
+        width: 140px;
+        height: 140px;
+    }
+
+    .agency-logo-large {
+        width: 180px;
+        height: 180px;
+    }
+
+    .portfolios-title {
+        font-size: 48px;
+    }
+
+    .portfolios-grid {
+        gap: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .agencies-section {
+        margin: 20px 2%;
+        padding: 60px 3%;
+        min-height: 500px;
+    }
+
+    .agencies-title {
+        font-size: 36px;
+    }
+
+    .agencies-description {
+        font-size: 15px;
+    }
+
+    .agency-logo {
+        position: static;
+        margin: 10px;
+        opacity: 0;
+        transform: translateY(30px) scale(0.8);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .agency-logo.visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    .agencies-logos {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        margin-top: 30px;
+    }
+
+    .agency-logo-small,
+    .agency-logo-medium,
+    .agency-logo-large {
+        width: 120px;
+        height: 120px;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+    }
+
+    /* Reset transform for centered logos in mobile */
+    .agency-logo-center.visible,
+    .agency-logo-center-vertical.visible {
+        transform: translateY(0) scale(1) !important;
+    }
+
+    .agency-logo-center:hover,
+    .agency-logo-center-vertical:hover,
+    .agency-logo:hover:not(.agency-logo-center):not(.agency-logo-center-vertical) {
+        transform: translateY(0) scale(1.05) !important;
+    }
+    
+    /* Ensure hover works after animation */
+    .agency-logo.visible.agency-logo-center:hover {
+        transform: translateY(0) scale(1.05) !important;
+    }
+    
+    .agency-logo.visible.agency-logo-center-vertical:hover {
+        transform: translateY(0) scale(1.05) !important;
+    }
+
+    .portfolios-section {
+        padding: 60px 3%;
+    }
+
+    .portfolios-title {
+        font-size: 40px;
+    }
+
+    .portfolio-carousel-wrapper {
+        margin-bottom: 30px;
+    }
+
+    .portfolios-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .portfolio-slide {
+        min-width: 100%;
+    }
+
+    .portfolio-arch {
+        height: 240px;
+    }
+
+    .portfolio-photo-wrapper {
+        width: 120px;
+        height: 120px;
+    }
+
+    .portfolio-stats {
+        padding: 15px 10px;
+    }
+
+    .portfolio-stat-number {
+        font-size: 28px;
+    }
+
+    .portfolio-stat-label {
+        font-size: 13px;
+    }
+
+    .portfolio-stat-divider {
+        height: 40px;
+        margin: 0 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .agencies-title {
+        font-size: 28px;
+    }
+
+    .agencies-description {
+        font-size: 14px;
+    }
+
+    .portfolios-title {
+        font-size: 32px;
+    }
+
+    .portfolio-name {
+        font-size: 20px;
+    }
+
+    .portfolio-arch {
+        height: 200px;
+    }
+
+    .portfolio-photo-wrapper {
+        width: 100px;
+        height: 100px;
+    }
+
+    .portfolio-stats {
+        padding: 12px 8px;
+    }
+
+    .portfolio-stat-number {
+        font-size: 24px;
+    }
+
+    .portfolio-stat-label {
+        font-size: 12px;
+    }
+
+    .portfolio-stat-divider {
+        height: 35px;
+        margin: 0 6px;
+    }
+}
+

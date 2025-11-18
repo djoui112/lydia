@@ -1,67 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>edit profile - client</title>
+        <title>Edit Profile - Client</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="UTF-8">
-        <meta name="keywords" content="architecture,architect,agency,client,login">
-        <meta name="description" content="connect architects and clients- make an account">
-        <meta name="author" content="Mimaria team" >
-        <meta http-equiv="refresh" content="60">
         <link rel="icon" href="assets/main/Department.png" type="image/png">
         <link rel="stylesheet" href="/css/general.css">    
         <link rel="stylesheet" href="/css/login/generalSignup.css">  
-        <link rel="stylesheet" href="/css/login/login.css">  
-        <link rel="icon" href="assets/main/Department.png" type="image/png">     
+        <link rel="stylesheet" href="/css/login/login.css">
+        <link rel="stylesheet" href="/css/editprofile.css">
     </head>
     <body>
-        <a href="../pages/signUp.html"><img src="/assets/create-account/Back Arrow.png" class="back green"></a>
-        <img src="/assets/create-account/Vector 4.png "class="vector1">
-        <img src="/assets/create-account/Vector 3.png "class="vector2">
+        <a href="javascript:history.back()"><img src="/assets/create-account/Back Arrow.png" class="back green"></a>
+        <img src="/assets/create-account/Vector 4.png" class="vector1">
+        <img src="/assets/create-account/Vector 3.png" class="vector2">
 
-
-       <div class="form-shape c">
-        <div class="pfp-container">
-            <div class="pfp">
-                <img src="../assets/create-account/Profile.png" id="profile-preview">
-                <input type="file" id="profile-upload" accept="image/*" style="display: none;">
-                <div class="pfp-mdf" onclick="document.getElementById('profile-upload').click()">
-                    <img src="../assets/create-account/Edit Image.png">
+        <div class="form-shape c">
+           
+            
+            <div class="pfp-container">
+                <div class="pfp">
+                    <img src="../assets/create-account/Profile.png" id="edit-client-profile-preview">
+                    <input type="file" id="edit-client-profile-upload" accept="image/*" style="display: none;">
+                    <div class="pfp-mdf" onclick="document.getElementById('edit-client-profile-upload').click()">
+                        <img src="../assets/create-account/Edit Image.png">
+                    </div>
                 </div>
             </div>
-        </div>
-      
-        <form id="login-client">
-            <label for="client-fname">First name</label>
-            <div>
-                <input type="text" id="client-fname" name="fname" placeholder="first name" required>
-                <img src="/assets/create-account/Profile.png" class="label-icon">
-            </div>
-            <span class="error-message" id="fname-error"></span>
+           <h1 class="edit-title-client">Edit profile:</h1>
+           
+            <form id="edit-profile-client" novalidate>
+                <label for="edit-client-email">email:</label>
+                <div>
+                    <input type="email" id="edit-client-email" name="email" placeholder="example@gmail.com" required>
+                    <img src="/assets/create-account/Email.png" class="label-icon">
+                </div>
+                <span class="error-message" id="edit-client-email-error"></span>
 
-            <label for="client-lname">Last name</label>
-            <div>
-                <input type="text" id="client-lname" name="lname" placeholder="last name" required>
-                <img src="/assets/create-account/Profile.png" class="label-icon">
-            </div>
-            <span class="error-message" id="lname-error"></span>
+                <label for="edit-client-fname">First name:</label>
+                <div>
+                    <input type="text" id="edit-client-fname" name="fname" placeholder="first name" required>
+                    <img src="/assets/create-account/Profile.png" class="label-icon">
+                </div>
+                <span class="error-message" id="edit-client-fname-error"></span>
 
-            <label for="client-email">Email</label>
-            <div>
-                <input type="email" id="client-email" name="email" placeholder="example@gmail.com" required>
-                <img src="/assets/create-account/Email.png" class="label-icon">
-            </div>
-            <span class="error-message" id="email-error"></span>
+                <label for="edit-client-lname">Last name:</label>
+                <div>
+                    <input type="text" id="edit-client-lname" name="lname" placeholder="last name" required>
+                    <img src="/assets/create-account/Profile.png" class="label-icon">
+                </div>
+                <span class="error-message" id="edit-client-lname-error"></span>
 
-            <a href="/pages/resetpass.html">Forgot password?</a>
+                <a href="/pages/resetpass.html" class="forget-link">reset password?</a>
 
-            <button type="submit">
+                <button type="submit">
                     <span>✓</span> Save changes
                 </button>
-        </form>
-    </div>
+            </form>
+        </div>
 
-        <script src="../js/client.js"></script>
-
+        <script src="../js/editclient.js"></script>
     </body>
 </html>

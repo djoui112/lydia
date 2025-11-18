@@ -113,17 +113,7 @@
             transform: scale(1.2);
         }
 
-@media(max-width: 380px){
-    .agencies-area1{
-    height: 90vh;
-    }
-    #i4{
-        display: none;
-    }
-    #i5{
-        top:50%;
-    }
-}
+
 
  @keyframes float1 {
             0%, 100% { transform: translateY(0px); }
@@ -149,3 +139,23 @@
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-22px); }
         }
+@media (min-height: 900px){
+    .agencies-area1{
+        height: 50vh;
+    }
+    #i4{
+        display: none;
+    }
+}
+
+@media(max-width: 380px){
+    .agencies-area1{
+    height: 90vh;
+    }
+    #i4{
+        display: none;
+    }
+    #i5{
+        top:50%;
+    }
+}
