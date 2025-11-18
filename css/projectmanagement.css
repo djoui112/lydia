@@ -655,7 +655,7 @@ body {
 
 /* Deadline Modal */
 .deadline-modal {
-  display: none;
+  display: none !important;
   position: fixed;
   top: 0;
   left: 0;
@@ -665,10 +665,15 @@ body {
   align-items: center;
   justify-content: center;
   padding: 20px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .deadline-modal.active {
-  display: flex;
+  display: flex !important;
+  visibility: visible;
+  opacity: 1;
 }
 
 .deadline-modal .modal-overlay {

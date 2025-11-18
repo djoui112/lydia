@@ -165,8 +165,12 @@ document.addEventListener("DOMContentLoaded", function () {
           dayEl.title = deadline.title || "Deadline";
         }
 
-        dayEl.addEventListener("click", () => {
-          openDeadlineModal(day, currentMonth, currentYear);
+        dayEl.addEventListener("click", (e) => {
+          e.stopPropagation(); // Prevent event bubbling to parent elements
+          // Only open modal when clicking on a valid calendar day (not empty)
+          if (!dayEl.classList.contains('empty')) {
+            openDeadlineModal(day, currentMonth, currentYear);
+          }
         });
 
         daysContainer.appendChild(dayEl);
@@ -263,7 +267,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const prevMonthBtn = calendarContainer.querySelector(".prev-month");
     const nextMonthBtn = calendarContainer.querySelector(".next-month");
 
-    prevMonthBtn.addEventListener("click", () => {
+    prevMonthBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); // Prevent event bubbling
       currentMonth--;
       if (currentMonth < 0) {
         currentMonth = 11;
@@ -272,7 +277,8 @@ document.addEventListener("DOMContentLoaded", function () {
       renderCalendar();
     });
 
-    nextMonthBtn.addEventListener("click", () => {
+    nextMonthBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); // Prevent event bubbling
       currentMonth++;
       if (currentMonth > 11) {
         currentMonth = 0;
@@ -280,6 +286,29 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       renderCalendar();
     });
+    
+    // Prevent calendar container from triggering modal accidentally
+    // Only calendar days should trigger the modal, not other elements
+    const calendarHeader = calendarContainer.querySelector(".calendar-header");
+    const calendarWeekdays = calendarContainer.querySelector(".calendar-weekdays");
+    const calendarLegend = calendarContainer.querySelector(".calendar-legend");
+    
+    // Prevent clicks on header, weekdays, and legend from doing anything
+    if (calendarHeader) {
+      calendarHeader.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+    }
+    if (calendarWeekdays) {
+      calendarWeekdays.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+    }
+    if (calendarLegend) {
+      calendarLegend.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+    }
 
     // Extract all deadlines and create timeline
     function extractTimelineData() {

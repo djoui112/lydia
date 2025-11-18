@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client Request Details</title>
+  <link rel="stylesheet" href="../css/project.css" />
+  <link rel="stylesheet" href="../css/c_reqpreview.css" />
+</head>
+<body>
+  <div class="page-container">
+    <header class="form-header">
+      <button class="back-btn" onclick="history.back()"><</button>
+      <h1>Client Request Details</h1>
+    </header>
+
+    <div class="preview-container">
+      <!-- Basic Information Section -->
+      <div class="info-section">
+        <h2>Basic Information</h2>
+        <div class="info-row">
+          <div class="info-label">Full Name</div>
+          <div class="info-value" id="fullName">John Doe</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Phone Number</div>
+          <div class="info-value" id="phoneNumber">+213 550 000 000</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Email</div>
+          <div class="info-value" id="email">contact@example.com</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Project Location</div>
+          <div class="info-value" id="projectLocation">Algiers, Algeria</div>
+        </div>
+      </div>
+
+      <!-- Project Type Section -->
+      <div class="info-section">
+        <h2>Project Type</h2>
+        <div class="info-row">
+          <div class="info-label">Type of Project</div>
+          <div class="info-value">
+            <span class="choice-display" id="projectType">Both</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interior Project Details Section -->
+      <div class="info-section" id="interiorSection">
+        <h2>Interior Project Details</h2>
+        <div class="info-row">
+          <div class="info-label">Project Location</div>
+          <div class="info-value" id="interiorLocation">Algiers, Algeria</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Total Area</div>
+          <div class="info-value" id="totalArea">150 m²</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Number of Rooms</div>
+          <div class="info-value" id="numberOfRooms">3 bedrooms, 2 bathrooms, 1 kitchen, 1 living room</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Interior Type</div>
+          <div class="info-value">
+            <span class="choice-display" id="interiorType">Residential</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Current Condition</div>
+          <div class="info-value" id="interiorCondition">Empty space</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Service Type</div>
+          <div class="info-value">
+            <span class="choice-display" id="interiorServiceType">Full renovation</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Budget Range</div>
+          <div class="info-value" id="interiorBudget">500,000 DZD - 1,000,000 DZD</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Preferred Timeline</div>
+          <div class="info-value" id="interiorTimeline">6 months</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Style Preference</div>
+          <div class="info-value" id="interiorStyle">Modern, Minimalist</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Color Preferences</div>
+          <div class="info-value" id="interiorColors">Neutral tones with accent colors</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Furniture Included</div>
+          <div class="info-value">
+            <span class="choice-display" id="furnitureIncluded">Yes, include furniture</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Lighting Requirements</div>
+          <div class="info-value" id="lightingRequirements">Natural light priority, Ambient lighting</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Storage Needs</div>
+          <div class="info-value" id="storageNeeds">Built-in cabinets, Walk-in closet</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Special Features</div>
+          <div class="info-value" id="specialFeaturesContainer">
+            <span class="choice-display">Home office space</span>
+            <span class="choice-display">Smart home integration</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Additional Notes (Interior)</div>
+          <div class="info-value" id="interiorNotes">Looking for a modern, functional design that maximizes space.</div>
+        </div>
+      </div>
+
+      <!-- Exterior Project Details Section -->
+      <div class="info-section" id="exteriorSection">
+        <h2>Exterior Project Details</h2>
+        <div class="info-row">
+          <div class="info-label">Project Location</div>
+          <div class="info-value" id="exteriorLocation">Algiers, Algeria</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Approximate Area</div>
+          <div class="info-value" id="approximateArea">200 m²</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Property Type</div>
+          <div class="info-value">
+            <span class="choice-display" id="propertyType">Residential facade</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Number of Floors</div>
+          <div class="info-value" id="numberOfFloors">2 floors</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Current Condition</div>
+          <div class="info-value" id="exteriorCondition">Needs renovation</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Service Type</div>
+          <div class="info-value">
+            <span class="choice-display" id="exteriorServiceType">Renovation</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Budget Range</div>
+          <div class="info-value" id="exteriorBudget">800,000 DZD - 1,500,000 DZD</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Preferred Timeline</div>
+          <div class="info-value" id="exteriorTimeline">8 months</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Style Preference</div>
+          <div class="info-value" id="exteriorStyle">Modern, Contemporary</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Material Preferences</div>
+          <div class="info-value" id="materialPreferencesContainer">
+            <span class="choice-display">Concrete</span>
+            <span class="choice-display">Stone</span>
+            <span class="choice-display">Glass</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Special Requirements</div>
+          <div class="info-value" id="exteriorSpecialRequirements">Parking space, Energy efficiency</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Environmental Considerations</div>
+          <div class="info-value" id="environmentalConsiderations">Solar panels, Rainwater collection</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Additional Notes (Exterior)</div>
+          <div class="info-value" id="exteriorNotes">Looking for sustainable and modern exterior design.</div>
+        </div>
+      </div>
+
+      <!-- Contact Preferences Section -->
+      <div class="info-section">
+        <h2>Contact Preferences</h2>
+        <div class="info-row">
+          <div class="info-label">Preferred Contact Method</div>
+          <div class="info-value">
+            <span class="choice-display" id="contactMethod">Email</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/c_reqpreview.js"></script>
+</body>
+</html>
+
