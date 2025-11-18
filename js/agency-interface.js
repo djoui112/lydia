@@ -393,8 +393,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const footerLinks = document.querySelectorAll(".footer-nav a");
   footerLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
+      const href = link.getAttribute("href");
+      // Allow navigation for external links (not anchor links starting with #)
+      if (href && !href.startsWith("#")) {
+        return; // Let the browser handle the navigation
+      }
       e.preventDefault();
-      const targetId = link.getAttribute("href").substring(1);
+      const targetId = href.substring(1);
       const targetSection = document.getElementById(targetId);
       if (targetSection) {
         targetSection.scrollIntoView({ behavior: "smooth", block: "start" });

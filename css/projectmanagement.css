@@ -87,11 +87,121 @@ body {
   margin: 0;
 }
 
+.description-container {
+  position: relative;
+}
+
 .project-description {
   font-size: 16px;
   color: var(--text-light);
   line-height: 1.6;
   margin: 0;
+  min-height: 60px;
+}
+
+.project-description-edit {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  font-size: 16px;
+  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-dark);
+  border: 2px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  resize: vertical;
+  background-color: var(--bg-white);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.project-description-edit:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(74, 124, 158, 0.1);
+}
+
+.description-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-edit-description {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-edit-description:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-more-details {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-more-details:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.description-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-done {
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-done:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(74, 124, 158, 0.3);
+}
+
+.btn-cancel-edit {
+  background-color: transparent;
+  color: var(--text-light);
+  border: 2px solid var(--border-color);
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel-edit:hover {
+  background-color: var(--bg-light);
+  border-color: var(--text-light);
 }
 
 .project-description-card {

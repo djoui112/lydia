@@ -24,10 +24,26 @@
         <div class="data-card project-description-card">
           <div class="project-info-content">
             <h1 class="project-title" id="projectTitle">Project Accord</h1>
-            <p class="project-description" id="projectDescription">
-              A comprehensive architectural project focusing on modern design
-              principles and sustainable building practices.
-            </p>
+            <div class="description-container">
+              <p class="project-description" id="projectDescription">
+                A comprehensive architectural project focusing on modern design
+                principles and sustainable building practices.
+              </p>
+              <textarea 
+                class="project-description-edit" 
+                id="projectDescriptionEdit" 
+                placeholder="Write description..."
+                style="display: none;"
+              ></textarea>
+              <div class="description-actions" id="descriptionActions" style="display: none;">
+                <button class="btn-done" id="btnDone">Done</button>
+                <button class="btn-cancel-edit" id="btnCancelEdit">Cancel</button>
+              </div>
+              <div class="description-buttons">
+                <button class="btn-edit-description" id="btnEditDescription">Edit Description</button>
+                <a href="c_reqpreview.html" class="btn-more-details">More Details</a>
+              </div>
+            </div>
           </div>
           <div class="project-actions">
             <a href="team-members.html" class="btn-assign-archi" id="assignArchiBtn">Assign Architect</a>
