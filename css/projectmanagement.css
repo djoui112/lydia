@@ -1,3 +1,31 @@
+@font-face {
+  font-family: 'Aileron';
+  src: url('../fonts/aileron.light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('../fonts/aileron.regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('../fonts/aileron.semibold (1).otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('../fonts/aileron.bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
 /* CSS Variables */
 :root {
   --primary-color: #1a2942;
@@ -29,7 +57,7 @@
 }
 
 body {
-  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Aileron', sans-serif;
   background-color: var(--bg-light);
   color: var(--text-dark);
   line-height: 1.6;
@@ -104,7 +132,7 @@ body {
   min-height: 120px;
   padding: 12px;
   font-size: 16px;
-  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Aileron', sans-serif;
   color: var(--text-dark);
   border: 2px solid var(--primary-color);
   border-radius: var(--border-radius);

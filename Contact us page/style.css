@@ -1,3 +1,31 @@
+@font-face {
+  font-family: 'Aileron';
+  src: url('../fonts/aileron.light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('../fonts/aileron.regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('../fonts/aileron.semibold (1).otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('../fonts/aileron.bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
 /* ============================================
    Reset and Base Styles
    ============================================ */
@@ -5,6 +33,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Aileron', sans-serif;
 }
 
 /* ============================================
@@ -38,7 +67,7 @@ html {
 }
 
 body {
-    font-family: 'Poppins', 'Open Sans', 'Roboto', sans-serif;
+    font-family: 'Aileron', sans-serif;
     line-height: 1.6;
     color: #FFFFFF;
     background: linear-gradient(180deg, #1a2b3d 0%, #2d4a5f 100%);
@@ -181,7 +210,7 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Aileron', sans-serif;
     letter-spacing: 0.3px;
 }
 

@@ -1,3 +1,31 @@
+@font-face {
+    font-family: 'Aileron';
+    src: url('../fonts/aileron.light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Aileron';
+    src: url('../fonts/aileron.regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Aileron';
+    src: url('../fonts/aileron.semibold (1).otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Aileron';
+    src: url('../fonts/aileron.bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+}
+
 /* ============================================
    Reset and Base Styles
    ============================================ */
@@ -8,7 +36,7 @@
 }
 
 body {
-    font-family: 'Poppins', 'Open Sans', sans-serif;
+    font-family: 'Aileron', sans-serif;
     background-color: #fafafa;
     color: #333;
     min-height: 100vh;
@@ -152,7 +180,7 @@ body {
     width: 100%;
     padding: 10px 15px;
     font-size: 1rem;
-    font-family: 'Poppins', 'Open Sans', sans-serif;
+    font-family: 'Aileron', sans-serif;
     border: 1px solid #780000;
     border-radius: 25px;
     background-color: #ffffff;
@@ -244,7 +272,7 @@ body {
 .form-file-input {
     padding: 10px 15px;
     font-size: 1rem;
-    font-family: 'Poppins', 'Open Sans', sans-serif;
+    font-family: 'Aileron', sans-serif;
     border: 1px solid #780000;
     border-radius: 25px;
     background-color: #ffffff;
@@ -270,7 +298,7 @@ body {
     border-radius: 20px;
     background-color: #780000;
     color: #ffffff;
-    font-family: 'Poppins', 'Open Sans', sans-serif;
+    font-family: 'Aileron', sans-serif;
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
@@ -329,7 +357,7 @@ body {
     padding: 14px 40px;
     font-size: 1.1rem;
     font-weight: 600;
-    font-family: 'Poppins', 'Open Sans', sans-serif;
+    font-family: 'Aileron', sans-serif;
     cursor: pointer;
     transition: all 0.3s ease;
     min-width: 200px;

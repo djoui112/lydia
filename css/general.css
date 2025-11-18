@@ -28,14 +28,14 @@ html {
 
 @font-face {
   font-family: 'Aileron';
-  src: url('../fonts/Aileron-SemiBold.otf') format('opentype');
+  src: url('../fonts/aileron.semibold (1).otf') format('opentype');
   font-weight: 600;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Aileron';
-  src: url('../fonts/Aileron-Bold.otf') format('opentype');
+  src: url('../fonts/aileron.bold.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
 }

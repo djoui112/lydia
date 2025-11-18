@@ -1,3 +1,35 @@
+@font-face {
+  font-family: 'Aileron';
+  src: url('../../fonts/aileron.light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('../../fonts/aileron.regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('../../fonts/aileron.semibold (1).otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('../../fonts/aileron.bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+* {
+  font-family: 'Aileron', sans-serif;
+}
+
 #portfolios {
   margin-top: 3rem;
   width: 100%;
