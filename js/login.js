@@ -34,7 +34,8 @@
                     email: email.value,
                     userType: 'general'
                 }));
-                window.location.href = '/pages/user-interface.html';
+                // TODO: update this path when user interface page is created/decided
+                window.location.href = 'index.html';
             }
         });
 

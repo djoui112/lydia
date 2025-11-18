@@ -72,7 +72,8 @@
                     };
                     sessionStorage.setItem('clientData', JSON.stringify(updatedData));
                     alert('Profile updated successfully!');
-                    window.location.href = '/pages/client-interface.html';
+                    // Back to client interface (same pages folder)
+                    window.location.href = 'clientinterface.html';
                 }
             });
 

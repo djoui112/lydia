@@ -56,7 +56,7 @@ document.getElementById('login-architect-2').addEventListener('submit', function
         showError(phone, 'phone-error', 'Phone number is required');
         isValid = false;
     } else if (!phoneRegex.test(phone.value.trim())) {
-        showError(phone, 'phone-error', 'Phone must be in format +213XXXXXXXXX');
+        showError(phone, 'phone-error', 'Phone must start with 05,06 or 07 and contain 10 numbers');
         isValid = false;
     }
 
@@ -103,7 +103,8 @@ document.getElementById('login-architect-2').addEventListener('submit', function
         
         sessionStorage.setItem('architectData', JSON.stringify(fullData));
         sessionStorage.removeItem('architectData1');
-        window.location.href = '/pages/architect-interface.html';
+        // Go to architect interface (relative to pages/login/)
+        window.location.href = '../architect-interface.html';
     }
 });
 

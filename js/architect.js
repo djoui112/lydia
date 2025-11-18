@@ -89,7 +89,8 @@ document.getElementById('login-architect-1').addEventListener('submit', function
             email: email.value,
             password: password.value
         }));
-        window.location.href = '/pages/archiLogin2.html';
+        // Go to architect login step 2 (same login folder)
+        window.location.href = 'archiLogin2.html';
     }
 });
 
@@ -194,7 +195,8 @@ document.getElementById('login-architect-2').addEventListener('submit', function
         
         sessionStorage.setItem('architectData', JSON.stringify(fullData));
         sessionStorage.removeItem('architectData1');
-        window.location.href = '/pages/architect-interface.html';
+        // Go to architect interface (pages folder)
+        window.location.href = '../architect-interface.html';
     }
 });
 
