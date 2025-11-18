@@ -69,6 +69,7 @@
   margin-top: 40px;
   padding: 30px 0;
   border-top: 2px solid #e0e0e0;
+  flex-wrap: wrap;
 }
 
 .btn-accept,
@@ -82,6 +83,8 @@
   transition: all 0.3s ease;
   text-decoration: none;
   display: inline-block;
+  min-width: 150px;
+  text-align: center;
 }
 
 .btn-accept {
@@ -95,6 +98,11 @@
   box-shadow: 0 4px 12px rgba(89, 95, 52, 0.3);
 }
 
+.btn-accept:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(89, 95, 52, 0.2);
+}
+
 .btn-reject {
   background-color: #6A2E2A;
   color: white;
@@ -106,14 +114,74 @@
   box-shadow: 0 4px 12px rgba(106, 46, 42, 0.3);
 }
 
+.btn-reject:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(106, 46, 42, 0.2);
+}
+
+/* Tablet and smaller desktop */
+@media (max-width: 992px) {
+  .action-buttons {
+    gap: 15px;
+    padding: 25px 0;
+  }
+
+  .btn-accept,
+  .btn-reject {
+    padding: 14px 50px;
+    font-size: 0.95rem;
+    min-width: 140px;
+  }
+}
+
+/* Mobile landscape and small tablets */
 @media (max-width: 768px) {
   .action-buttons {
     flex-direction: column;
+    gap: 15px;
+    padding: 25px 20px;
+    margin-top: 30px;
   }
 
   .btn-accept,
   .btn-reject {
     width: 100%;
+    padding: 16px 40px;
+    font-size: 1rem;
+    min-width: auto;
+    min-height: 50px; /* Better touch target */
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .action-buttons {
+    padding: 20px 15px;
+    margin-top: 25px;
+    gap: 12px;
+  }
+
+  .btn-accept,
+  .btn-reject {
+    padding: 14px 30px;
+    font-size: 0.95rem;
+    min-height: 48px;
+    border-radius: 20px;
+  }
+}
+
+/* Very small mobile devices */
+@media (max-width: 360px) {
+  .action-buttons {
+    padding: 15px 10px;
+    gap: 10px;
+  }
+
+  .btn-accept,
+  .btn-reject {
+    padding: 12px 25px;
+    font-size: 0.9rem;
+    min-height: 46px;
   }
 }
 
