@@ -629,6 +629,87 @@ document.addEventListener("DOMContentLoaded", function () {
     renderCalendar();
     updateTimeline();
     loadClientReviews();
+    initDescriptionEditor();
   }
 });
+
+// Description Editor Functionality
+function initDescriptionEditor() {
+  const descriptionElement = document.getElementById('projectDescription');
+  const descriptionEdit = document.getElementById('projectDescriptionEdit');
+  const editButton = document.getElementById('btnEditDescription');
+  const doneButton = document.getElementById('btnDone');
+  const cancelButton = document.getElementById('btnCancelEdit');
+  const descriptionActions = document.getElementById('descriptionActions');
+  const descriptionButtons = document.querySelector('.description-buttons');
+
+  // Load saved description from localStorage
+  const savedDescription = localStorage.getItem('projectDescription');
+  if (savedDescription) {
+    descriptionElement.textContent = savedDescription;
+  }
+
+  // Edit button click handler
+  editButton.addEventListener('click', function() {
+    // Hide the description text and buttons container
+    descriptionElement.style.display = 'none';
+    descriptionButtons.style.display = 'none';
+    
+    // Show the textarea and action buttons
+    descriptionEdit.style.display = 'block';
+    descriptionActions.style.display = 'flex';
+    
+    // Set the current description text in the textarea
+    descriptionEdit.value = descriptionElement.textContent;
+    
+    // Focus on the textarea
+    descriptionEdit.focus();
+  });
+
+  // Done button click handler
+  doneButton.addEventListener('click', function() {
+    const newDescription = descriptionEdit.value.trim();
+    
+    if (newDescription) {
+      // Update the description text
+      descriptionElement.textContent = newDescription;
+      
+      // Save to localStorage
+      localStorage.setItem('projectDescription', newDescription);
+    } else {
+      // If empty, use default or keep current
+      const defaultDescription = 'A comprehensive architectural project focusing on modern design principles and sustainable building practices.';
+      descriptionElement.textContent = descriptionElement.textContent || defaultDescription;
+    }
+    
+    // Hide the textarea and action buttons
+    descriptionEdit.style.display = 'none';
+    descriptionActions.style.display = 'none';
+    
+    // Show the description text and buttons container
+    descriptionElement.style.display = 'block';
+    descriptionButtons.style.display = 'flex';
+  });
+
+  // Cancel button click handler
+  cancelButton.addEventListener('click', function() {
+    // Reset textarea to current description
+    descriptionEdit.value = descriptionElement.textContent;
+    
+    // Hide the textarea and action buttons
+    descriptionEdit.style.display = 'none';
+    descriptionActions.style.display = 'none';
+    
+    // Show the description text and buttons container
+    descriptionElement.style.display = 'block';
+    descriptionButtons.style.display = 'flex';
+  });
+
+  // Allow Enter key to save (Ctrl+Enter or Cmd+Enter)
+  descriptionEdit.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      doneButton.click();
+    }
+  });
+}
 
