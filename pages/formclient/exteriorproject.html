@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Make a request</title>
+  <link rel="stylesheet" href="project.css" />
+</head>
+<body>
+
+  <div class="page-container" >
+  <header class="form-header">
+    <button class="back-btn" onclick="history.back()"><</button>
+    <h1>Make a Request</h1>
+  </header>
+
+  <div class="progress-bar">
+    <div class="step active">1</div>
+    <div class="line active"></div>
+    <div class="step">2</div>
+  </div>
+
+  <form class="application-form">
+    
+
+    <label>Full name</label>
+    <input type="text" placeholder="your full name" required>
+
+    <label>Phone number</label>
+    <input type="tel" placeholder="+213 --- ---- --" required>
+
+    <label>Project location</label>
+    <input type="text" placeholder="city or adress if possible" required>
+
+    <label>Email</label>
+    <input type="email" placeholder="contact@gmail.com" required>
+
+    <button type="button" class="next-btn" onclick="handleNextClick(event, 'exterior_2.html')"> Next </button>
+  </form>
+  </div>
+  <script src="project.js"></script>
+  <script src="form-persistence.js"></script>
+  <script src="form-validation.js"></script>
+</body>
+</html>

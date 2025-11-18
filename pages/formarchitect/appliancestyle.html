@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Appliance form</title>
+  <link rel="stylesheet" href="ArchiForm.css" />
+</head>
+<body>
+
+  <div class="page-container" >
+  <header class="form-header">
+    <button class="back-btn" onclick="window.location.href='appliance.html'"><</button>
+    <h1>Apply for this agency</h1>
+  </header>
+
+  <div class="progress-bar">
+    <div class="step completed">1</div>
+    <div class="line completed"></div>
+    <div class="step active">2</div>
+    <div class="line active"></div>
+    <div class="step">3</div>
+    <div class="line"></div>
+    <div class="step">4</div>
+  </div>
+
+  <form class="application-form">
+    
+    <div class="form-group">
+      <label>statement</label>
+      <div class="choice-group">
+        <button type="button" class="choice active">graduate architect</button>
+        <button type="button" class="choice">intern</button>
+      </div>
+    </div>
+
+    <label>Primary Expertise</label>
+    <input type="text" placeholder="e.g modern interior design" required>
+
+    <label>Software Proficiency</label>
+    <input type="text" placeholder="e.g 3d ." required>
+
+    <div class="form-group">
+      <label>Types of Projects Worked On</label>
+        <div class="choice-group">
+          <button type="button" class="choice">residential</button>
+          <button type="button" class="choice">commercial</button>
+          <button type="button" class="choice">institutional</button>
+          <button type="button" class="choice">urban</button>
+          <button type="button" class="choice">cultural</button>
+        </div>
+    </div>
+
+
+    <button type="button" class="next-btn" onclick="handleNextClick(event, 'appliancepro.html')"> Next </button>
+  </form>
+  </div>
+  <script src="appliance.js"></script>
+  <script src="form-persistence.js"></script>
+  <script src="form-validation.js"></script>
+</body>
+</html>

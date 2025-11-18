@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Make a request</title>
+  <link rel="stylesheet" href="project.css" />
+</head>
+<body>
+
+  <div class="page-container">
+    <header class="form-header">
+      <button class="back-btn" onclick="window.location.href='exteriorproject.html'"><</button>
+      <h1>Make a Request</h1>
+    </header>
+
+    <div class="progress-bar">
+      <div class="step completed">1</div>
+      <div class="line completed"></div>
+      <div class="step active">2</div>
+    </div>
+
+    <form class="application-form">
+      <div class="form-group">
+        <label>What type of project do you need?</label>
+        <div class="choice-group" style="flex-direction: column; gap: 20px;">
+          <button type="button" class="choice choice-large" onclick="handleProjectType('exterior')">
+            <span style="font-size: 1.2rem; font-weight: 600;">Exterior</span>
+            <span style="font-size: 0.9rem; opacity: 0.8;">Facades, outdoor spaces, landscaping</span>
+          </button>
+          <button type="button" class="choice choice-large" onclick="handleProjectType('interior')">
+            <span style="font-size: 1.2rem; font-weight: 600;">Interior</span>
+            <span style="font-size: 0.9rem; opacity: 0.8;">Rooms, spaces, interior design</span>
+          </button>
+          <button type="button" class="choice choice-large" onclick="handleProjectType('both')">
+            <span style="font-size: 1.2rem; font-weight: 600;">Both</span>
+            <span style="font-size: 0.9rem; opacity: 0.8;">Complete project including exterior and interior</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <script src="project.js"></script>
+  <script src="form-persistence.js"></script>
+  <script src="form-validation.js"></script>
+  <script>
+    function handleProjectType(type) {
+      // Remove active from all choices
+      document.querySelectorAll('.choice-large').forEach(btn => btn.classList.remove('active'));
+      // Add active to clicked choice
+      event.target.closest('.choice-large').classList.add('active');
+      
+      // Save current form data before switching types
+      if (typeof saveFormData === 'function') {
+        saveFormData();
+      }
+      
+      // Save project type
+      localStorage.setItem('project-type', type);
+      
+      setTimeout(() => {
+        if (type === 'exterior') {
+          window.location.href = 'exterior_ext_1.html';
+        } else if (type === 'interior') {
+          window.location.href = 'exterior_int_1.html';
+        } else {
+          window.location.href = 'exterior_both_1.html';
+        }
+      }, 300);
+    }
+  </script>
+</body>
+</html>

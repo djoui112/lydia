@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interior Project - Step 2</title>
+  <link rel="stylesheet" href="project.css" />
+</head>
+<body>
+
+  <div class="page-container">
+    <header class="form-header">
+      <button class="back-btn" onclick="window.location.href='exterior_int_1.html'"><</button>
+      <h1>Interior Project</h1>
+    </header>
+
+    <div class="progress-bar">
+      <div class="step completed">1</div>
+      <div class="line completed"></div>
+      <div class="step completed">2</div>
+      <div class="line completed"></div>
+      <div class="step completed">3</div>
+      <div class="line completed"></div>
+      <div class="step active">4</div>
+      <div class="line"></div>
+      <div class="step">5</div>
+      <div class="line"></div>
+      <div class="step">6</div>
+    </div>
+
+    <form class="application-form">
+      <div class="form-group">
+        <label>Service Type</label>
+        <div class="choice-group">
+          <button type="button" class="choice">Full renovation</button>
+          <button type="button" class="choice">Partial renovation</button>
+          <button type="button" class="choice">Design only</button>
+        </div>
+      </div>
+
+      <label>Minimum Budget (in DZD)</label>
+      <input type="number" name="minBudget" placeholder="e.g., 500000" min="0" step="1000" required>
+      <label style="margin-top: 15px;">Maximum Budget (in DZD)</label>
+      <input type="number" name="maxBudget" placeholder="e.g., 1000000" min="0" step="1000" required>
+
+      <label>Preferred Timeline</label>
+      <input type="text" placeholder="e.g., 6 months" required>
+
+      <label>Style Preference</label>
+      <input type="text" placeholder="e.g., Modern, Classic, Minimalist, Industrial, Scandinavian" required>
+
+      <label>Color Preferences</label>
+      <input type="text" placeholder="Preferred color scheme or specific colors" required>
+
+      <div class="form-group">
+        <label>Furniture Included</label>
+        <div class="choice-group">
+          <button type="button" class="choice">Yes, include furniture</button>
+          <button type="button" class="choice">No, design only</button>
+        </div>
+      </div>
+
+      <button type="button" class="next-btn" onclick="handleNextClick(event, 'exterior_int_3.html')"> Next </button>
+    </form>
+  </div>
+  <script src="project.js"></script>
+  <script src="form-persistence.js"></script>
+  <script src="form-validation.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete Project - Step 3</title>
+  <link rel="stylesheet" href="project.css" />
+</head>
+<body>
+
+  <div class="page-container">
+    <header class="form-header">
+      <button class="back-btn" onclick="window.location.href='exterior_both_2.html'"><</button>
+      <h1>Complete Project</h1>
+    </header>
+
+    <div class="progress-bar">
+      <div class="step completed">1</div>
+      <div class="line completed"></div>
+      <div class="step completed">2</div>
+      <div class="line completed"></div>
+      <div class="step completed">3</div>
+      <div class="line completed"></div>
+      <div class="step completed">4</div>
+      <div class="line completed"></div>
+      <div class="step active">5</div>
+      <div class="line"></div>
+      <div class="step">6</div>
+    </div>
+
+    <form class="application-form">
+      <label>Interior Color Scheme</label>
+      <input type="text" placeholder="Preferred colors for interior spaces" required>
+
+      <label>Outdoor Space Requirements</label>
+      <input type="text" placeholder="e.g., Garden, Terrace, Balcony, Parking area" required>
+
+      <div class="form-group">
+        <label>Special Features</label>
+        <div class="choice-group">
+          <button type="button" class="choice">Solar panels</button>
+          <button type="button" class="choice">Smart home</button>
+          <button type="button" class="choice">Home office</button>
+          <button type="button" class="choice">Accessibility</button>
+        </div>
+      </div>
+
+      <label>Environmental Considerations</label>
+      <input type="text" placeholder="e.g., Energy efficiency, Green building, Sustainable materials" required>
+
+      <label>Preferred Contact Method</label>
+      <div class="form-group">
+        <div class="choice-group">
+          <button type="button" class="choice">Phone call</button>
+          <button type="button" class="choice">Email</button>
+          <button type="button" class="choice">WhatsApp</button>
+        </div>
+      </div>
+
+      <label>Additional Notes</label>
+      <textarea placeholder="Any additional information about your complete project..." rows="4"></textarea>
+
+      <button type="button" class="next-btn" onclick="handleNextClick(event, 'exterior_both_success.html')"> Submit </button>
+    </form>
+  </div>
+  <script src="project.js"></script>
+  <script src="form-persistence.js"></script>
+  <script src="form-validation.js"></script>
+</body>
+</html>
+
