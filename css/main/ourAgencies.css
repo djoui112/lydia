@@ -28,6 +28,17 @@
     color: white;
     font-size: 1.3rem;
 }
+
+.agencies-section-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    width: 100%;
+}
+
+.agencies-section-link:hover {
+    cursor: pointer;
+}
 #i1,#i2,#i3,#i4,#i5,#i6,#i7{
     position: absolute;
 }

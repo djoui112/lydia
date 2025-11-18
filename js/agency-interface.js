@@ -123,7 +123,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const buttons = document.querySelectorAll(".btn-see-more, .btn-view-project");
   buttons.forEach((button) => {
     button.addEventListener("click", function (e) {
-      e.preventDefault();
+      // Only prevent default if it's not a link (anchor tag)
+      if (this.tagName !== 'A') {
+        e.preventDefault();
+      }
       // Add ripple effect
       const ripple = document.createElement("span");
       const rect = this.getBoundingClientRect();

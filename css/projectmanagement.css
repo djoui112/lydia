@@ -117,9 +117,12 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 5px 15px rgba(30, 58, 95, 0.3);
+  text-decoration: none;
+  display: inline-block;
   text-transform: none;
   width: 100%;
   max-width: 300px;
+  text-align: center;
 }
 
 .btn-assign-archi:hover {
@@ -717,6 +720,8 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(26, 41, 66, 0.2);
+  text-decoration: none;
+  display: inline-block;
 }
 
 .btn-add-portfolio:hover {
