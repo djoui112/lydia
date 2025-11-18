@@ -38,9 +38,7 @@ html {
 }
 
 body {
-    font-family: 'Poppins', 'Open Sans', 'Roboto', sans-serif;
     line-height: 1.6;
-    color: #2E2E2E;
     background-color: #F5F5F5;
     overflow-x: hidden;
 }

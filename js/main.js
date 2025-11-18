@@ -178,30 +178,70 @@
 
 
 //main page tracker
-        const sections = document.querySelectorAll('section');
         const trackerDots = document.querySelectorAll('.tracker-dot');
+        
+        // Define the main sections to track (in order)
+        const mainSectionIds = ['landingPage', 'about-us', 'our-agencies', 'portfolios', 'Contact'];
 
         function updateProgressTracker() {
             const scrollPosition = window.scrollY + window.innerHeight / 2;
+            let activeSectionId = null;
 
-            sections.forEach((section, index) => {
-                const sectionTop = section.offsetTop;
-                const sectionBottom = sectionTop + section.offsetHeight;
+            // Check each main section
+            mainSectionIds.forEach((sectionId) => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const sectionTop = section.offsetTop;
+                    const sectionBottom = sectionTop + section.offsetHeight;
 
-                if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-                    trackerDots.forEach(dot => dot.classList.remove('active'));
-                    trackerDots[index].classList.add('active');
+                    if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                        activeSectionId = sectionId;
+                    }
                 }
             });
+
+            // Update tracker dots based on active section
+            if (activeSectionId) {
+                trackerDots.forEach(dot => {
+                    const dotSectionId = dot.getAttribute('data-section');
+                    if (dotSectionId === activeSectionId) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
         }
 
         // Click tracker dots to navigate
-        trackerDots.forEach((dot, index) => {
+        trackerDots.forEach((dot) => {
             dot.addEventListener('click', () => {
-                sections[index].scrollIntoView({ behavior: 'smooth' });
+                const sectionId = dot.getAttribute('data-section');
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             });
         });
 
         // Update on scroll
-        window.addEventListener('scroll', updateProgressTracker);
+        window.addEventListener('scroll', updateProgressTracker, { passive: true });
         updateProgressTracker();
+
+        // Footer Navigation - Smooth scroll to sections
+        const footerLinks = document.querySelectorAll(".footer-nav a");
+        footerLinks.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                const href = link.getAttribute("href");
+                // Only handle anchor links (starting with #)
+                if (href && href.startsWith("#")) {
+                    e.preventDefault();
+                    const targetId = href.substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                }
+                // For non-anchor links, let the browser handle it normally
+            });
+        });

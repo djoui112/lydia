@@ -1,0 +1,314 @@
+/* Override Contact Us page body styles */
+body {
+  background: #F5F5F5 !important;
+  color: #333 !important;
+}
+
+/* Contact Section Styles */
+.contact-section {
+  background-color:  #2b3e5a;
+  padding: 80px 5%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-section .contact-container {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.contact-section .contact-left {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.contact-section .contact-header {
+  color: white;
+}
+
+.contact-section .contact-title {
+  font-size: 64px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.contact-section .contact-subtitle {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+}
+
+.contact-section .contact-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.contact-section .contact-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 25px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.contact-section .contact-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.contact-section .contact-card-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #1a2b3d 0%, #2d4a5f 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.contact-section .contact-card-icon i {
+  font-size: 28px;
+  color: white;
+}
+
+.contact-section .contact-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a2b3d;
+  margin-bottom: 8px;
+}
+
+.contact-section .contact-card-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.contact-section .contact-card-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #1a2b3d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.contact-section .contact-card-btn:hover {
+  background-color: #2d4a5f;
+  transform: translateY(-2px);
+}
+
+.contact-section .contact-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-section .contact-image-wrapper {
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+}
+
+.contact-section .contact-image {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Footer Styles */
+.footer {
+  background-color: #6A2E2A;
+  color: white;
+  padding: 40px 40px 30px;
+  border-radius: 20px 20px 0 0;
+  margin-top: 60px;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.footer-logo svg {
+  width: 20px;
+  height: 20px;
+}
+
+.footer-logo span {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+.footer-tagline {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 300;
+}
+
+.footer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.footer-nav a:hover {
+  color: #ffcfcc;
+}
+
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-size: 13px;
+}
+
+.contact-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Footer Navigation Smooth Scroll */
+.footer-nav a {
+  cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .contact-section .contact-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .contact-section .contact-title {
+    font-size: 48px;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .footer-contact {
+    grid-column: 1 / -1;
+  }
+
+  .footer-logo span {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-section {
+    padding: 60px 4%;
+  }
+
+  .contact-section .contact-title {
+    font-size: 36px;
+  }
+
+  .contact-section .contact-subtitle {
+    font-size: 16px;
+  }
+
+  .contact-section .contact-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer {
+    padding: 30px 20px 25px;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .footer-logo {
+    justify-content: center;
+  }
+
+  .footer-logo span {
+    font-size: 18px;
+  }
+
+  .footer-tagline {
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .footer-nav {
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-nav a {
+    font-size: 13px;
+  }
+
+  .footer-contact {
+    grid-column: 1;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contact-item {
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  .contact-item svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
