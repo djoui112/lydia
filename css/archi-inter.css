@@ -359,6 +359,8 @@
   text-transform: lowercase;
   align-self: flex-start;
   margin-top: auto;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .btn-view-project:hover {

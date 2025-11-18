@@ -407,6 +407,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Show success message
       showSuccessMessage("Review submitted successfully!");
+
+      // Reload and display reviews
+      loadAndDisplayReviews();
     });
   }
 
@@ -494,7 +497,64 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // Function to load and display saved reviews
+  function loadAndDisplayReviews() {
+    const reviewsContainer = document.getElementById("reviewsContainer");
+    if (!reviewsContainer) return;
+
+    const reviews = JSON.parse(localStorage.getItem("projectReviews")) || [];
+    const currentProjectName = document.getElementById("projectTitle")?.textContent || "Project";
+
+    // Filter reviews for current project
+    const projectReviews = reviews.filter(review => 
+      review.projectName === currentProjectName
+    ).sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date, newest first
+
+    if (projectReviews.length === 0) {
+      reviewsContainer.innerHTML = '<p class="no-reviews-message">No reviews yet. Be the first to add a review!</p>';
+      return;
+    }
+
+    reviewsContainer.innerHTML = projectReviews.map(review => {
+      const reviewDate = new Date(review.date);
+      const formattedDate = reviewDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      // Create star rating display
+      let starsHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        starsHTML += `<span class="review-star ${i <= review.rating ? 'active' : ''}">★</span>`;
+      }
+
+      return `
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-rating">
+              ${starsHTML}
+              <span class="rating-number">${review.rating}/5</span>
+            </div>
+            <div class="review-date">${formattedDate}</div>
+          </div>
+          <div class="review-text">${escapeHtml(review.text)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Helper function to escape HTML
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
   // Initialize
   updateTimeline();
+  loadAndDisplayReviews();
 });
 

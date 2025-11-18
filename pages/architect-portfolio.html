@@ -9,106 +9,291 @@
         <title>Architect Portfolio</title>
     </head>
     <body>
-        <div class="cover">
-            <img class="menu-icon" src="../assets/portfolios/menus.png">
-        </div>
+        
         <div class="generalcontainer">
-            <img class="profile-pic" src="../assets/portfolios/user-pic.jpg" alt="Architect Profile">
-            <h1 class="titles" id="architectName">ZAHA HADID</h1>
-            <h2 class="architect-title" id="architectTitle">Senior Architect</h2>
-            <h2 class="location" id="architectLocation">Algeria, Algiers</h2>
-            <a href="#" class="info">Contact info</a>
-            <p class="bio" id="architectBio">Passionate architect with a focus on modern and sustainable design. Skilled in blending functionality with aesthetics to create innovative spaces. Experienced in 3D modeling, urban design, and construction project management.</p>
-           
-            <!-- Skills Section -->
-            <section class="skills-section">
-                <h2 class="titles">Skills & Expertise</h2>
-                <div class="skills-container">
-                    <div class="skill-tag">3D Modeling</div>
-                    <div class="skill-tag">Urban Design</div>
-                    <div class="skill-tag">Sustainable Design</div>
-                    <div class="skill-tag">Project Management</div>
-                    <div class="skill-tag">AutoCAD</div>
-                    <div class="skill-tag">Revit</div>
-                    <div class="skill-tag">SketchUp</div>
-                    <div class="skill-tag">Photoshop</div>
+          <!-- Header Section -->
+          <div class="header-section">
+            <div class="cover">
+              <button class="back-btn" id="backBtn" aria-label="Go back" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+              </button>
+              <img class="profile-pic" src="../assets/portfolios/user-pic.jpg" alt="Architect Profile Picture">
+            </div>
+            <div class="profile-section">
+              <div class="profile-info">
+                <h1 class="user-name">ZAHA HADID</h1>
+                <div class="architect-title-location">
+                  <h2 class="architect-title">Architect at Memaria</h>
+                  <h2 class="location">Algeria, Algiers</h2>
                 </div>
-            </section>
+                <a href="#" class="info">Contact info</a>
+                <p class="bio">Passionate architect with a focus on modern and sustainable design. Skilled in blending functionality with aesthetics to create innovative spaces. Experienced in 3D modeling, urban design, and construction project management.</p>
+              </div>
+            </div>
+          </div>
 
-            <!-- Projects Section -->
-            <section class="projects-section">
-                <h2 class="titles">My Projects</h2>
-                <div class="projects-grid" id="projectsGrid">
-                    <!-- Projects will be dynamically loaded -->
+          <!-- Education Section -->
+          <section class="education-section">
+            <h1 class="titles">Education</h1>
+            <div class="education-container">
+              <div class="education-card">
+                <div class="education-icon">
+                  <i class="fas fa-building"></i>
                 </div>
-            </section>
+                <h3 class="education-university">University name</h3>
+                <p class="education-degree">Degree</p>
+              </div>
+              <div class="education-card">
+                <div class="education-icon">
+                  <i class="fas fa-building"></i>
+                </div>
+                <h3 class="education-university">University name</h3>
+                <p class="education-degree">Degree</p>
+              </div>
+            </div>
+          </section>
 
-            <!-- Experience Section -->
-            <section class="experience-section">
-                <h2 class="titles">Experience</h2>
-                <div class="experience-list">
-                    <div class="experience-item">
-                        <div class="experience-year">2020 - Present</div>
-                        <div class="experience-details">
-                            <h3>Senior Architect</h3>
-                            <p class="experience-company">Architecture Agency</p>
-                            <p class="experience-description">Leading design teams and managing complex architectural projects from concept to completion.</p>
-                        </div>
-                    </div>
-                    <div class="experience-item">
-                        <div class="experience-year">2015 - 2020</div>
-                        <div class="experience-details">
-                            <h3>Architect</h3>
-                            <p class="experience-company">Design Studio</p>
-                            <p class="experience-description">Designed residential and commercial buildings with focus on sustainable architecture.</p>
-                        </div>
-                    </div>
+          <!-- Experience Section -->
+          <section class="experience-section" id="experience">
+            <h1 class="titles">Experience</h1>
+            <div class="experience-container">
+              <!-- Experience Item 1 -->
+              <div class="experience-item" data-experience-id="1">
+                <div class="experience-timeline">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-line"></div>
                 </div>
-            </section>
+                <div class="experience-content">
+                  <div class="experience-header">
+                    <div class="experience-icon-wrapper">
+                      <div class="experience-icon">
+                        <i class="fas fa-building"></i>
+                      </div>
+                    </div>
+                    <div class="experience-main-info">
+                      <h3 class="experience-role">Senior Architect</h3>
+                      <h4 class="experience-agency">ABC Studio</h4>
+                      <p class="experience-date">
+                        <i class="far fa-calendar"></i>
+                        <span>January 2023 - Present</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="experience-description">
+                    <p>Leading design teams and managing complex architectural projects from concept to completion. Specialized in sustainable design and innovative building solutions.</p>
+                  </div>
+                  <button class="see-more-exp">View Details</button>
+                </div>
+              </div>
 
-            <!-- Education Section -->
-            <section class="education-section">
-                <h2 class="titles">Education</h2>
-                <div class="education-list">
-                    <div class="education-item">
-                        <h3>Master of Architecture</h3>
-                        <p class="education-institution">University of Architecture</p>
-                        <p class="education-year">2015</p>
-                    </div>
-                    <div class="education-item">
-                        <h3>Bachelor of Architecture</h3>
-                        <p class="education-institution">University of Design</p>
-                        <p class="education-year">2013</p>
-                    </div>
+              <!-- Experience Item 2 -->
+              <div class="experience-item" data-experience-id="2">
+                <div class="experience-timeline">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-line"></div>
                 </div>
-            </section>
+                <div class="experience-content">
+                  <div class="experience-header">
+                    <div class="experience-icon-wrapper">
+                      <div class="experience-icon">
+                        <i class="fas fa-building"></i>
+                      </div>
+                    </div>
+                    <div class="experience-main-info">
+                      <h3 class="experience-role">Architect Intern</h3>
+                      <h4 class="experience-agency">Design Studio</h4>
+                      <p class="experience-date">
+                        <i class="far fa-calendar"></i>
+                        <span>June 2022 - September 2022</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="experience-description">
+                    <p>Assisted in designing residential and commercial buildings with focus on sustainable architecture. Collaborated with senior architects on multiple projects.</p>
+                  </div>
+                  <button class="see-more-exp">View Details</button>
+                </div>
+              </div>
 
-            <!-- Reviews Section -->
-            <section class="reviews-section">
-                <h2 class="titles">Client Reviews</h2>
-                <div class="reviews-container" id="reviewsContainer">
-                    <div class="review-card">
-                        <div>
-                            <img class="avatar" src="../assets/portfolios/user-pic.jpg" alt="Client">
-                        </div>
-                        <div class="review-info">
-                            <div class="review-name">Sarah Johnson</div>
-                            <div class="review-stars">★★★★★</div>
-                            <div class="review-text">Exceptional work! The design exceeded our expectations.</div>
-                        </div>
-                    </div>
-                    <div class="review-card">
-                        <div>
-                            <img class="avatar" src="../assets/portfolios/user-pic.jpg" alt="Client">
-                        </div>
-                        <div class="review-info">
-                            <div class="review-name">Michael Lee</div>
-                            <div class="review-stars">★★★★☆</div>
-                            <div class="review-text">Professional and creative approach to our project.</div>
-                        </div>
-                    </div>
+              <!-- Experience Item 3 -->
+              <div class="experience-item" data-experience-id="3">
+                <div class="experience-timeline">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-line"></div>
                 </div>
-            </section>
+                <div class="experience-content">
+                  <div class="experience-header">
+                    <div class="experience-icon-wrapper">
+                      <div class="experience-icon">
+                        <i class="fas fa-building"></i>
+                      </div>
+                    </div>
+                    <div class="experience-main-info">
+                      <h3 class="experience-role">Junior Architect</h3>
+                      <h4 class="experience-agency">Urban Architects</h4>
+                      <p class="experience-date">
+                        <i class="far fa-calendar"></i>
+                        <span>September 2021 - May 2022</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="experience-description">
+                    <p>Worked on various urban planning projects and residential designs. Gained experience in 3D modeling, CAD, and project documentation.</p>
+                  </div>
+                  <button class="see-more-exp">View Details</button>
+                </div>
+              </div>
+
+              <!-- Experience Item 4 -->
+              <div class="experience-item" data-experience-id="4">
+                <div class="experience-timeline">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="experience-content">
+                  <div class="experience-header">
+                    <div class="experience-icon-wrapper">
+                      <div class="experience-icon">
+                        <i class="fas fa-building"></i>
+                      </div>
+                    </div>
+                    <div class="experience-main-info">
+                      <h3 class="experience-role">Architecture Assistant</h3>
+                      <h4 class="experience-agency">Modern Design Group</h4>
+                      <p class="experience-date">
+                        <i class="far fa-calendar"></i>
+                        <span>January 2020 - August 2021</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="experience-description">
+                    <p>Supported architectural projects through research, drafting, and client presentations. Developed skills in architectural visualization and rendering.</p>
+                  </div>
+                  <button class="see-more-exp">View Details</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Projects Section -->
+          <section class="project-management" id="project-management">
+            <div class="projects-header">
+              <h2 class="titles">Projects</h2>
+              <a href="#" class="add-project-link">Add project</a>
+            </div>
+            <div class="project-slider-container">
+              <div class="project-slider-track" id="projectSliderTrack">
+                <div class="project-slider-card" data-index="0" data-project-id="1">
+                  <div class="project-content">
+                    <div class="project-info">
+                      <h3 class="project-name">Project name</h3>
+                      <div class="project-details">
+                        <p class="project-agency">Agency: BuildBig</p>
+                        <p class="project-architect">Architect: Ahmed Ahmed</p>
+                        <div class="project-tags-container">
+                          <span class="project-tag">exterior</span>
+                          <span class="project-tag">residential</span>
+                          <span class="project-tag">modern</span>
+                        </div>
+                        <div class="project-date">
+                          <i class="far fa-calendar"></i>
+                          <span>12/03/2026</span>
+                        </div>
+                      </div>
+                      <button class="btn-view-project">view project</button>
+                    </div>
+                    <div class="project-image">
+                      <img
+                        src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&h=600&fit=crop"
+                        alt="Modern Building"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="project-slider-card" data-index="1" data-project-id="2">
+                  <div class="project-content">
+                    <div class="project-info">
+                      <h3 class="project-name">Project name</h3>
+                      <div class="project-details">
+                        <p class="project-agency">Agency: DesignStudio</p>
+                        <p class="project-architect">Architect: Sarah Johnson</p>
+                        <div class="project-tags-container">
+                          <span class="project-tag">office</span>
+                          <span class="project-tag">commercial</span>
+                          <span class="project-tag">sustainable</span>
+                        </div>
+                        <div class="project-date">
+                          <i class="far fa-calendar"></i>
+                          <span>15/04/2026</span>
+                        </div>
+                      </div>
+                      <button class="btn-view-project">view project</button>
+                    </div>
+                    <div class="project-image">
+                      <img
+                        src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"
+                        alt="Office Building"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="project-slider-card" data-index="2" data-project-id="3">
+                  <div class="project-content">
+                    <div class="project-info">
+                      <h3 class="project-name">Project name</h3>
+                      <div class="project-details">
+                        <p class="project-agency">Agency: UrbanArch</p>
+                        <p class="project-architect">Architect: Michael Chen</p>
+                        <div class="project-tags-container">
+                          <span class="project-tag">luxury</span>
+                          <span class="project-tag">residential</span>
+                          <span class="project-tag">high-rise</span>
+                        </div>
+                        <div class="project-date">
+                          <i class="far fa-calendar"></i>
+                          <span>20/05/2026</span>
+                        </div>
+                      </div>
+                      <button class="btn-view-project">view project</button>
+                    </div>
+                    <div class="project-image">
+                      <img
+                        src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop"
+                        alt="Luxury Building"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="project-slider-card" data-index="3" data-project-id="4">
+                  <div class="project-content">
+                    <div class="project-info">
+                      <h3 class="project-name">Project name</h3>
+                      <div class="project-details">
+                        <p class="project-agency">Agency: EcoBuild</p>
+                        <p class="project-architect">Architect: Emma Wilson</p>
+                        <div class="project-tags-container">
+                          <span class="project-tag">sustainable</span>
+                          <span class="project-tag">eco-friendly</span>
+                          <span class="project-tag">green</span>
+                        </div>
+                        <div class="project-date">
+                          <i class="far fa-calendar"></i>
+                          <span>10/06/2026</span>
+                        </div>
+                      </div>
+                      <button class="btn-view-project">view project</button>
+                    </div>
+                    <div class="project-image">
+                      <img
+                        src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop"
+                        alt="Eco Building"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
 
         <!-- Footer Section -->
@@ -124,10 +309,10 @@
                     </div>
                 </div>
                 <div class="footer-nav">
-                    <a href="agencyportfolio.html">Home screen</a>
-                    <a href="architectportfolio.html">My profile</a>
-                    <a href="#projects">my projects</a>
-                    <a href="agencyportfolio.html">Our agencies</a>
+                    <a href="#">Home screen</a>
+                    <a href="#">My profile</a>
+                    <a href="#">my projects</a>
+                    <a href="#">Our agencies</a>
                 </div>
                 <div class="footer-contact">
                     <div class="contact-item">
@@ -150,8 +335,6 @@
             </div>
         </footer>
 
-        <script src="../js/architectportfolio.js"></script>
+     <script src="../js/architectportfolio.js"></script>   
     </body>
 </html>
-
-

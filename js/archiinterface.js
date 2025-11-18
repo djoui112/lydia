@@ -28,7 +28,11 @@ document.addEventListener('DOMContentLoaded', function() {
     viewProjectButtons.forEach((button) => {
         button.addEventListener("click", function (e) {
             e.stopPropagation(); // Prevent card click event
-            window.location.href = "./projectmanagement.html";
+            // Only prevent default and redirect if it's not already a link
+            if (this.tagName !== 'A') {
+                e.preventDefault();
+                window.location.href = "projectpreview.html";
+            }
         });
     });
 

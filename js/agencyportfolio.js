@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    initMenu();
     initReviewForm();
     initProjectReveal();
     initPortfolioSlider();
@@ -8,6 +9,65 @@ document.addEventListener("DOMContentLoaded", () => {
     initNavigation();
 });
 
+// ====== Menu Toggle Functionality ======
+function initMenu() {
+    const menuToggle = document.getElementById("menuToggle");
+    const menuClose = document.getElementById("menuClose");
+    const navMenu = document.getElementById("navMenu");
+    const menuOverlay = document.getElementById("menuOverlay");
+
+    if (!menuToggle || !navMenu) return;
+
+    function openMenu() {
+        navMenu.classList.add("active");
+        document.body.style.overflow = "hidden"; // Prevent body scrolling when menu is open
+    }
+
+    function closeMenu() {
+        navMenu.classList.remove("active");
+        document.body.style.overflow = ""; // Restore body scrolling
+    }
+
+    // Open menu when menu icon is clicked
+    menuToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openMenu();
+    });
+
+    // Close menu when close button is clicked
+    if (menuClose) {
+        menuClose.addEventListener("click", (e) => {
+            e.stopPropagation();
+            closeMenu();
+        });
+    }
+
+    // Close menu when overlay is clicked
+    if (menuOverlay) {
+        menuOverlay.addEventListener("click", closeMenu);
+    }
+
+    // Close menu when pressing Escape key
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && navMenu.classList.contains("active")) {
+            closeMenu();
+        }
+    });
+
+    // Close menu when clicking on a menu link (optional - you can remove this if you want menu to stay open)
+    const menuLinks = document.querySelectorAll(".menu-link");
+    menuLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+            // Only close if the link has a real href (not just #)
+            if (link.getAttribute("href") === "#") {
+                e.preventDefault();
+            } else {
+                closeMenu();
+            }
+        });
+    });
+}
+
 function initReviewForm() {
     const starContainer = document.getElementById("starRating");
     const reviewForm = document.getElementById("reviewForm");
@@ -15,20 +75,36 @@ function initReviewForm() {
 
     if (!starContainer || !reviewForm || !reviewsList) return;
 
+    const fields = {
+        name: reviewForm.querySelector("#name"),
+        email: reviewForm.querySelector("#email"),
+        reviewText: reviewForm.querySelector("#reviewText"),
+    };
+
+    const ratingWrapper = starContainer.closest(".rating-area") || starContainer.parentElement;
+    const ratingError = createHelperMessage(ratingWrapper, "rating");
     let selectedRating = 0;
-    const initialStars = 5;
+    const maxStars = 5;
 
     starContainer.innerHTML = "";
-
-    for (let i = 0; i < initialStars; i++) {
+    for (let i = 0; i < maxStars; i++) {
         const span = document.createElement("span");
         span.textContent = "★";
+        span.setAttribute("role", "button");
+        span.setAttribute("aria-label", `Select ${i + 1} star${i === 0 ? "" : "s"}`);
         span.addEventListener("click", () => {
             selectedRating = i + 1;
             updateStars();
+            clearRatingError();
         });
         starContainer.appendChild(span);
     }
+
+    Object.values(fields).forEach((field) => {
+        if (!field) return;
+        field.addEventListener("input", () => validateField(field));
+        field.addEventListener("blur", () => validateField(field));
+    });
 
     function updateStars() {
         const spans = starContainer.querySelectorAll("span");
@@ -37,34 +113,184 @@ function initReviewForm() {
         });
     }
 
+    function createHelperMessage(container, key) {
+        if (!container) return null;
+        let helper = container.querySelector(`.error-message[data-for="${key}"]`);
+        if (!helper) {
+            helper = document.createElement("span");
+            helper.className = "error-message";
+            helper.dataset.for = key;
+            container.appendChild(helper);
+        }
+        return helper;
+    }
+
+    function getFieldErrorElement(field) {
+        if (!field) return null;
+        const wrapper = field.closest(".form-group") || field.parentElement;
+        if (!wrapper) return null;
+        let error = wrapper.querySelector(`.error-message[data-for="${field.id}"]`);
+        if (!error) {
+            error = document.createElement("span");
+            error.className = "error-message";
+            error.dataset.for = field.id;
+            wrapper.appendChild(error);
+        }
+        return error;
+    }
+
+    function setFieldError(field, message) {
+        if (!field) return false;
+        const errorEl = getFieldErrorElement(field);
+        if (errorEl) {
+            errorEl.textContent = message;
+            errorEl.style.display = "block";
+        }
+        field.classList.add("input-error");
+        field.setAttribute("aria-invalid", "true");
+        return false;
+    }
+
+    function clearFieldError(field) {
+        if (!field) return;
+        const errorEl = getFieldErrorElement(field);
+        if (errorEl) {
+            errorEl.textContent = "";
+            errorEl.style.display = "none";
+        }
+        field.classList.remove("input-error");
+        field.removeAttribute("aria-invalid");
+    }
+
+    function setRatingError(message) {
+        if (ratingError) {
+            ratingError.textContent = message;
+            ratingError.style.display = "block";
+        }
+        ratingWrapper?.classList.add("input-error");
+    }
+
+    function clearRatingError() {
+        if (ratingError) {
+            ratingError.textContent = "";
+            ratingError.style.display = "none";
+        }
+        ratingWrapper?.classList.remove("input-error");
+    }
+
+    function validateField(field) {
+        if (!field) return true;
+        const value = field.value.trim();
+
+        if (field.id === "name") {
+            if (!value) return setFieldError(field, "Please enter your name.");
+            if (value.length < 2) return setFieldError(field, "Name must have at least 2 characters.");
+        } else if (field.id === "email") {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!value) return setFieldError(field, "Email is required.");
+            if (!emailPattern.test(value)) return setFieldError(field, "Enter a valid email address.");
+        } else if (field.id === "reviewText") {
+            if (!value) return setFieldError(field, "Please write a review.");
+            if (value.length < 10) return setFieldError(field, "Review must be at least 10 characters.");
+        }
+
+        clearFieldError(field);
+        return true;
+    }
+
+    function validateRating() {
+        if (!selectedRating) {
+            setRatingError("Please select a rating.");
+            return false;
+        }
+        clearRatingError();
+        return true;
+    }
+
+    function validateForm() {
+        const isNameValid = validateField(fields.name);
+        const isEmailValid = validateField(fields.email);
+        const isReviewValid = validateField(fields.reviewText);
+        const isRatingValid = validateRating();
+        return isNameValid && isEmailValid && isReviewValid && isRatingValid;
+    }
+
     reviewForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
-        const name = document.getElementById("name")?.value.trim() || "Anonymous";
-        const text = document.getElementById("reviewText")?.value.trim() || "";
-
-        if (!selectedRating || !text) {
+        if (!validateForm()) {
+            const firstInvalid =
+                Object.values(fields).find((field) => field?.classList.contains("input-error")) || null;
+            if (firstInvalid) {
+                firstInvalid.focus();
+            } else if (!selectedRating) {
+                starContainer.focus();
+            }
             return;
         }
 
-        addReview(name, selectedRating, text);
+        addReview(fields.name.value.trim(), selectedRating, fields.reviewText.value.trim());
+        showSuccessMessage("Thank you for your review!");
         reviewForm.reset();
+        Object.values(fields).forEach(clearFieldError);
         selectedRating = 0;
         updateStars();
+        clearRatingError();
     });
 
     function addReview(name, rating, text) {
         const card = document.createElement("div");
         card.className = "review-card";
-        card.innerHTML = `
-            <div class="avatar"></div>
-            <div class="review-info">
-                <div class="review-name">${name}</div>
-                <div class="review-stars">${"★".repeat(rating)}${"☆".repeat(5 - rating)}</div>
-                <div class="review-text">${text}</div>
-            </div>
-        `;
+
+        const avatarWrapper = document.createElement("div");
+        const avatar = document.createElement("img");
+        avatar.className = "avatar";
+        avatar.src = "../assets/portfolios/user-pic.jpg";
+        avatar.alt = `${name} avatar`;
+        avatarWrapper.appendChild(avatar);
+
+        const info = document.createElement("div");
+        info.className = "review-info";
+
+        const reviewName = document.createElement("div");
+        reviewName.className = "review-name";
+        reviewName.textContent = name;
+
+        const reviewStars = document.createElement("div");
+        reviewStars.className = "review-stars";
+        reviewStars.textContent = `${"★".repeat(rating)}${"☆".repeat(5 - rating)}`;
+
+        const reviewText = document.createElement("div");
+        reviewText.className = "review-text";
+        reviewText.textContent = text;
+
+        info.appendChild(reviewName);
+        info.appendChild(reviewStars);
+        info.appendChild(reviewText);
+
+        card.appendChild(avatarWrapper);
+        card.appendChild(info);
+
         reviewsList.prepend(card);
+    }
+
+    function showSuccessMessage(message) {
+        let successMsg = reviewForm.parentElement?.querySelector(".success-message");
+        if (!successMsg) {
+            successMsg = document.createElement("div");
+            successMsg.className = "success-message";
+            reviewForm.parentElement?.insertBefore(successMsg, reviewForm);
+        }
+
+        successMsg.textContent = message;
+        successMsg.style.opacity = "1";
+        successMsg.style.transform = "translateY(0)";
+
+        setTimeout(() => {
+            if (!successMsg) return;
+            successMsg.style.opacity = "0";
+            successMsg.style.transform = "translateY(-8px)";
+        }, 2500);
     }
 }
 
@@ -81,7 +307,7 @@ function initProjectReveal() {
                 }
             });
         },
-        { threshold: 0.3 },
+        { threshold: 0.3 }
     );
 
     projectCards.forEach((card, index) => {
@@ -125,7 +351,6 @@ function initPortfolioSlider() {
         allCards.forEach((card, index) => {
             const isCurrent = index === currentIndex;
             card.classList.toggle("current", isCurrent);
-
             allUserNames[index]?.classList.toggle("current", isCurrent);
             allNumbs[index]?.classList.toggle("current", isCurrent);
             allSeeMoreBtns[index]?.classList.toggle("current", isCurrent);
@@ -135,6 +360,7 @@ function initPortfolioSlider() {
     function updateSliderPosition(instant = false) {
         const allCards = slider.querySelectorAll(".port-card");
         const wrapper = document.querySelector(".portfolio-slider-wrapper");
+
         if (!allCards.length || !wrapper) return;
 
         const cardWidth = allCards[0].offsetWidth;
@@ -142,13 +368,13 @@ function initPortfolioSlider() {
 
         const sliderStyle = window.getComputedStyle(slider);
         const gap = parseFloat(sliderStyle.gap) || 32;
-
         const viewportCenter = wrapper.offsetWidth / 2;
         const totalOffsetToCurrent = currentIndex * (cardWidth + gap);
         const offset = viewportCenter - totalOffsetToCurrent - cardWidth / 2;
 
         if (instant) slider.style.transition = "none";
         slider.style.transform = `translateX(${offset}px)`;
+
         if (instant) {
             setTimeout(() => {
                 slider.style.transition = "transform 0.6s ease";
@@ -169,7 +395,6 @@ function initPortfolioSlider() {
     function nextCard() {
         if (isAnimating) return;
         isAnimating = true;
-
         currentIndex++;
         updateCurrentCard();
         updateSliderPosition();
@@ -183,7 +408,6 @@ function initPortfolioSlider() {
     function prevCard() {
         if (isAnimating) return;
         isAnimating = true;
-
         currentIndex--;
         updateCurrentCard();
         updateSliderPosition();
@@ -213,7 +437,7 @@ function initPortfolioSlider() {
         (e) => {
             touchStartX = e.changedTouches[0].screenX;
         },
-        { passive: true },
+        { passive: true }
     );
 
     slider.addEventListener(
@@ -222,7 +446,7 @@ function initPortfolioSlider() {
             touchEndX = e.changedTouches[0].screenX;
             handleSwipe();
         },
-        { passive: true },
+        { passive: true }
     );
 
     function handleSwipe() {
@@ -244,6 +468,7 @@ function initPortfolioSlider() {
 function initProgressTracker() {
     const sections = document.querySelectorAll("section");
     const trackerDots = document.querySelectorAll(".tracker-dot");
+
     if (!trackerDots.length || !sections.length) return;
 
     function updateProgressTracker() {
@@ -307,6 +532,7 @@ function initProjectStack() {
     function getNextCard() {
         const allCards = Array.from(projectSliderTrack.querySelectorAll(".project-slider-card"));
         const currentIndex = allCards.indexOf(currentActiveCard);
+
         if (currentIndex < allCards.length - 1) {
             return allCards[currentIndex + 1];
         }
@@ -354,23 +580,20 @@ function initNavigation() {
     memberCards.forEach((card) => {
         const seeMoreBtn = card.querySelector(".see-more");
         const memberId = card.getAttribute("data-member-id");
-        
+
         // Make the entire card clickable
         card.style.cursor = "pointer";
-        
+
         const navigateToArchitect = (e) => {
-            // Only prevent default if it's not a link
-            if (seeMoreBtn && seeMoreBtn.tagName !== 'A') {
-                e.stopPropagation();
-                // Navigate to architect portfolio page
-                window.location.href = `architect-portfolio.html?id=${memberId || '1'}`;
-            }
+            e.stopPropagation();
+            // Navigate to architect portfolio page
+            window.location.href = `architectportfolio.html?id=${memberId || '1'}`;
         };
-        
-        if (seeMoreBtn && seeMoreBtn.tagName !== 'A') {
+
+        if (seeMoreBtn) {
             seeMoreBtn.addEventListener("click", navigateToArchitect);
         }
-        
+
         card.addEventListener("click", (e) => {
             // Don't navigate if clicking on the see more button (it will handle its own navigation)
             if (!e.target.closest(".see-more")) {
@@ -378,19 +601,17 @@ function initNavigation() {
             }
         });
     });
-    
-    // Navigation for project view buttons to architect portfolio
+
+    // Navigation for project view buttons to project details
     const projectViewButtons = document.querySelectorAll(".btn-view-project");
     projectViewButtons.forEach((button) => {
-        // Only add event listener if it's not a link (links handle their own navigation)
-        if (button.tagName !== 'A') {
-            button.addEventListener("click", (e) => {
-                e.stopPropagation(); // Prevent card click event
-                const projectCard = button.closest(".project-slider-card");
-                const projectId = projectCard?.getAttribute("data-project-id") || '1';
-                // Navigate to architect portfolio page
-                window.location.href = `architect-portfolio.html?id=${projectId}`;
-            });
-        }
+        button.addEventListener("click", (e) => {
+            e.stopPropagation(); // Prevent card click event
+            const projectCard = button.closest(".project-slider-card");
+            const projectId = projectCard?.getAttribute("data-project-id") || '1';
+
+            // Navigate to project details page
+            window.location.href = `projectdetails.html?id=${projectId}`;
+        });
     });
 }

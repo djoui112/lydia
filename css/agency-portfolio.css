@@ -12,7 +12,7 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background-color: #f5f5f5;
+    background-color: #D9D9D9;
     color: var(--primary-color);
     line-height: 1.5;
 }
@@ -22,110 +22,224 @@ img {
     height: auto;
     display: block;
 }
-.cover{
-  background-color: white;
-  height: 130px;
-  width: 100%;
+
+/* ====== Back Button ====== */
+.back-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    padding: 0;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 100;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
 }
-.menu-icon{
-    height: 40px;
-    width: 40px;
-    margin: 10px;
+
+.back-btn:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+    transform: translateX(-3px);
 }
-.generalcontainer{
+
+.back-btn:active {
+    transform: translateX(-3px) scale(0.95);
+}
+
+.back-btn i {
+    font-size: 20px;
+}
+
+.generalcontainer {
     background-color: #D9D9D9;
     width: 100%;
     min-height: 100vh;
     padding-bottom: 60px;
+    position: relative;
 }
-.profile-pic{
-    height: 130px;
-    width: 130px;
+
+/* ====== Header Section ====== */
+.cover {
+    background-color: white;
+    height: 160px;
+    width: 100%;
+    position: relative;
+    overflow: visible;
+}
+
+.header-section {
+    width: 100%;
+    position: relative;
+}
+
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 65px;
+}
+
+.profile-pic {
+    height: 160px;
+    width: 160px;
     border-radius: 50%;
-    margin-top: -65px;
-    margin-left: 50px;
-    border:2px solid #1B2B41;
+    border: 4px solid white;
+    margin-bottom: 0;
+    background-color: white;
+    object-fit: cover;
+    position: absolute;
+    top: 65px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-.user-name{
-    font-size: 40px;
+
+.profile-info {
+    width: 100%;
+    text-align: center;
+}
+
+.titles {
+    font-size: 55px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #1B2B41;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+.agency-location {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+}
+
+.agency {
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #686767;
+    margin: 0;
+    padding: 0;
+}
+
+
+.location {
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #686767;
+    margin: 0;
+    padding: 0;
+}
+
+.info {
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(87, 87, 209);
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    margin: 10px 0;
+    padding: 0;
+}
+
+.info:hover {
+    text-decoration: underline;
+}
+
+.bio {
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: black;
+    margin: 15px auto 0;
+    padding: 0;
+    max-width: 800px;
+    line-height: 1.6;
+}
+
+.user-name {
+    font-size: 30px;
     font-weight: 600;
     font-family: Arial, Helvetica, sans-serif;
     padding-left: 55px;
     padding-top: 17px;
 }
-.agency{
-    font-size:15px ;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #686767;
-    padding-left: 55px;
-    padding-top: 10px;
-}
-.location{
-    font-size:15px ;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #686767;
-    padding-left: 55px;
-    padding-top: 10px;
-}
-.info{
-    font-size:16px ;
-    font-family: Arial, Helvetica, sans-serif;
-    color: rgb(87, 87, 209);
-    padding-left: 198px;
-    margin-top: -16px;
-    text-decoration: none;
-    display: inline-block;
-    cursor: pointer;
-}
-.info:hover {
-    text-decoration: underline;
-}
-.bio{
-    font-size:20px ;
-    font-family: Arial, Helvetica, sans-serif;
-    color: black;
-    padding-left: 55px;
-    padding-right: 50px;
-    padding-top: 10px; 
-}
 
-.clients-container{
-    padding: 80px 50px 0;
+.clients-container {
+    padding: 100px 50px 0;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 40px;
     overflow: visible;
+    justify-items: center;
 }
-.client-pic{
+
+.client {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 200px;
+}
+
+.client-pic {
     height: 100px;
     width: 100px;
     border-radius: 50%;
     margin-top: -60px;
-    margin-left: 50px;
-    border:2px solid #5B7E98;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid #5B7E98;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: block;
+    object-fit: cover;
 }
 .client-pic:hover {
   transform: translateY(-10px); /* moves card up by 10px */
   box-shadow: 0 10px 20px rgba(0,0,0,0.2); /* stronger shadow while hovering */
 }
-.client-name{
-    font-size:15px ;
+.client-name {
+    font-size: 15px;
     font-family: Arial, Helvetica, sans-serif;
     color: #5B7E98;
-    padding-left: 55px;
-    padding-top: 10px;
+    padding: 10px 0 0 0;
+    margin: 0;
+    text-align: center;
+    width: 100%;
 }
-.titles{
-    font-size: 40px;
+.titles {
+    font-size: 55px;
     font-family: Arial, Helvetica, sans-serif;
-    color:#1B2B41;
-    padding-top: 45px;
+    color: #1B2B41;
     padding-left: 55px;
+    padding-right: 55px;
+    margin-top: 30px;
+    margin-bottom: 20px;
 }
-
-
-
+.clientstitle {
+  font-size: 55px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #1B2B41;
+  padding-left: 55px;
+  padding-right: 55px;
+  margin-top: 50px;
+  margin-bottom: 20px;
+}
 
 
 .container {
@@ -234,6 +348,10 @@ input, textarea {
     border-radius: 8px;
     font-family: Arial, Helvetica, sans-serif;
 }
+.input-error {
+    border-color: #d93025 !important;
+    box-shadow: 0 0 0 1px rgba(217, 48, 37, 0.15);
+}
 label {
   font-family: Arial, Helvetica, sans-serif;
   color: #1B2B41;
@@ -256,204 +374,289 @@ button {
 .submit:active{
     opacity: 0.7;
 }
-
-/* SLIDER SECTION */
-/* ====== Portfolios Section ====== */
-#portfolios {
-    width: 100%;
+.rating-area.input-error .stars {
+    outline: 1px solid #d93025;
+    border-radius: 8px;
+    padding: 4px 8px;
 }
-
-
-
-/* ====== Slider Wrapper ====== */
-.portfolio-slider-wrapper {
-    position: relative;
-    width: 90%;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    margin: auto;
-    margin-top: -70px;
-}
-
-/* ====== Slider ====== */
-.portfolio-slider {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    transition: transform 0.6s ease;
-    position: absolute;
-    left: 0;
-}
-
-/* ====== Portfolio Cards ====== */
-.port-card {
-    background-color: white;
-    width: 15rem;
-    height: 22rem;
-    border-radius: 200px 200px 10px 10px;
-    box-shadow: 0 3px 6px rgb(141, 141, 141);
-    position: relative;
-    border: 3px solid #1B2B41;
-    flex-shrink: 0;
-    transition: all 0.4s ease;
-}
-
-.port-card.current {
-    background-color: #5B7E98;
-    transform: scale(1.2);
-}
-
-/* ====== User Picture ====== */
-.user-pic {
-    position: absolute;
-    height: 35%;
-    top: 15%; /* adjust vertical position */
-    left: 50%;
-    border-radius: 60px;
-    transform: translateX(-50%);
-}
-
-/* ====== Portfolio Cover ====== */
-.portfolio-cover {
-    height: 35%;
-    background-color: lightgray;
-    border-top-left-radius: 8rem;
-    border-top-right-radius: 8rem;
-}
-
-/* ====== Portfolio Info ====== */
-.portfolio-info {
-    height: 65%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #1B2B41;
-}
-
-/* ====== User Name ====== */
-.user-name {
-    margin-top: 1.5rem;
-    margin-right: 25px;
-    margin-left: -25px;
-    font-size: 1.6rem;
-    font-weight: 600;
-    font-family: Arial, Helvetica, sans-serif;
-    transform: translateY(2rem);
-    transition: all 0.4s ease;
-}
-
-.user-name.current {
-    transform: translateY(-0.1rem);
-    color: white;
-    margin-top: 40px;
-}
-
-/* ====== Numbers Section ====== */
-.numb {
-    display: flex;
-    margin: 1.3rem 0;
-    opacity: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    transition: all 0.4s ease;
-    color: #1a2942;
-}
-
-.numb.current {
-    opacity: 1;
-    color: white;
-    margin-top: 5px;
-}
-
-.num-projects, .num-years {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    color: #1a2942;
-    align-items: center;
-    width: 4rem;
-}
-
-.num-years {
-    border-left: 1px solid #1B2B41;
-}
-
-.num-projects p:first-child,
-.num-years p:first-child {
-    font-size: 0.8rem;
-}
-
-.num-projects p:last-child,
-.num-years p:last-child {
-    font-size: 1.5rem;
-}
-
-/* ====== See More Button ====== */
-.see-more {
-    background-color: #1B2B41;
-    color: white;
-    border: none;
-    padding: 0.4rem 1rem;
-    border-radius: 1.5rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-top: -20px;
+.error-message {
+    color: #d93025;
+    font-size: 12px;
+    display: block;
+    margin-top: -8px;
     margin-bottom: 10px;
-    text-decoration: none;
-    display: inline-block;
 }
-
-.see-more.current {
-    background-color: white;
-    color: #1B2B41;
-    margin-top: -10px;
-}
-
-.see-more.current:hover {
-    box-shadow: 0 0 3px white;
-    cursor: pointer;
-}
-
-/* ====== Navigation Arrows ====== */
-.nav-lign {
-    position: absolute;
-    width: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    justify-content: space-between;
-    padding: 0 3%;
-    pointer-events: none;
-    z-index: 20;
-}
-
-.nav-arrow {
-    color: white;
-    background-color: #5B7E98;
-    text-align: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 2rem;
-    font-size: 1.6rem;
-    cursor: pointer;
-    pointer-events: all;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
-    user-select: none;
-}
-
-.nav-arrow:hover {
-    background-color: #1B2B41;
+.success-message {
+    background: #e6f4ea;
+    border: 1px solid #9ad3b4;
+    color: #1b5e20;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 
+/* ==========================
+   Responsive Design
+========================== */
 
+/* Tablets and Medium Devices */
+@media (max-width: 992px) {
+    .portfolio-slider-wrapper {
+        height: 65vh;
+        min-height: 450px;
+        width: 95%;
+        margin-top: 30px;
+    }
 
+    .port-card {
+        width: 13rem;
+        height: 20rem;
+    }
+
+    .port-card.current {
+        height: 22rem;
+    }
+
+    .user-name {
+        font-size: 1.3rem;
+        margin-top: 2.5rem;
+    }
+
+    .port-card.current .user-name {
+        font-size: 1.6rem;
+        margin-top: 3rem;
+    }
+
+    .num-projects p:first-child,
+    .num-years p:first-child {
+        font-size: 0.7rem;
+    }
+
+    .num-projects p:last-child,
+    .num-years p:last-child {
+        font-size: 1.3rem;
+    }
+
+    .see-more {
+        font-size: 0.8rem;
+        padding: 0.4rem 1rem;
+    }
+}
+
+/* Mobile Devices */
+@media (max-width: 768px) {
+    .portfolio-slider-wrapper {
+        height: auto;
+        min-height: 420px;
+        padding: 40px 0;
+        width: 100%;
+        margin-top: 30px;
+    }
+
+    .portfolio-slider {
+        gap: 1.5rem;
+    }
+
+    .port-card {
+        width: 11rem;
+        height: 17rem;
+    }
+
+    .port-card.current {
+        height: 20rem;
+    }
+
+    .user-name {
+        font-size: 1.1rem;
+        margin-top: 2rem;
+    }
+
+    .port-card.current .user-name {
+        font-size: 1.3rem;
+        margin-top: 2.3rem;
+    }
+
+    .num-projects, .num-years {
+        width: 3.5rem;
+        padding: 0.3rem;
+    }
+
+    .num-projects p:first-child,
+    .num-years p:first-child {
+        font-size: 0.65rem;
+    }
+
+    .num-projects p:last-child,
+    .num-years p:last-child {
+        font-size: 1.1rem;
+    }
+
+    .see-more {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.8rem;
+    }
+
+    .nav-lign {
+        padding: 0 2%;
+    }
+
+    .nav-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 1.4rem;
+    }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 576px) {
+    .portfolio-slider-wrapper {
+        min-height: 380px;
+        padding: 30px 0;
+    }
+
+    .port-card {
+        width: 10rem;
+        height: 16rem;
+    }
+
+    .port-card.current {
+        height: 19rem;
+    }
+
+    .user-name {
+        font-size: 1rem;
+        margin-top: 1.8rem;
+    }
+
+    .port-card.current .user-name {
+        font-size: 1.2rem;
+        margin-top: 2rem;
+    }
+
+    .numb {
+        margin: 0.5rem 0;
+    }
+
+    .num-projects, .num-years {
+        width: 3rem;
+    }
+
+    .num-projects p:first-child,
+    .num-years p:first-child {
+        font-size: 0.6rem;
+    }
+
+    .num-projects p:last-child,
+    .num-years p:last-child {
+        font-size: 1rem;
+    }
+
+    .see-more {
+        font-size: 0.65rem;
+        padding: 0.3rem 0.7rem;
+    }
+
+    .nav-arrow {
+        width: 35px;
+        height: 35px;
+        font-size: 1.2rem;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 420px) {
+    .portfolio-slider-wrapper {
+        padding: 30px 5px;
+        min-height: 360px;
+        width: 100%;
+    }
+
+    .portfolio-slider {
+        gap: 1rem;
+    }
+
+    .port-card {
+        width: 9rem;
+        height: 15rem;
+        min-width: 130px;
+    }
+
+    .port-card.current {
+        height: 18rem;
+    }
+
+    .user-name {
+        font-size: 0.95rem;
+        margin-top: 1.5rem;
+        padding: 0 8px;
+    }
+
+    .port-card.current .user-name {
+        font-size: 1.1rem;
+        margin-top: 1.8rem;
+    }
+
+    .numb {
+        margin: 0.4rem 0;
+    }
+
+    .num-projects, .num-years {
+        width: 2.8rem;
+        padding: 0.2rem;
+    }
+
+    .num-projects p:first-child,
+    .num-years p:first-child {
+        font-size: 0.55rem;
+    }
+
+    .num-projects p:last-child,
+    .num-years p:last-child {
+        font-size: 0.95rem;
+    }
+
+    .see-more {
+        font-size: 0.6rem;
+        padding: 0.25rem 0.6rem;
+    }
+
+    .nav-arrow {
+        width: 32px;
+        height: 32px;
+        font-size: 1.1rem;
+    }
+
+    .nav-lign {
+        padding: 0 1%;
+    }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .port-card,
+    .portfolio-slider,
+    .user-name,
+    .numb,
+    .see-more,
+    .nav-arrow {
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .port-card,
+    .portfolio-slider,
+    .user-name,
+    .numb,
+    .see-more,
+    .nav-arrow {
+        transition-duration: 0.01ms !important;
+    }
+}
 
 .project-management {
   margin-bottom: 60px;
@@ -477,7 +680,7 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 20px;
+  padding: 20px 20px 50px 20px;
 }
 
 .project-slider-card {
@@ -656,8 +859,6 @@ button {
   text-transform: lowercase;
   align-self: flex-start;
   margin-bottom: 100px;
-  text-decoration: none;
-  display: inline-block;
 }
 
 .btn-view-project:hover {
@@ -686,8 +887,9 @@ button {
   background-color: #1B2B41;
   color: white;
   padding: 60px 50px 40px;
-  margin-top: 60px;
-  width: 100%;
+  max-width:1200px;
+  margin-left: 30px;
+  border-radius: 25px 25px 0 0;
 }
 
 .footer-content {
@@ -773,6 +975,7 @@ button {
   
   .footer {
     padding: 40px 30px 30px;
+    margin-left: 1px;
   }
 }
 
@@ -807,18 +1010,27 @@ button {
 }
 
 @media (max-width: 992px) {
+  .profile-section {
+        padding: 20px;
+        margin-top: 80px;
+    }
+
   .profile-pic {
-    margin-left: 20px;
+        height: 140px;
+        width: 140px;
+        top: 70px;
+    }
+
+  .titles {
+    font-size: 50px;
   }
 
-  .user-name,
-  .agency,
-  .location,
-  .info,
-  .bio,
-  .titles {
-    padding-left: 20px;
-    padding-right: 20px;
+  .clientstitle {
+    font-size: 45px;
+  }
+
+  .bio {
+    font-size: 18px;
   }
 
   .clients-container {
@@ -829,9 +1041,100 @@ button {
   }
 
   .portfolio-slider-wrapper {
-    height: 55vh;
+    height: 65vh;
+    min-height: 450px;
+    width: 95%;
+    margin-top: 30px;
   }
+  .portfolio-info {
+    height: 65%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #1B2B41;
+}
 
+/* ====== User Name ====== */
+.user-name {
+    margin-top: 1.5rem;
+    margin-right: 25px;
+    margin-left: -25px;
+    font-size: 30px;
+    font-weight: 300;
+    font-family: Arial, Helvetica, sans-serif;
+    transform: translateY(2rem);
+    transition: all 0.4s ease;
+}
+
+.user-name.current {
+    transform: translateY(-0.1rem);
+    color: white;
+    margin-top: 40px;
+}
+
+/* ====== Numbers Section ====== */
+.numb {
+    display: flex;
+    margin: 1.3rem 0;
+    opacity: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: all 0.4s ease;
+    color: #1a2942;
+}
+
+.numb.current {
+    opacity: 1;
+    color: white;
+    margin-top: 5px;
+}
+
+.num-projects, .num-years {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #1a2942;
+    align-items: center;
+    width: 4rem;
+}
+
+.num-years {
+    border-left: 1px solid #1B2B41;
+}
+
+.num-projects p:first-child,
+.num-years p:first-child {
+    font-size: 1rem;
+}
+
+.num-projects p:last-child,
+.num-years p:last-child {
+    font-size: 1rem;
+}
+
+/* ====== See More Button ====== */
+.see-more {
+    background-color: #1B2B41;
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 1.5rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.see-more.current {
+    background-color: white;
+    color: #1B2B41;
+    margin-top: -10px;
+}
+
+.see-more.current:hover {
+    box-shadow: 0 0 3px white;
+    cursor: pointer;
+}
   .port-card {
     width: 13rem;
     height: 20rem;
@@ -852,59 +1155,135 @@ button {
   .container {
     padding: 0 20px;
   }
+
+  .titles,
+  .clientstitle {
+    padding-left: 20px;
+    padding-right: 20px;
+
+  }
 }
 
 @media (max-width: 768px) {
   .cover {
-    height: 100px;
+    height: 120px;
+  }
+   .back-btn {
+        width: 40px;
+        height: 40px;
+        top: 10px;
+        left: 10px;
+    }
+
+    .back-btn i {
+        font-size: 18px;
+    }
+  
+  .profile-section {
+    padding: 15px;
+    margin-top: 60px;
   }
 
   .profile-pic {
-    margin: 0 auto;
-    display: block;
+    height: 120px;
+    width: 120px;
+    top: 60px;
+    border-width: 3px;
   }
 
-  .user-name,
+  .titles {
+    font-size: 40px;
+    text-align: center;
+    padding: 0 15px;
+  }
+
+  .clientstitle {
+    font-size: 40px;
+    text-align: center;
+    padding: 0 15px;
+    margin-top: 40px;
+  }
+
   .agency,
   .location,
-  .info,
-  .bio,
-  .titles {
+  .info {
     text-align: center;
+  }
+
+  .bio {
+    font-size: 17px;
+    text-align: center;
+    padding: 0 15px;
   }
 
   .clients-container {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding: 60px 20px 0;
+    padding: 20px 15px 0;
+    gap: 30px;
+  }
+
+  .client {
+    max-width: 150px;
+  }
+
+  .client-pic {
+    height: 80px;
+    width: 80px;
+    margin-top:10px;
+    
+  }
+
+  .client-name {
+    font-size: 13px;
+    padding-top: 8px;
   }
 
   .portfolio-slider-wrapper {
     height: auto;
-    padding: 60px 0;
+    min-height: 400px;
+    padding: 40px 0;
+    width: 100%;
+    margin-top: 30px;
+  }
+ 
+  .portfolio-slider {
+    gap: 1.5rem;
+  }
+
+  .port-card {
+    width: 12rem;
+    height: 18rem;
   }
 
   .nav-lign {
     top: auto;
     bottom: 10px;
+    padding: 0 10px;
   }
 
   .project-slider-container {
     height: auto;
+    margin-top: 30px;
+    padding: 0 10px;
   }
 
   .project-slider-track {
     position: static;
     height: auto;
+    padding: 10px;
   }
 
   .project-slider-card {
     position: relative;
     width: 100%;
     max-width: none;
+    height: auto;
+    min-height: 400px;
     margin-bottom: 30px;
     transform: none !important;
     opacity: 1 !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    left: 0;
   }
 
   .project-slider-card.active:hover {
@@ -918,12 +1297,18 @@ button {
   .project-info {
     width: 100%;
     clip-path: none;
+    padding: 24px;
+    min-height: auto;
+  }
+
+  .project-name {
+    font-size: 28px;
   }
 
   .project-image {
     position: relative;
     width: 100%;
-    height: 260px;
+    height: 250px;
   }
 
   .container {
@@ -945,11 +1330,63 @@ button {
     width: 100%;
     padding: 20px;
   }
+
+  .titles,
+  .clientstitle {
+    padding-left: 15px;
+    padding-right: 15px;
+    text-align: center;
+  }
 }
 
 @media (max-width: 576px) {
-  .titles {
+ 
+  .cover {
+    height: 100px;
+  }
+
+  .back-btn {
+    width: 35px;
+    height: 35px;
+    top: 8px;
+    left: 8px;
+  }
+
+  .back-btn i {
+        font-size: 16px;
+  }
+
+
+  .profile-section {
+    padding: 10px;
+    margin-top: 50px;
+  }
+
+  .profile-pic {
+    height: 100px;
+    width: 100px;
+    top: 50px;
+    border-width: 3px;
+  }
+
+  .titles,
+  .clientstitle {
     font-size: 32px;
+    padding: 0 10px;
+  }
+
+  .agency,
+  .location {
+    font-size: 14px;
+  }
+
+  .info {
+    font-size: 15px;
+  }
+
+  .bio {
+    font-size: 16px;
+    padding: 0 10px;
   }
 
   .user-name {
@@ -979,6 +1416,8 @@ button {
   .clients-container {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 
   .project-info {
@@ -991,13 +1430,74 @@ button {
 }
 
 @media (max-width: 420px) {
+  
+
+  .cover {
+    height: 80px;
+  }
+
+  .profile-section {
+    margin-top: 40px;
+  }
+
+  .profile-pic {
+    height: 90px;
+    width: 90px;
+    top: 45px;
+    border-width: 2px;
+  }
+
+  .back-btn {
+    width: 40px;
+    height: 40px;
+    top: 10px;
+    left: 10px;
+  }
+
+  .back-btn i {
+    font-size: 18px;
+  }
+
+  .agency-location {
+    gap: 8px;
+  }
+
+  .agency,
+  .location {
+    font-size: 14px;
+  }
+
+  .separator {
+    font-size: 14px;
+  }
+
+  .titles,
+  .clientstitle {
+    font-size: 28px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .bio {
+    font-size: 15px;
+  }
+
   .portfolio-slider-wrapper {
-    padding: 40px 0;
+    padding: 40px 10px;
+    min-height: 350px;
+    width: 100%;
   }
 
   .port-card {
     width: 10rem;
     height: 17rem;
+    min-width: 140px;
+  }
+
+  .nav-arrow {
+    width: 35px;
+    height: 35px;
+    font-size: 1.4rem;
   }
 
   .review-card {
@@ -1009,7 +1509,50 @@ button {
   }
 
   .clients-container {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 50px 10px 0;
+    gap: 20px;
+  }
+
+  .client {
+    max-width: 140px;
+  }
+
+  .client-pic {
+    height: 70px;
+    width: 70px;
+    margin-top: -40px;
+  }
+
+  .client-name {
+    font-size: 12px;
+  }
+
+  .project-slider-container {
+    padding: 0 5px;
+  }
+
+  .project-slider-card {
+    min-height: 350px;
+    margin-bottom: 20px;
+  }
+
+  .project-info {
+    padding: 20px;
+  }
+
+  .project-name {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+
+  .project-image {
+    height: 200px;
+  }
+
+  .btn-view-project {
+    padding: 10px 24px;
+    font-size: 14px;
   }
 }
 
