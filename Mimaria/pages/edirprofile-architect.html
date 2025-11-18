@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Log in-architect 1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8">
+        <meta name="keywords" content="architecture,architect,agency,client,login">
+        <meta name="description" content="connect architects and clients- make an account">
+        <meta name="author" content="Mimaria team" >
+        <meta http-equiv="refresh" content="60">
+        <link rel="icon" href="assets/main/Department.png" type="image/png">
+        <link rel="stylesheet" href="/css/general.css">    
+        <link rel="stylesheet" href="/css/login/generalSignup.css">  
+        <link rel="stylesheet" href="/css/login/login.css">  
+        <link rel="icon" href="assets/main/Department.png" type="image/png">     
+    </head>
+    <body>
+        <a href="../pages/signUp.html"><img src="/assets/create-account/Back Arrow r.png" class="back red"></a>
+        <img src="/assets/create-account/Vector 5.png "class="vector1">
+        <img src="/assets/create-account/Vector 6.png "class="vector2">
+
+
+       <div class="form-shape ar">
+        <div class="pfp-container">
+            <div class="pfp">
+                <img src="../assets/create-account/Profile.png" id="profile-preview-arch">
+                <input type="file" id="profile-upload-arch" accept="image/*" style="display: none;">
+                <div class="pfp-mdf" onclick="document.getElementById('profile-upload-arch').click()">
+                    <img src="../assets/create-account/Edit Image.png">
+                </div>
+            </div>
+        </div>
+      
+        <form id="login-architect-1">
+            <label for="architect-fname">First name</label>
+            <div>
+                <input type="text" id="architect-fname" name="fname" placeholder="first name" required>
+                <img src="/assets/create-account/Profile.png" class="label-icon">
+            </div>
+            <span class="error-message" id="fname-error"></span>
+
+            <label for="architect-lname">Last name</label>
+            <div>
+                <input type="text" id="architect-lname" name="lname" placeholder="last name" required>
+                <img src="/assets/create-account/Profile.png" class="label-icon">
+            </div>
+            <span class="error-message" id="lname-error"></span>
+
+            <label for="architect-email">Email</label>
+            <div>
+                <input type="email" id="architect-email" name="email" placeholder="example@gmail.com" required>
+                <img src="/assets/create-account/Email.png" class="label-icon">
+            </div>
+            <span class="error-message" id="email-error"></span>
+<label for="architect-phone">Phone number</label>
+            <div>
+                <input type="tel" id="architect-phone" name="phone" placeholder="+213******" required>
+                <img src="/assets/create-account/Phone.png" class="label-icon">
+            </div>
+            <span class="error-message" id="phone-error"></span>
+
+            <label for="architect-city">City</label>
+            <div class="select-wrapper">
+                <select id="architect-city" name="city" required>
+                    <option value="01 - Adrar">01 - Adrar</option>
+                    <option value="02 - Chlef">02 - Chlef</option>
+                    <option value="03 - Laghouat">03 - Laghouat</option>
+                    <option value="04 - Oum El Bouaghi">04 - Oum El Bouaghi</option>
+                    <option value="05 - Batna">05 - Batna</option>
+                    <option value="06 - Béjaïa">06 - Béjaïa</option>
+                    <option value="07 - Biskra">07 - Biskra</option>
+                    <option value="08 - Béchar">08 - Béchar</option>
+                    <option value="09 - Blida">09 - Blida</option>
+                    <option value="10 - Bouira">10 - Bouira</option>
+                    <option value="11 - Tamanrasset">11 - Tamanrasset</option>
+                    <option value="12 - Tébessa">12 - Tébessa</option>
+                    <option value="13 - Tlemcen">13 - Tlemcen</option>
+                    <option value="14 - Tiaret">14 - Tiaret</option>
+                    <option value="15 - Tizi Ouzou">15 - Tizi Ouzou</option>
+                    <option value="16 - Algiers" selected>16 - Algiers</option>
+                    <option value="17 - Djelfa">17 - Djelfa</option>
+                    <option value="18 - Jijel">18 - Jijel</option>
+                    <option value="19 - Sétif">19 - Sétif</option>
+                    <option value="20 - Saïda">20 - Saïda</option>
+                    <option value="21 - Skikda">21 - Skikda</option>
+                    <option value="22 - Sidi Bel Abbès">22 - Sidi Bel Abbès</option>
+                    <option value="23 - Annaba">23 - Annaba</option>
+                    <option value="24 - Guelma">24 - Guelma</option>
+                    <option value="25 - Constantine">25 - Constantine</option>
+                    <option value="26 - Médéa">26 - Médéa</option>
+                    <option value="27 - Mostaganem">27 - Mostaganem</option>
+                    <option value="28 - M'Sila">28 - M'Sila</option>
+                    <option value="29 - Mascara">29 - Mascara</option>
+                    <option value="30 - Ouargla">30 - Ouargla</option>
+                    <option value="31 - Oran">31 - Oran</option>
+                    <option value="32 - El Bayadh">32 - El Bayadh</option>
+                    <option value="33 - Illizi">33 - Illizi</option>
+                    <option value="34 - Bordj Bou Arreridj">34 - Bordj Bou Arreridj</option>
+                    <option value="35 - Boumerdès">35 - Boumerdès</option>
+                    <option value="36 - El Tarf">36 - El Tarf</option>
+                    <option value="37 - Tindouf">37 - Tindouf</option>
+                    <option value="38 - Tissemsilt">38 - Tissemsilt</option>
+                    <option value="39 - El Oued">39 - El Oued</option>
+                    <option value="40 - Khenchela">40 - Khenchela</option>
+                    <option value="41 - Souk Ahras">41 - Souk Ahras</option>
+                    <option value="42 - Tipaza">42 - Tipaza</option>
+                    <option value="43 - Mila">43 - Mila</option>
+                    <option value="44 - Aïn Defla">44 - Aïn Defla</option>
+                    <option value="45 - Naâma">45 - Naâma</option>
+                    <option value="46 - Aïn Témouchent">46 - Aïn Témouchent</option>
+                    <option value="47 - Ghardaïa">47 - Ghardaïa</option>
+                    <option value="48 - Relizane">48 - Relizane</option>
+                    <option value="49 - Timimoun">49 - Timimoun</option>
+                    <option value="50 - Bordj Badji Mokhtar">50 - Bordj Badji Mokhtar</option>
+                    <option value="51 - Ouled Djellal">51 - Ouled Djellal</option>
+                    <option value="52 - Béni Abbès">52 - Béni Abbès</option>
+                    <option value="53 - In Salah">53 - In Salah</option>
+                    <option value="54 - In Guezzam">54 - In Guezzam</option>
+                    <option value="55 - Touggourt">55 - Touggourt</option>
+                    <option value="56 - Djanet">56 - Djanet</option>
+                    <option value="57 - El M'Ghair">57 - El M'Ghair</option>
+                    <option value="58 - El Meniaa">58 - El Meniaa</option>
+                </select>
+                <img src="/assets/create-account/Address.png" class="label-icon">
+            </div>
+            <span class="error-message" id="city-error"></span>
+
+            <label for="architect-birth">Date of birth</label>
+            <div class="date-wrapper">
+                <input type="text" id="architect-birth-display" placeholder="DD/MM/YYYY" readonly required>
+                <input type="date" id="architect-birth" name="birth" required>
+                <img src="/assets/create-account/Calendar.png" class="label-icon date-icon" onclick="document.getElementById('architect-birth').showPicker()">
+            </div>
+            <span class="error-message" id="birth-error"></span>
+
+            <label>Gender</label>
+            <section class="gender">
+                <label class="gender"><input type="radio" name="gender" value="female" checked><p>Female</p></label>
+                <label class="gender"><input type="radio" name="gender" value="male"><p>Male</p></label>
+            </section>
+            <a href="/pages/resetpass.html">Forgot password?</a>
+            
+                <button type="submit">
+                    <span>✓</span> Save changes
+                </button>
+
+        </form>
+    </div>
+        <script src="../js/architect.js"></script>
+
+    </body>
+</html>
