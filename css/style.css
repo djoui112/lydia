@@ -1,0 +1,502 @@
+/* ============================================
+   Reset and Base Styles
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', 'Open Sans', sans-serif;
+    background-color: #fafafa;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* ============================================
+   Background Vectors
+   ============================================ */
+.background-vectors {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.vector {
+    position: absolute;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+.vector-1 {
+    top: -50px;
+    left: -100px;
+    width: 400px;
+    height: auto;
+    transform: rotate(-10deg);
+}
+
+.vector-2 {
+    top: 100px;
+    right: -150px;
+    width: 500px;
+    height: auto;
+    transform: rotate(15deg);
+}
+
+.vector-3 {
+    bottom: 200px;
+    left: -80px;
+    width: 450px;
+    height: auto;
+    transform: rotate(-20deg);
+}
+
+.vector-4 {
+    bottom: -100px;
+    right: -120px;
+    width: 600px;
+    height: auto;
+    transform: rotate(25deg);
+}
+
+/* ============================================
+   Form Container
+   ============================================ */
+.form-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   Form Card
+   ============================================ */
+.form-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+    background-image: 
+        linear-gradient(#ffffff, #ffffff),
+        linear-gradient(90deg, #780000 0%, #1B2B41 100%);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    transition: box-shadow 0.3s ease;
+}
+
+.form-card:hover {
+    box-shadow: 0 15px 50px rgba(120, 0, 0, 0.15);
+}
+
+/* ============================================
+   Form Title
+   ============================================ */
+.form-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #780000;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* ============================================
+   Form Structure
+   ============================================ */
+.project-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group-submit {
+    margin-top: 10px;
+    align-items: center;
+}
+
+/* ============================================
+   Form Labels
+   ============================================ */
+.form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #780000;
+    margin-bottom: 5px;
+}
+
+/* ============================================
+   Form Inputs
+   ============================================ */
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-family: 'Poppins', 'Open Sans', sans-serif;
+    border: 1px solid #780000;
+    border-radius: 25px;
+    background-color: #ffffff;
+    color: #333;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: #999;
+    opacity: 0.7;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    border-color: #1B2B41;
+    box-shadow: 0 0 0 3px rgba(120, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.form-input:hover,
+.form-select:hover,
+.form-textarea:hover {
+    border-color: #1B2B41;
+}
+
+/* ============================================
+   Error States
+   ============================================ */
+.form-input.error,
+.form-select.error,
+.form-textarea.error {
+    border-color: #d32f2f;
+    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+.error-message {
+    display: block;
+    color: #d32f2f;
+    font-size: 0.85rem;
+    margin-top: 6px;
+    padding-left: 4px;
+    letter-spacing: 0.2px;
+    animation: errorMessageFade 0.25s ease;
+}
+
+@keyframes errorMessageFade {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   Textarea Specific Styles
+   ============================================ */
+.form-textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+}
+
+/* ============================================
+   Select Dropdown Styles
+   ============================================ */
+.form-select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23780000' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px;
+}
+
+.form-select option {
+    padding: 10px;
+    color: #333;
+}
+
+/* ============================================
+   File Input Styles
+   ============================================ */
+.form-file-input {
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-family: 'Poppins', 'Open Sans', sans-serif;
+    border: 1px solid #780000;
+    border-radius: 25px;
+    background-color: #ffffff;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-file-input:hover {
+    border-color: #1B2B41;
+}
+
+.form-file-input:focus {
+    border-color: #1B2B41;
+    box-shadow: 0 0 0 3px rgba(120, 0, 0, 0.1);
+}
+
+.form-file-input::file-selector-button {
+    padding: 8px 16px;
+    margin-right: 12px;
+    border: none;
+    border-radius: 20px;
+    background-color: #780000;
+    color: #ffffff;
+    font-family: 'Poppins', 'Open Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-file-input::file-selector-button:hover {
+    background-color: #1B2B41;
+    transform: translateY(-1px);
+}
+
+/* ============================================
+   File Names Display
+   ============================================ */
+.file-names-display {
+    margin-top: 10px;
+    padding: 12px 15px;
+    background-color: #f8f8f8;
+    border-radius: 15px;
+    min-height: 40px;
+    display: none;
+}
+
+.file-names-display.has-files {
+    display: block;
+}
+
+.file-names-display ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.file-names-display li {
+    font-size: 0.9rem;
+    color: #780000;
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.file-names-display li::before {
+    content: "📷";
+    font-size: 1rem;
+}
+
+/* ============================================
+   Submit Button
+   ============================================ */
+.submit-btn {
+    background-color: #780000;
+    color: #ffffff;
+    border: none;
+    border-radius: 25px;
+    padding: 14px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: 'Poppins', 'Open Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    box-shadow: 0 4px 15px rgba(120, 0, 0, 0.3);
+}
+
+.submit-btn:hover {
+    background-color: #1B2B41;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(27, 43, 65, 0.4);
+}
+
+.submit-success {
+    margin-top: 20px;
+    padding: 16px 24px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(120, 0, 0, 0.08), rgba(27, 43, 65, 0.12));
+    color: #1B2B41;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border: 1px solid rgba(120, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.submit-success::before {
+    content: "✓";
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: rgba(120, 0, 0, 0.15);
+    color: #780000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.submit-success.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(120, 0, 0, 0.3);
+}
+
+/* ============================================
+   Responsive Design - Tablet
+   ============================================ */
+@media (max-width: 1024px) {
+    .vector-1 {
+        width: 300px;
+    }
+
+    .vector-2 {
+        width: 400px;
+    }
+
+    .vector-3 {
+        width: 350px;
+    }
+
+    .vector-4 {
+        width: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    .vector-1 {
+        width: 250px;
+        top: -30px;
+        left: -60px;
+    }
+
+    .vector-2 {
+        width: 300px;
+        right: -100px;
+    }
+
+    .vector-3 {
+        width: 280px;
+        left: -50px;
+    }
+
+    .vector-4 {
+        width: 400px;
+        right: -80px;
+    }
+
+    .form-card {
+        padding: 30px 25px;
+        border-radius: 15px;
+    }
+
+    .form-title {
+        font-size: 28px;
+        margin-bottom: 25px;
+    }
+
+    .project-form {
+        gap: 20px;
+    }
+
+    .submit-btn {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+/* ============================================
+   Responsive Design - Mobile
+   ============================================ */
+@media (max-width: 480px) {
+    .vector-1 {
+        width: 200px;
+        opacity: 0.2;
+    }
+
+    .vector-2 {
+        width: 250px;
+        opacity: 0.2;
+    }
+
+    .vector-3 {
+        width: 220px;
+        opacity: 0.2;
+    }
+
+    .vector-4 {
+        width: 300px;
+        opacity: 0.2;
+    }
+
+    body {
+        padding: 15px;
+    }
+
+    .form-card {
+        padding: 25px 20px;
+        border-radius: 12px;
+    }
+
+    .form-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea,
+    .form-file-input {
+        font-size: 0.95rem;
+        padding: 12px 15px;
+    }
+
+    .submit-btn {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+}
+

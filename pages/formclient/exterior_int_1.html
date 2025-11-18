@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interior Project - Step 1</title>
+  <link rel="stylesheet" href="project.css" />
+</head>
+<body>
+
+  <div class="page-container">
+    <header class="form-header">
+      <button class="back-btn" onclick="window.location.href='exterior_2.html'"><</button>
+      <h1>Interior Project</h1>
+    </header>
+
+    <div class="progress-bar">
+      <div class="step completed">1</div>
+      <div class="line completed"></div>
+      <div class="step completed">2</div>
+      <div class="line completed"></div>
+      <div class="step active">3</div>
+      <div class="line"></div>
+      <div class="step">4</div>
+      <div class="line"></div>
+      <div class="step">5</div>
+      <div class="line"></div>
+      <div class="step">6</div>
+    </div>
+
+    <form class="application-form">
+      <label>Project Location</label>
+      <input type="text" placeholder="City or address if possible" required>
+
+      <label>Total Area</label>
+      <input type="text" placeholder="Total interior area in m²" required>
+
+      <label>Number of Rooms</label>
+      <input type="text" placeholder="e.g., 3 bedrooms, 2 bathrooms, 1 kitchen, 1 living room" required>
+
+      <div class="form-group">
+        <label>Interior Type</label>
+        <div class="choice-group">
+          <button type="button" class="choice">Residential</button>
+          <button type="button" class="choice">Commercial</button>
+          <button type="button" class="choice">Office space</button>
+          <button type="button" class="choice">Retail</button>
+        </div>
+      </div>
+
+      <label>Current Condition</label>
+      <input type="text" placeholder="e.g., Empty space, Needs renovation, Partially furnished" required>
+
+      <button type="button" class="next-btn" onclick="handleNextClick(event, 'exterior_int_2.html')"> Next </button>
+    </form>
+  </div>
+  <script src="project.js"></script>
+  <script src="form-persistence.js"></script>
+  <script src="form-validation.js"></script>
+</body>
+</html>
+

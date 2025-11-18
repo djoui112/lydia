@@ -1,0 +1,57 @@
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Aileron', sans-serif;
+  font-weight: 300;
+  
+}
+html {
+  font-size: 16px;
+  background-color: #D9D9D9;
+  overflow-x: hidden;
+}
+@font-face {
+  font-family: 'Aileron';
+  src: url('../fonts/aileron.light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('../fonts/aileron.regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('../fonts/Aileron-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('../fonts/Aileron-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+@media (max-width:600px){
+  html{
+    font-size: 10px;
+  }
+}
+@media (max-width:975px){
+  html{
+    font-size: 13px;
+  }
+}
+
+
+
+
+
+

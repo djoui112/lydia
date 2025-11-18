@@ -1,0 +1,478 @@
+/*Genral login*/
+
+.blue:hover{
+    filter: drop-shadow(0 0 3px #7D97AA);
+}
+
+#login-form {
+    width: 80%;
+    font-weight: 600;
+    margin-top: 1.5rem;
+}
+.l{
+    background-color: #7D97AA;
+}
+
+.logo{
+    margin-top: 1.7rem;
+}
+.h-signup{
+    font-weight: 700;
+    font-size: 3rem;
+    color:white;
+
+}
+#login-form div{
+    display: flex;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 0.5rem 1rem 0.5rem 1.5rem;
+    margin-bottom: 1rem;
+    margin-top: 0.3rem;
+}
+#login-form div img{
+    height: 2rem;
+}
+
+label{
+    margin-left: 1.8rem;
+    font-weight: 500;
+    color: #1B2B41;
+    font-size: 1.2rem;
+}
+input{
+    background-color: transparent;
+    border: none;
+    width:90%;
+}
+
+input:focus {
+  outline: none;       
+  border: none;        
+  box-shadow: none;
+  font-size: 1rem ; 
+  font-weight: 500;    
+}
+
+input:focus::placeholder{
+    opacity: 0;
+}
+#login-form div:focus-within {
+  border-color: #1B2B41; 
+   
+}
+input::placeholder{
+    color: rgb(228, 226, 226);
+   
+}
+ 
+#login-form a{
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 1.8rem;
+    margin-top:  -0.7rem;
+    font-size: 0.9rem ;
+    color: #2e496e;
+    transition: text-decoration 0.4s ease;
+}
+
+#login-form a:hover{
+text-decoration: underline;
+}
+
+#login-form button{
+    background-color: #1B2B41;
+    margin-bottom: 1rem;
+}
+
+/*Client login*/
+
+.c{
+    background-color: #8B8E7B;
+}
+ .green:hover {
+    filter: drop-shadow(0 0 3px #595f34);
+}
+#login-client div{
+    display: flex;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 0.3rem 1rem 0.3rem 1.5rem;
+    margin-bottom: 2rem;
+    margin-top: 0.3rem;
+}
+#login-client div img{
+    height: 1.7rem;
+}
+#login-client div:focus-within {
+  border-color: #595F34; 
+}
+#login-client{
+    width: 80%;
+    font-weight: 600;
+    margin-top: 1rem;
+    
+}
+
+#login-client label{
+    color: #595F34;
+}
+#login-client button{
+margin-top: 0.4rem;
+margin-bottom: 0.7rem;
+background-color: #595F34;
+}
+
+ #login-client button:hover{
+    box-shadow: 0 0 5px #595F34;
+}
+.pfp-container{
+    position: relative;
+    margin-top: 0.6rem;
+}
+.pfp{
+    border: 3px #595F34 solid;
+    border-radius: 10rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pfp img{
+    height: 10rem;
+    margin:-0.8rem;
+}
+
+.pfp-mdf{
+    background-color: #595F34;
+    border-radius: 10rem;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width:2.3rem;
+    height: 2.3rem;
+    right:0.2rem;
+    bottom: -0.1rem;
+}
+.pfp-mdf:hover{
+    cursor: pointer;
+}
+
+.pfp-mdf img{
+    height: 3rem;
+}
+
+/*architect login css*/
+.red:hover{
+    filter: drop-shadow(0 0 3px #6A2E2A);
+}
+
+.ar{
+    background-color: #98605C;
+    margin-bottom: 1.5rem;
+}
+.ar .pfp{
+    border: 3px #6A2E2A solid;
+}
+.ar .pfp-mdf{
+    background-color: #6A2E2A;
+}
+.ar .logo{
+    margin-bottom: 2rem;
+}
+#login-architect-1 div,#login-architect-2 div{
+    display: flex;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 0.3rem 1rem 0.3rem 1.5rem;
+    margin-bottom: 1.6rem;
+    margin-top: 0.3rem;
+}
+#login-architect-1 div img,#login-architect-2 div img{
+    height: 1.7rem;
+}
+#login-architect-1 div:focus-within,#login-architect-2 div:focus-within {
+  border-color: #6A2E2A; 
+}
+#login-architect-1,#login-architect-2{
+   width: 80%;
+    font-weight: 600;
+    
+}
+
+#login-architect-1 label,#login-architect-2 label{
+    color: #6A2E2A;
+}
+#login-architect-1 input{
+    font-size: 1REM;
+    color: white;
+}
+#login-architect-1 button,#login-architect-2 button{
+margin-top: 1.5rem;
+margin-bottom: 1.5rem;
+background-color: #6A2E2A;
+}
+
+ #login-architect-1 button:hover ,#login-architect-2 button:hover{
+    box-shadow: 0 0 5px #6A2E2A;
+    
+}
+
+.gender-con{
+    all: unset;
+    display: flex;
+    
+}
+.gender{
+    display: flex;
+    margin-top: 0.6rem;
+}
+.gender p{
+    color: white;
+    margin-left: 0.2rem;
+}
+ input[type="radio"]:checked {
+      border-color: #6A2E2A;
+      background-color: #6A2E2A;
+    }
+input[type="date"]{
+    width: 96.5%;
+    margin-top:0.3rem ;
+    margin-bottom:0.3rem ;
+}
+
+
+/*agency login*/
+.ag{
+    background-color: #5B7E98;
+     margin-bottom: 1.5rem;
+}
+
+.ag .pfp{
+    border: 3px #2e496e solid;
+}
+.ag .pfp-mdf{
+    background-color: #2e496e;
+}
+.ag .logo{
+    margin-bottom: 2rem;
+}
+#login-agency-1 div,#login-agency-2 div{
+    display: flex;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 0.3rem 1rem 0.3rem 1.5rem;
+    margin-bottom: 1rem;
+    margin-top: 0.3rem;
+}
+#login-agency-1 div img,#login-agency-2 div img{
+    height: 1.7rem;
+}
+#login-agency-1 div:focus-within ,#login-agency-2 div:focus-within{
+  border-color: #2e496e; 
+}
+#login-agency-1,#login-agency-2{
+   width: 80%;
+    font-weight: 600;
+    
+}
+
+#login-agency-1 label,#login-agency-2 label{
+    color: #2e496e;
+}
+#login-agency-1 input,#login-agency-2 input{
+    font-size: 1REM;
+    color: white;
+}
+#login-agency-1 button,#login-agency-2 button{
+margin-top: 1rem;
+margin-bottom: 1rem;
+background-color: #2e496e;
+}
+
+ #login-agency-1 button:hover, #login-agency-2 button:hover{
+    box-shadow: 0 0 5px #2e496e;
+    
+}
+/*reset password */
+#reset-form {
+    width: 80%;
+    font-weight: 600;
+    margin-top: 1.5rem;
+}
+
+#reset-form div{
+    display: flex;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 0.5rem 1rem 0.5rem 1.5rem;
+    margin-bottom: 4rem;
+    margin-top: 0.3rem;
+}
+#reset-form div img{
+    height: 2rem;
+}
+
+
+#reset-form div:focus-within {
+  border-color: #1B2B41; 
+   
+}
+
+#reset-form a{
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 1.8rem;
+    margin-top:  -0.7rem;
+    font-size: 0.9rem ;
+    color: #2e496e;
+    transition: text-decoration 0.4s ease;
+}
+
+#reset-form a:hover{
+text-decoration: underline;
+}
+
+#reset-form button{
+    background-color: #1B2B41;
+    margin-bottom: 1rem;
+}
+
+.reset-info{
+text-align: center;
+
+}
+
+
+/* Error styling */
+.error-message {
+    display: block;
+    color: #bf3030;
+    font-size: 0.85rem;
+    margin-left: 1.8rem;
+    margin-top: -0.8rem;
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+}
+
+form div.error {
+    border-color: #bf3030 !important;
+}
+
+/* Reset password info text */
+.reset-info {
+    color: white !important;
+    font-size: 1rem !important;
+    margin: 1rem 1.8rem !important;
+    text-align: center;
+}
+
+/* Select dropdown styling */
+.select-wrapper {
+    position: relative;
+    display: flex;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 0.3rem 1rem 0.3rem 1.5rem;
+    margin-bottom: 1rem;
+    margin-top: 0.3rem;
+}
+
+.select-wrapper.error {
+    border-color: #bf3030 !important;
+}
+
+.select-wrapper select {
+    background-color: transparent;
+    border: none;
+    width: 90%;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+}
+
+.select-wrapper select option {
+    background-color: #1B2B41;
+    color: white;
+}
+
+.select-wrapper img {
+    height: 1.7rem;
+}
+
+/* Date input styling */
+.date-wrapper {
+    position: relative;
+    display: flex;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 0.3rem 1rem 0.3rem 1.5rem;
+    margin-bottom: 1rem;
+    margin-top: 0.3rem;
+}
+
+.date-wrapper.error {
+    border-color: #bf3030 !important;
+}
+
+.date-wrapper input[type="text"] {
+    background-color: transparent;
+    border: none;
+    width: 90%;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.date-wrapper input[type="date"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.date-wrapper .date-icon {
+    cursor: pointer;
+    height: 1.7rem;
+}
+
+/* File input styling */
+.file-input-wrapper {
+    position: relative;
+    display: flex;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 0.3rem 1rem 0.3rem 1.5rem;
+    margin-bottom: 1rem;
+    margin-top: 0.3rem;
+}
+
+.file-input-wrapper.error {
+    border-color: #bf3030 !important;
+}
+
+.file-input-wrapper input[type="text"] {
+    background-color: transparent;
+    border: none;
+    width: 90%;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.file-input-wrapper .file-icon {
+    cursor: pointer;
+    height: 1.7rem;
+}
+
+/* Profile upload */
+.pfp-mdf {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.pfp-mdf:hover {
+    transform: scale(1.1);
+}
