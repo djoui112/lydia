@@ -173,7 +173,8 @@
                     };
                     sessionStorage.setItem('architectData', JSON.stringify(updatedData));
                     alert('Profile updated successfully!');
-                    window.location.href = '/pages/architect-interface.html';
+                    // Back to architect interface (same pages folder)
+                    window.location.href = 'architect-interface.html';
                 }
             });
 

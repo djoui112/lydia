@@ -89,7 +89,8 @@ document.getElementById('login-client').addEventListener('submit', function(e) {
             email: email.value,
             userType: 'client'
         }));
-        window.location.href = '/pages/client-interface.html';
+        // Go to client interface (pages folder)
+        window.location.href = '../clientinterface.html';
     }
 });
 

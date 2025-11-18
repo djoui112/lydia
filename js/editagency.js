@@ -88,7 +88,8 @@
                     };
                     sessionStorage.setItem('agencyData', JSON.stringify(updatedData));
                     alert('Profile updated successfully!');
-                    window.location.href = '/pages/agency-interface.html';
+                    // Back to agency interface (same pages folder)
+                    window.location.href = 'agency-interface.html';
                 }
             });
 

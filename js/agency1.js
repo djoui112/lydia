@@ -68,12 +68,13 @@ document.getElementById('login-agency-1').addEventListener('submit', function(e)
     }
 
     // Phone validation
+    // Phone validation: 10 digits starting with 05, 06 or 07
     const phoneRegex = /^[0]{1}[5-7]{1}[0-9]{8}$/;
     if (!phone.value.trim()) {
         showError(phone, 'phone-error', 'Phone number is required');
         isValid = false;
     } else if (!phoneRegex.test(phone.value.trim())) {
-        showError(phone, 'phone-error', 'Phone must be in format +213XXXXXXXXX');
+        showError(phone, 'phone-error', 'Phone must be 10 digits starting with 05, 06, or 07');
         isValid = false;
     }
 
@@ -85,7 +86,8 @@ document.getElementById('login-agency-1').addEventListener('submit', function(e)
             name: name.value,
             phone: phone.value
         }));
-        window.location.href = '/pages/agencyLogin2.html';
+        // Go to agencyLogin2 in the same login folder
+        window.location.href = 'agencyLogin2.html';
     }
 });
 

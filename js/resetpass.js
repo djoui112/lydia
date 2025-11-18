@@ -13,7 +13,7 @@ document.getElementById('reset-form').addEventListener('submit', function(e) {
                 showError(email, 'reset-email-error', 'Please enter a valid email');
             } else {
                 alert('Password reset link sent to ' + email.value);
-                window.location.href = '/pages/login.html';
+                window.location.href = 'login/login.html';
             }
         });
 

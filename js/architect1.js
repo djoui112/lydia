@@ -86,7 +86,8 @@ document.getElementById('login-architect-1').addEventListener('submit', function
             email: email.value,
             password: password.value
         }));
-        window.location.href = '/pages/archiLogin2.html';
+        // Go to architect login step 2 (same login folder)
+        window.location.href = 'archiLogin2.html';
     }
 });
 
