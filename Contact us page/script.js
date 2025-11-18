@@ -4,9 +4,6 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // ============================================
-    // Header Scroll Effect
-    // ============================================
     const header = document.querySelector('.site-header');
     if (header) {
         const toggleHeaderState = () => {

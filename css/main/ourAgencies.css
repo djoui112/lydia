@@ -152,21 +152,29 @@
         }
 @media (min-height: 900px){
     .agencies-area1{
-        height: 50vh;
+        height: 55vh;
     }
     #i4{
         display: none;
     }
 }
 
-@media(max-width: 380px){
+@media(max-width: 391px){
     .agencies-area1{
-    height: 90vh;
+    height: 94vh;
     }
     #i4{
         display: none;
     }
     #i5{
         top:50%;
+    }
+    .white-titles{
+    font-size: 2rem;
+    
+    }
+
+    .age-desc{
+        font-size: 1rem;
     }
 }

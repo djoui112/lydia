@@ -87,7 +87,7 @@
 
 }
 .user-name.current{
-    transform: translateY(-0.1rem);
+    transform: translateY(0.2rem);
     color: white;
 }
 .numb{
