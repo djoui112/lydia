@@ -135,6 +135,8 @@
     border-radius: 1.5rem;
     font-weight: 600;
     font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-block;
     
 }
 .see-more.current{

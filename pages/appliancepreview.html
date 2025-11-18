@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Application Preview</title>
+  <link rel="stylesheet" href="../css/ArchiForm.css" />
+  <link rel="stylesheet" href="../css/appliancepreview.css" />
+</head>
+<body>
+  <div class="page-container">
+    <header class="form-header">
+      <button class="back-btn" onclick="history.back()"><</button>
+      <h1>Application Preview</h1>
+    </header>
+
+    <div class="preview-container">
+      <!-- Personal Information Section -->
+      <div class="info-section">
+        <h2>Personal Information</h2>
+        <div class="info-row">
+          <div class="info-label">First Name</div>
+          <div class="info-value" id="firstName">John</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Last Name</div>
+          <div class="info-value" id="lastName">Doe</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Phone Number</div>
+          <div class="info-value" id="phoneNumber">+213 550 000 000</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Address</div>
+          <div class="info-value" id="address">123 Main Street, Algiers, Algeria</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Date of Birth</div>
+          <div class="info-value" id="dateOfBirth">01/01/1990</div>
+        </div>
+      </div>
+
+      <!-- Professional Information Section -->
+      <div class="info-section">
+        <h2>Professional Information</h2>
+        <div class="info-row">
+          <div class="info-label">Statement</div>
+          <div class="info-value">
+            <span class="choice-display" id="statement">Graduate Architect</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Primary Expertise</div>
+          <div class="info-value" id="primaryExpertise">Modern interior design</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Software Proficiency</div>
+          <div class="info-value" id="softwareProficiency">AutoCAD, SketchUp, Revit, 3ds Max</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Types of Projects Worked On</div>
+          <div class="info-value" id="projectTypesContainer">
+            <span class="choice-display">Residential</span>
+            <span class="choice-display">Commercial</span>
+            <span class="choice-display">Institutional</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact & Portfolio Section -->
+      <div class="info-section">
+        <h2>Contact & Portfolio</h2>
+        <div class="info-row">
+          <div class="info-label">Email</div>
+          <div class="info-value" id="email">architect@example.com</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Portfolio</div>
+          <div class="info-value">
+            <a href="#" id="portfolio" target="_blank" class="info-link">https://portfolio.com</a>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">LinkedIn</div>
+          <div class="info-value">
+            <a href="#" id="linkedin" target="_blank" class="info-link">https://linkedin.com/in/architect</a>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Motivation Letter</div>
+          <div class="info-value" id="motivationLetter">I am passionate about creating innovative architectural designs that combine functionality with aesthetic appeal. With extensive experience in residential and commercial projects, I am excited to contribute to your team.</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn-accept" onclick="handleAccept()">Accept</button>
+        <button class="btn-reject" onclick="handleReject()">Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/appliancepreview.js"></script>
+</body>
+</html>
