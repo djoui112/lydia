@@ -259,6 +259,8 @@ button {
   font-weight: 500;
   border: 1px solid var(--navy-dark);
   transition: background-color 150ms ease, color 150ms ease;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .btn:hover {
@@ -266,98 +268,85 @@ button {
   color: var(--navy);
 }
 
-.site-footer {
+.footer {
   background-color: var(--navy-dark);
-  padding: 3rem clamp(1.5rem, 4vw, 4rem);
+  padding: 40px 40px 30px;
   border-radius: 20px 20px 0 0;
-  color: #fff;
+  color: white;
 }
 
-.footer-card {
-  max-width: 1200px;
+.footer-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 40px;
+  max-width: 1000px;
   margin: 0 auto;
-  display: flex;
-  gap: clamp(2rem, 5vw, 5rem);
-  align-items: center;
-  flex-wrap: wrap;
 }
 
-.footer-brand {
+.footer-section {
   display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  flex: 1 1 220px;
+  flex-direction: column;
 }
 
 .footer-logo {
-  width: 74px;
-  height: 74px;
-  border-radius: 20px;
-  background-color: rgba(255, 255, 255, 0.15);
-  position: relative;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-.footer-logo::before,
-.footer-logo::after {
-  content: "";
-  position: absolute;
-  inset: 14px;
-  border: 3px solid #fff;
-  border-radius: 10px;
+.footer-logo svg {
+  width: 20px;
+  height: 20px;
 }
 
-.footer-logo::after {
-  inset: 22px 24px 12px 24px;
-  border-width: 0;
-  border-top: 3px solid #fff;
-}
-
-.brand-name {
-  font-size: 2rem;
+.footer-logo span {
+  font-size: 20px;
   font-weight: 600;
-  text-transform: lowercase;
+  color: white;
 }
 
-.brand-tagline {
-  margin-top: 0.25rem;
+.footer-tagline {
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.8);
-  line-height: 1.4;
+  font-weight: 300;
 }
 
-.footer-links,
+.footer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.footer-nav a:hover {
+  color: #91c5e8;
+}
+
 .footer-contact {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  flex: 1 1 180px;
+  gap: 15px;
 }
 
-.footer-links a {
-  color: #fff;
-  font-weight: 500;
-  padding: 0.25rem 0;
-}
-
-.footer-links a:hover {
-  text-decoration: underline;
-}
-
-.footer-contact a {
+.contact-item {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  color: rgba(255, 255, 255, 0.9);
+  gap: 10px;
+  color: white;
+  font-size: 13px;
 }
 
-.footer-contact i {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.1);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.contact-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 640px) {

@@ -607,11 +607,13 @@ function initNavigation() {
     projectViewButtons.forEach((button) => {
         button.addEventListener("click", (e) => {
             e.stopPropagation(); // Prevent card click event
-            const projectCard = button.closest(".project-slider-card");
-            const projectId = projectCard?.getAttribute("data-project-id") || '1';
-
-            // Navigate to project details page
-            window.location.href = `projectdetails.html?id=${projectId}`;
+            // Only prevent default and handle navigation if it's not already a link
+            if (button.tagName !== 'A') {
+                const projectCard = button.closest(".project-slider-card");
+                const projectId = projectCard?.getAttribute("data-project-id") || '1';
+                // Navigate to project details page
+                window.location.href = `projectdetails.html?id=${projectId}`;
+            }
         });
     });
 }

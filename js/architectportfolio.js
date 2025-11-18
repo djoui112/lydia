@@ -125,8 +125,11 @@ function initNavigation() {
 
         const navigateToExperience = (e) => {
             e.stopPropagation();
-            // Navigate to experience details page if needed
-            // window.location.href = `experience-details.html?id=${experienceId || '1'}`;
+            // Only prevent default and handle navigation if it's not already a link
+            if (seeMoreBtn && seeMoreBtn.tagName !== 'A') {
+                // Navigate to experience details page if needed
+                // window.location.href = `experience-details.html?id=${experienceId || '1'}`;
+            }
         };
 
         if (seeMoreBtn) {
@@ -139,10 +142,13 @@ function initNavigation() {
     projectViewButtons.forEach((button) => {
         button.addEventListener("click", (e) => {
             e.stopPropagation();
-            const projectCard = button.closest(".project-slider-card");
-            const projectId = projectCard?.getAttribute("data-project-id") || "1";
-            // Navigate to project details page
-            window.location.href = `projectdetails.html?id=${projectId}`;
+            // Only prevent default and handle navigation if it's not already a link
+            if (button.tagName !== 'A') {
+                const projectCard = button.closest(".project-slider-card");
+                const projectId = projectCard?.getAttribute("data-project-id") || "1";
+                // Navigate to project details page
+                window.location.href = `projectdetails.html?id=${projectId}`;
+            }
         });
     });
 }

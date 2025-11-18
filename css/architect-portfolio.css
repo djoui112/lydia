@@ -399,6 +399,8 @@ img {
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: Arial, Helvetica, sans-serif;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .see-more-exp:hover {
@@ -616,6 +618,8 @@ img {
     text-transform: lowercase;
     align-self: flex-start;
     margin-bottom: 0;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .btn-view-project:hover {

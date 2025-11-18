@@ -859,6 +859,8 @@ button {
   text-transform: lowercase;
   align-self: flex-start;
   margin-bottom: 100px;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .btn-view-project:hover {
@@ -888,7 +890,7 @@ button {
   color: white;
   padding: 60px 50px 40px;
   max-width:1200px;
-  margin-left: 30px;
+  margin: 0 auto;
   border-radius: 25px 25px 0 0;
 }
 
@@ -975,7 +977,7 @@ button {
   
   .footer {
     padding: 40px 30px 30px;
-    margin-left: 1px;
+    margin: 0 auto;
   }
 }
 
