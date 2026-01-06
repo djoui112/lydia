@@ -1,43 +1,60 @@
-// Date picker handling
-const dateInput = document.getElementById('architect-birth');
-const dateDisplay = document.getElementById('architect-birth-display');
+const ARCH_API_BASE = '../../php/api';
 
-// Update display when date changes
-dateInput.addEventListener('change', function() {
-    if (this.value) {
-        // Split the date string (format: YYYY-MM-DD)
-        const [year, month, day] = this.value.split('-');
-        // Format as DD/MM/YYYY
-        dateDisplay.value = `${day}/${month}/${year}`;
+// Wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('architect2.js loaded, DOM ready');
+
+    // Date picker handling
+    const dateInput = document.getElementById('architect-birth');
+    const dateDisplay = document.getElementById('architect-birth-display');
+
+    if (dateInput && dateDisplay) {
+        // Update display when date changes
+        dateInput.addEventListener('change', function() {
+            if (this.value) {
+                // Split the date string (format: YYYY-MM-DD)
+                const [year, month, day] = this.value.split('-');
+                // Format as DD/MM/YYYY
+                dateDisplay.value = `${day}/${month}/${year}`;
+            }
+        });
+
+        // Trigger date picker when clicking the icon
+        const dateIcon = document.querySelector('.date-icon');
+        if (dateIcon) {
+            dateIcon.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                try {
+                    dateInput.showPicker();
+                } catch (e) {
+                    // Fallback: focus and click the input
+                    dateInput.focus();
+                    dateInput.click();
+                }
+            });
+        }
+
+        // Also allow clicking the display input to open picker
+        dateDisplay.addEventListener('click', function(e) {
+            e.preventDefault();
+            try {
+                dateInput.showPicker();
+            } catch (e) {
+                dateInput.focus();
+                dateInput.click();
+            }
+        });
     }
-});
-
-// Trigger date picker when clicking the icon
-document.querySelector('.date-icon').addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-        dateInput.showPicker();
-    } catch (e) {
-        // Fallback: focus and click the input
-        dateInput.focus();
-        dateInput.click();
+    const form = document.getElementById('login-architect-2');
+    if (!form) {
+        console.error('Form #login-architect-2 not found!');
+        return;
     }
-});
+    console.log('Form found, attaching submit handler');
 
-// Also allow clicking the display input to open picker
-dateDisplay.addEventListener('click', function(e) {
-    e.preventDefault();
-    try {
-        dateInput.showPicker();
-    } catch (e) {
-        dateInput.focus();
-        dateInput.click();
-    }
-});
-
-// Form validation
-document.getElementById('login-architect-2').addEventListener('submit', function(e) {
+    // Form validation + final registration
+    form.addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const phone = document.getElementById('architect-phone');
@@ -87,25 +104,66 @@ document.getElementById('login-architect-2').addEventListener('submit', function
         }
     }
 
-    if (isValid) {
-        // Get data from page 1
-        const data1 = JSON.parse(sessionStorage.getItem('architectData1') || '{}');
-        
-        // Combine all data
-        const fullData = {
-            ...data1,
-            phone: phone.value,
-            city: city.value,
-            birth: birth.value,
-            gender: gender.value,
-            userType: 'architect'
-        };
-        
-        sessionStorage.setItem('architectData', JSON.stringify(fullData));
+    if (!isValid) {
+        console.log('Validation failed');
+        return;
+    }
+
+    // Get data from page 1
+    const data1 = JSON.parse(sessionStorage.getItem('architectData1') || '{}');
+    console.log('Data from step 1:', data1);
+
+    if (!data1.email || !data1.password || !data1.fname || !data1.lname) {
+        console.error('Missing data from step 1');
+        showError(phone, 'phone-error', 'Previous step data is missing. Please go back.');
+        return;
+    }
+
+    const registerUrl = `${ARCH_API_BASE}/auth/register.php`;
+    console.log('Registering architect at:', registerUrl);
+
+    const registerData = {
+        user_type: 'architect',
+        email: data1.email.trim(),
+        password: data1.password,
+        first_name: data1.fname.trim(),
+        last_name: data1.lname.trim(),
+        phone_number: phone.value.trim(),
+        city: city.value,
+        date_of_birth: birth.value,
+        gender: gender.value
+    };
+    console.log('Sending data:', { ...registerData, password: '***' });
+
+    try {
+        const res = await fetch(registerUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(registerData)
+        });
+
+        console.log('Response status:', res.status, res.statusText);
+        console.log('Response headers:', Object.fromEntries(res.headers.entries()));
+
+        const data = await res.json();
+        console.log('Response data:', data);
+
+        if (!res.ok || data.success === false) {
+            console.error('Registration failed:', data.message);
+            showError(phone, 'phone-error', data.message || 'Registration failed');
+            return;
+        }
+
+        console.log('Registration successful!');
         sessionStorage.removeItem('architectData1');
         // Go to architect interface (relative to pages/login/)
         window.location.href = '../architect-interface.html';
+    } catch (err) {
+        console.error('Network error:', err);
+        showError(phone, 'phone-error', 'Network error: ' + err.message);
     }
+    });
 });
 
 function showError(input, errorId, message) {

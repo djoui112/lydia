@@ -1,4 +1,6 @@
 
+const CLIENT_API_BASE = '../../php/api';
+
 // Profile image upload
 document.getElementById('profile-upload').addEventListener('change', function(e) {
     const file = e.target.files[0];
@@ -11,8 +13,8 @@ document.getElementById('profile-upload').addEventListener('change', function(e)
     }
 });
 
-// Form validation
-document.getElementById('login-client').addEventListener('submit', function(e) {
+// Form validation + registration
+document.getElementById('login-client').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const fname = document.getElementById('client-fname');
@@ -81,16 +83,33 @@ document.getElementById('login-client').addEventListener('submit', function(e) {
         isValid = false;
     }
 
-    if (isValid) {
-        // Store data
-        sessionStorage.setItem('clientData', JSON.stringify({
-            fname: fname.value,
-            lname: lname.value,
-            email: email.value,
-            userType: 'client'
-        }));
-        // Go to client interface (pages folder)
+    if (!isValid) return;
+
+    try {
+        const res = await fetch(`${CLIENT_API_BASE}/auth/register.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                user_type: 'client',
+                email: email.value.trim(),
+                password: password.value,
+                first_name: fname.value.trim(),
+                last_name: lname.value.trim()
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || data.success === false) {
+            showError(email, 'email-error', data.message || 'Registration failed');
+            return;
+        }
+
+        // On successful registration, go to client interface
         window.location.href = '../clientinterface.html';
+    } catch (err) {
+        showError(email, 'email-error', 'Network error. Please try again.');
     }
 });
 
