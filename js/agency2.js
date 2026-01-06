@@ -1,3 +1,5 @@
+const AGENCY_API_BASE = '../../php/api';
+
 // Load profile image from page 1
 window.addEventListener('load', function () {
     const savedProfile = sessionStorage.getItem('agencyProfile');
@@ -25,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Form validation
-document.getElementById('login-agency-2').addEventListener('submit', function (e) {
+// Form validation + final registration
+document.getElementById('login-agency-2').addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const city = document.getElementById('agency-city');
@@ -75,24 +77,48 @@ document.getElementById('login-agency-2').addEventListener('submit', function (e
         }
     }
 
-    if (isValid) {
-        // Get data from page 1
-        const data1 = JSON.parse(sessionStorage.getItem('agencyData1') || '{}');
+    if (!isValid) return;
 
-        // Combine all data
-        const fullData = {
-            ...data1,
-            city: city.value,
-            address: address.value,
-            document: agencyDocument.files[0].name, // FIXED
-            userType: 'agency'
-        };
+    // Get data from page 1
+    const data1 = JSON.parse(sessionStorage.getItem('agencyData1') || '{}');
 
-        sessionStorage.setItem('agencyData', JSON.stringify(fullData));
+    if (!data1.email || !data1.password || !data1.name || !data1.phone) {
+        showError(city, 'city-error', 'Previous step data is missing. Please go back.');
+        return;
+    }
+
+    try {
+        const res = await fetch(`${AGENCY_API_BASE}/auth/register.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                user_type: 'agency',
+                email: data1.email.trim(),
+                password: data1.password,
+                first_name: data1.name.trim(),
+                last_name: '',
+                agency_name: data1.name.trim(),
+                phone_number: data1.phone.trim(),
+                city: city.value,
+                address: address.value.trim(),
+                legal_document: agencyDocument.files[0].name
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || data.success === false) {
+            showError(city, 'city-error', data.message || 'Registration failed');
+            return;
+        }
+
         sessionStorage.removeItem('agencyData1');
 
         // Go to agency interface (relative to pages/login/)
         window.location.href = '../agency-interface.html';
+    } catch (err) {
+        showError(city, 'city-error', 'Network error. Please try again.');
     }
 });
 

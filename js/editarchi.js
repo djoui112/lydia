@@ -1,52 +1,68 @@
-// Profile image upload
-document.getElementById('edit-architect-profile-upload').addEventListener('change', function(e) {
+const API_BASE = '../php/api';
+
+document.getElementById('edit-architect-profile-upload').addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
             document.getElementById('edit-architect-profile-preview').src = event.target.result;
         };
         reader.readAsDataURL(file);
     }
 });
 
-// Date input auto-formatting
 const dateInput = document.getElementById('edit-architect-birth');
 const dateDisplay = document.getElementById('edit-architect-birth-display');
 
-dateInput.addEventListener('change', function() {
+dateInput.addEventListener('change', function () {
     if (this.value) {
         const [year, month, day] = this.value.split('-');
         dateDisplay.value = `${day}/${month}/${year}`;
     }
 });
 
-// Trigger date picker
 document.querySelectorAll('.date-icon, #edit-architect-birth-display').forEach(el => {
-    el.addEventListener('click', function(e) {
+    el.addEventListener('click', function (e) {
         e.preventDefault();
-        try { dateInput.showPicker(); }
-        catch { dateInput.focus(); dateInput.click(); }
+        try {
+            dateInput.showPicker();
+        } catch {
+            dateInput.focus();
+            dateInput.click();
+        }
     });
 });
 
-// Load existing data
-window.addEventListener('load', function() {
-    const userData = JSON.parse(sessionStorage.getItem('architectData') || '{}');
-    if (userData.fname) document.getElementById('edit-architect-fname').value = userData.fname;
-    if (userData.lname) document.getElementById('edit-architect-lname').value = userData.lname;
-    if (userData.email) document.getElementById('edit-architect-email').value = userData.email;
-    if (userData.phone) document.getElementById('edit-architect-phone').value = userData.phone;
-    if (userData.city) document.getElementById('edit-architect-city').value = userData.city;
-    if (userData.birth) document.getElementById('edit-architect-birth').value = userData.birth;
-    if (userData.gender) {
-        const genderInput = document.querySelector(`input[name="edit-architect-gender"][value="${userData.gender}"]`);
-        if (genderInput) genderInput.checked = true;
+window.addEventListener('load', async function () {
+    try {
+        const res = await fetch(`${API_BASE}/users/profile.php`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+        const data = await res.json();
+        if (!res.ok || data.success === false) return;
+
+        const architect = data.data.architect || {};
+        const user = data.data.user || {};
+
+        if (architect.first_name) document.getElementById('edit-architect-fname').value = architect.first_name;
+        if (architect.last_name) document.getElementById('edit-architect-lname').value = architect.last_name;
+        if (user.email) document.getElementById('edit-architect-email').value = user.email;
+        if (user.phone_number) document.getElementById('edit-architect-phone').value = user.phone_number;
+        if (architect.city) document.getElementById('edit-architect-city').value = architect.city;
+        if (architect.date_of_birth) document.getElementById('edit-architect-birth').value = architect.date_of_birth;
+        if (architect.gender) {
+            const genderInput = document.querySelector(
+                `input[name="edit-architect-gender"][value="${architect.gender}"]`
+            );
+            if (genderInput) genderInput.checked = true;
+        }
+    } catch (e) {
+        // ignore
     }
 });
 
-// Form validation
-document.getElementById('edit-profile-architect').addEventListener('submit', function(e) {
+document.getElementById('edit-profile-architect').addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const fname = document.getElementById('edit-architect-fname');
@@ -60,7 +76,6 @@ document.getElementById('edit-profile-architect').addEventListener('submit', fun
 
     clearErrors();
 
-    // First name
     if (!fname.value.trim()) {
         showError(fname, 'edit-architect-fname-error', 'First name is required');
         isValid = false;
@@ -72,7 +87,6 @@ document.getElementById('edit-profile-architect').addEventListener('submit', fun
         isValid = false;
     }
 
-    // Last name
     if (!lname.value.trim()) {
         showError(lname, 'edit-architect-lname-error', 'Last name is required');
         isValid = false;
@@ -84,7 +98,6 @@ document.getElementById('edit-profile-architect').addEventListener('submit', fun
         isValid = false;
     }
 
-    // Email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.value.trim()) {
         showError(email, 'edit-architect-email-error', 'Email is required');
@@ -94,7 +107,6 @@ document.getElementById('edit-profile-architect').addEventListener('submit', fun
         isValid = false;
     }
 
-    // Phone
     const phoneRegex = /^[0]{1}[5-7]{1}[0-9]{8}$/;
     if (!phone.value.trim()) {
         showError(phone, 'edit-architect-phone-error', 'Phone number is required');
@@ -104,13 +116,11 @@ document.getElementById('edit-profile-architect').addEventListener('submit', fun
         isValid = false;
     }
 
-    // City
     if (!city.value) {
         showError(city, 'edit-architect-city-error', 'Please select a city');
         isValid = false;
     }
 
-    // Birth date: only +18
     if (!birth.value) {
         showError(birth, 'edit-architect-birth-error', 'Date of birth is required');
         isValid = false;
@@ -126,32 +136,60 @@ document.getElementById('edit-profile-architect').addEventListener('submit', fun
         }
     }
 
-    if (isValid) {
-        const updatedData = {
-            fname: fname.value.trim(),
-            lname: lname.value.trim(),
-            email: email.value.trim(),
-            phone: phone.value.trim(),
-            city: city.value,
-            birth: birth.value,
-            gender: gender.value,
-            userType: 'architect'
-        };
-        sessionStorage.setItem('architectData', JSON.stringify(updatedData));
+    if (!isValid) return;
+
+    try {
+        const res = await fetch(`${API_BASE}/users/profile.php`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                first_name: fname.value.trim(),
+                last_name: lname.value.trim(),
+                email: email.value.trim(),
+                phone_number: phone.value.trim(),
+                city: city.value,
+                date_of_birth: birth.value,
+                gender: gender.value,
+                address: null,
+            }),
+        });
+        const data = await res.json();
+        if (!res.ok || data.success === false) {
+            alert(data.message || 'Failed to save changes');
+            return;
+        }
         alert('Profile updated successfully!');
         window.location.href = 'architect-interface.html';
+    } catch (err) {
+        alert('Network error. Please try again.');
     }
 });
 
-// Show error function
 function showError(input, errorId, message) {
     const wrapper = input.closest('div, .select-wrapper');
     if (wrapper) wrapper.classList.add('error');
     document.getElementById(errorId).textContent = message;
 }
 
-// Clear all errors
 function clearErrors() {
     document.querySelectorAll('.error-message').forEach(err => err.textContent = '');
     document.querySelectorAll('.select-wrapper, div').forEach(el => el.classList.remove('error'));
 }
+
+const logoutArchitectBtn = document.getElementById('logout-architect');
+if (logoutArchitectBtn) {
+    logoutArchitectBtn.addEventListener('click', async () => {
+        try {
+            await fetch(`${API_BASE}/auth/logout.php`, {
+                method: 'POST',
+                credentials: 'include',
+            });
+        } catch (e) {
+            // ignore
+        } finally {
+            window.location.href = 'login/login.html';
+        }
+    });
+}
+
