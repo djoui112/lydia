@@ -1,6 +1,9 @@
 const API_BASE = '../php/api';
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-document.getElementById('edit-client-profile-upload').addEventListener('change', function (e) {
+const clientProfileUpload = document.getElementById('edit-client-profile-upload');
+if (clientProfileUpload) {
+  clientProfileUpload.addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
@@ -9,7 +12,8 @@ document.getElementById('edit-client-profile-upload').addEventListener('change',
         };
         reader.readAsDataURL(file);
     }
-});
+  });
+}
 
 window.addEventListener('load', async function () {
     try {
@@ -17,17 +21,52 @@ window.addEventListener('load', async function () {
             method: 'GET',
             credentials: 'include',
         });
+        
+        if (!res.ok) {
+            console.error('Failed to load profile:', res.status, res.statusText);
+            const text = await res.text();
+            console.error('Response:', text.substring(0, 200));
+            return;
+        }
+        
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            console.error('Response is not JSON. Content-Type:', contentType);
+            const text = await res.text();
+            console.error('Response:', text.substring(0, 200));
+            return;
+        }
+        
         const data = await res.json();
-        if (!res.ok || data.success === false) return;
+        
+        if (!data.success || !data.data) {
+            console.error('Invalid response:', data);
+            return;
+        }
 
         const client = data.data.client || {};
         const user = data.data.user || {};
 
-        if (client.first_name) document.getElementById('edit-client-fname').value = client.first_name;
-        if (client.last_name) document.getElementById('edit-client-lname').value = client.last_name;
-        if (user.email) document.getElementById('edit-client-email').value = user.email;
+        console.log('Loaded user:', user);
+        console.log('Loaded client:', client);
+
+        const fnameEl = document.getElementById('edit-client-fname');
+        const lnameEl = document.getElementById('edit-client-lname');
+        const emailEl = document.getElementById('edit-client-email');
+
+        if (fnameEl && client.first_name) fnameEl.value = client.first_name;
+        if (lnameEl && client.last_name) lnameEl.value = client.last_name;
+        if (emailEl && user.email) emailEl.value = user.email;
+
+        // Load profile image if available
+        const profilePreview = document.getElementById('edit-client-profile-preview');
+        if (profilePreview && user.profile_image) {
+            profilePreview.src = user.profile_image.startsWith('http') 
+                ? user.profile_image 
+                : `../${user.profile_image}`;
+        }
     } catch (e) {
-        // fail silently for now
+        console.error('Error loading profile:', e);
     }
 });
 
@@ -63,11 +102,10 @@ document.getElementById('edit-profile-client').addEventListener('submit', async 
         isValid = false;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.value.trim()) {
         showError(email, 'edit-client-email-error', 'Email is required');
         isValid = false;
-    } else if (!emailRegex.test(email.value)) {
+    } else if (!EMAIL_REGEX.test(email.value.trim())) {
         showError(email, 'edit-client-email-error', 'Please enter a valid email address');
         isValid = false;
     }
@@ -85,6 +123,14 @@ document.getElementById('edit-profile-client').addEventListener('submit', async 
                 email: email.value.trim(),
             }),
         });
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await res.text();
+            console.error('Update response is not JSON:', text.substring(0, 200));
+            alert('Server returned an error. Please check the console.');
+            return;
+        }
+        
         const data = await res.json();
         if (!res.ok || data.success === false) {
             alert(data.message || 'Failed to save changes');

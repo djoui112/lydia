@@ -7,7 +7,6 @@
         <meta name="keywords" content="architecture,architect,agency,client,login">
         <meta name="description" content="connect architects and clients- make an account">
         <meta name="author" content="Mimaria team" >
-        <meta http-equiv="refresh" content="60">
         <link rel="icon" href="assets/main/Department.png" type="image/png">
         <link rel="stylesheet" href="../../css/general.css">    
         <link rel="stylesheet" href="../../css/login/generalSignup.css">  
@@ -15,7 +14,7 @@
         <link rel="icon" href="assets/main/Department.png" type="image/png">     
     </head>
     <body>
-        <a href="/pages/signup/signUp.html"><img src="../../assets/create-account/Back Arrow r.png" class="back red"></a>
+        <a href="../signup/signUp.html"><img src="../../assets/create-account/Back Arrow r.png" class="back red"></a>
         <img src="../../assets/create-account/Vector 5.png "class="vector1">
         <img src="../../assets/create-account/Vector 6.png "class="vector2">
 
@@ -31,7 +30,7 @@
             </div>
         </div>
       
-        <form id="login-architect-1" novalidate>
+        <form id="login-architect-1" method="post" novalidate>
             <label for="architect-fname">First name</label>
             <div>
                 <input type="text" id="architect-fname" name="fname" placeholder="first name" required>
@@ -66,6 +65,22 @@
                 <img src="../../assets/create-account/Lock.png" class="label-icon">
             </div>
             <span class="error-message" id="cpassword-error"></span>
+
+            <label for="architect-address">Address</label>
+            <div>
+                <input type="te" id="architect-address" name="address" placeholder="Your address"></textarea>
+                <img src="../../assets/create-account/Address.png" class="label-icon">
+            </div>
+            <span class="error-message" id="address-error"></span>
+
+            <label for="architect-bio">Bio</label>
+            <div>
+                <textarea id="architect-bio" name="bio" placeholder="Tell us about yourself"></textarea>
+                <img src="../../assets/create-account/Profile.png" class="label-icon">
+            </div>
+            <span class="error-message" id="bio-error"></span>
+
+
 
             <button type="submit">Next</button>
         </form>

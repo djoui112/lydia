@@ -21,6 +21,31 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error('Menu elements not found');
     }
+})
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const clientMenuToggle = document.querySelector('.client-menu-icon');
+    const clientMenu = document.querySelector('.client-menu');
+
+    if (clientMenuToggle && clientMenu) {
+        clientMenuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            clientMenu.classList.toggle('active');
+            console.log('Menu toggled');
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!clientMenuToggle.contains(event.target) && !clientMenu.contains(event.target)) {
+                clientMenu.classList.remove('active');
+            }
+        });
+
+        clientMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    } else {
+        console.error('Menu elements not found');
+    }
 
     // Project Management - Vertical Project Card Stack - Click to bring to top with smooth animation
     // Link "view project" buttons to project management page

@@ -1,4 +1,5 @@
 const AGENCY_API_BASE = '../../php/api';
+const PHONE_REGEX = /^0[5-7][0-9]{8}$/;
 
 // Load profile image from page 1
 window.addEventListener('load', function () {
@@ -33,6 +34,7 @@ document.getElementById('login-agency-2').addEventListener('submit', async funct
 
     const city = document.getElementById('agency-city');
     const address = document.getElementById('agency-address');
+    const bio = document.getElementById('agency-bio');
     const agencyDocument = document.getElementById('agency-document'); // FIXED
 
     let isValid = true;
@@ -52,6 +54,12 @@ document.getElementById('login-agency-2').addEventListener('submit', async funct
         isValid = false;
     } else if (address.value.trim().length < 5) {
         showError(address, 'address-error', 'Address must be at least 5 characters');
+        isValid = false;
+    }
+
+    // Bio validation
+    if (!bio.value.trim()) {
+        showError(bio, 'bio-error', 'Agency bio is required');
         isValid = false;
     }
 
@@ -102,6 +110,7 @@ document.getElementById('login-agency-2').addEventListener('submit', async funct
                 phone_number: data1.phone.trim(),
                 city: city.value,
                 address: address.value.trim(),
+                bio: bio.value.trim(),
                 legal_document: agencyDocument.files[0].name
             })
         });
@@ -109,7 +118,7 @@ document.getElementById('login-agency-2').addEventListener('submit', async funct
         const data = await res.json();
 
         if (!res.ok || data.success === false) {
-            showError(city, 'city-error', data.message || 'Registration failed');
+            alert(data.message || 'Registration failed');
             return;
         }
 

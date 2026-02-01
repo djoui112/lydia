@@ -1,3 +1,8 @@
+// Shared validation patterns
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+const PHONE_REGEX = /^0[5-7][0-9]{8}$/;
+
 // Profile image upload
 document.getElementById('profile-upload-agency').addEventListener('change', function(e) {
     const file = e.target.files[0];
@@ -28,11 +33,10 @@ document.getElementById('login-agency-1').addEventListener('submit', function(e)
     clearErrors();
 
     // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.value.trim()) {
         showError(email, 'email-error', 'Email is required');
         isValid = false;
-    } else if (!emailRegex.test(email.value)) {
+    } else if (!EMAIL_REGEX.test(email.value.trim())) {
         showError(email, 'email-error', 'Please enter a valid email address');
         isValid = false;
     }
@@ -41,11 +45,12 @@ document.getElementById('login-agency-1').addEventListener('submit', function(e)
     if (!password.value) {
         showError(password, 'password-error', 'Password is required');
         isValid = false;
-    } else if (password.value.length < 8) {
-        showError(password, 'password-error', 'Password must be at least 8 characters');
-        isValid = false;
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password.value)) {
-        showError(password, 'password-error', 'Password must contain uppercase, lowercase and number');
+    } else if (!PASSWORD_REGEX.test(password.value)) {
+        showError(
+            password,
+            'password-error',
+            'Password must be at least 8 characters and include uppercase, lowercase, number and symbol'
+        );
         isValid = false;
     }
 
@@ -68,12 +73,10 @@ document.getElementById('login-agency-1').addEventListener('submit', function(e)
     }
 
     // Phone validation
-    // Phone validation: 10 digits starting with 05, 06 or 07
-    const phoneRegex = /^[0]{1}[5-7]{1}[0-9]{8}$/;
     if (!phone.value.trim()) {
         showError(phone, 'phone-error', 'Phone number is required');
         isValid = false;
-    } else if (!phoneRegex.test(phone.value.trim())) {
+    } else if (!PHONE_REGEX.test(phone.value.trim())) {
         showError(phone, 'phone-error', 'Phone must be 10 digits starting with 05, 06, or 07');
         isValid = false;
     }
