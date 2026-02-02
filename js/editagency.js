@@ -23,6 +23,12 @@ window.addEventListener('load', async function () {
             credentials: 'include',
         });
         
+        if (res.status === 401) {
+            // Unauthorized - redirect to login
+            window.location.href = 'login/login.html';
+            return;
+        }
+        
         if (!res.ok) {
             console.error('Failed to load profile:', res.status, res.statusText);
             const text = await res.text();
@@ -70,9 +76,14 @@ window.addEventListener('load', async function () {
         // Load profile image if available
         const profilePreview = document.getElementById('edit-agency-profile-preview');
         if (profilePreview && user.profile_image) {
-            profilePreview.src = user.profile_image.startsWith('http') 
-                ? user.profile_image 
-                : `../${user.profile_image}`;
+            // Fix path - ensure correct relative path
+            if (user.profile_image.startsWith('http')) {
+                profilePreview.src = user.profile_image;
+            } else if (user.profile_image.startsWith('assets/')) {
+                profilePreview.src = `../${user.profile_image}`;
+            } else {
+                profilePreview.src = `../assets/uploads/profile_images/${user.profile_image.split('/').pop()}`;
+            }
         }
     } catch (e) {
         console.error('Error loading profile:', e);
@@ -136,19 +147,43 @@ document.getElementById('edit-profile-agency').addEventListener('submit', async 
 
     if (!isValid) return;
 
+    // Use FormData if profile image is selected
+    const profileImageFile = agencyProfileUpload?.files[0];
+    const useFormData = !!profileImageFile;
+    
+    let requestBody;
+    let headers = {};
+    
+    if (useFormData) {
+      const formData = new FormData();
+      formData.append('name', name.value.trim());
+      formData.append('email', email.value.trim());
+      formData.append('phone_number', phone.value.trim());
+      formData.append('city', city.value);
+      formData.append('address', address.value.trim());
+      formData.append('bio', bio.value.trim());
+      if (profileImageFile) {
+        formData.append('profile_image', profileImageFile);
+      }
+      requestBody = formData;
+    } else {
+      headers['Content-Type'] = 'application/json';
+      requestBody = JSON.stringify({
+        name: name.value.trim(),
+        email: email.value.trim(),
+        phone_number: phone.value.trim(),
+        city: city.value,
+        address: address.value.trim(),
+        bio: bio.value.trim(),
+      });
+    }
+    
     try {
         const res = await fetch(`${API_BASE}/users/profile.php`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: headers,
             credentials: 'include',
-            body: JSON.stringify({
-                name: name.value.trim(),
-                email: email.value.trim(),
-                phone_number: phone.value.trim(),
-                city: city.value,
-                address: address.value.trim(),
-                bio: bio.value.trim(),
-            }),
+            body: requestBody,
         });
         const contentType = res.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {

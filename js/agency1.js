@@ -82,15 +82,50 @@ document.getElementById('login-agency-1').addEventListener('submit', function(e)
     }
 
     if (isValid) {
-        // Store data for page 2
-        sessionStorage.setItem('agencyData1', JSON.stringify({
-            email: email.value,
-            password: password.value,
-            name: name.value,
-            phone: phone.value
-        }));
-        // Go to agencyLogin2 in the same login folder
-        window.location.href = 'agencyLogin2.html';
+        // Security fix: Register immediately with password, don't store it
+        const AGENCY_API_BASE = '../../php/api';
+        
+        // Use FormData to handle profile image upload
+        const formData = new FormData();
+        formData.append('user_type', 'agency');
+        formData.append('email', email.value.trim());
+        formData.append('password', password.value); // Send password directly, don't store
+        formData.append('first_name', name.value.trim());
+        formData.append('last_name', '');
+        formData.append('agency_name', name.value.trim());
+        formData.append('phone_number', phone.value.trim());
+        
+        // Handle profile image upload if selected
+        const profileUpload = document.getElementById('profile-upload-agency');
+        if (profileUpload && profileUpload.files[0]) {
+            formData.append('profile_image', profileUpload.files[0]);
+        }
+        
+        try {
+            const res = await fetch(`${AGENCY_API_BASE}/auth/register.php`, {
+                method: 'POST',
+                credentials: 'include',
+                body: formData // Use FormData instead of JSON
+            });
+
+            const data = await res.json();
+            if (!res.ok || data.success === false) {
+                showError(email, 'email-error', data.message || 'Registration failed');
+                return;
+            }
+
+            // Store only non-sensitive data for step 2 profile update
+            sessionStorage.setItem('agencyData1', JSON.stringify({
+                email: email.value,
+                name: name.value,
+                phone: phone.value
+            }));
+
+            // User is now registered and logged in - proceed to step 2
+            window.location.href = 'agencyLogin2.html';
+        } catch (err) {
+            showError(email, 'email-error', 'Network error. Please try again.');
+        }
     }
 });
 

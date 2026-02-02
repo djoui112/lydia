@@ -8,7 +8,12 @@ require_once __DIR__ . '/../../models/Architect.php';
 require_once __DIR__ . '/../../models/Agency.php';
 require_once __DIR__ . '/../utils/response.php';
 
-// Debug logging
+// Session diagnostics (required for debugging)
+error_log('Session status: ' . session_status());
+error_log('Session ID: ' . session_id());
+error_log('Session data: ' . print_r($_SESSION, true));
+
+// Existing debug logging (do not remove)
 error_log('Profile.php - Session ID: ' . session_id());
 error_log('Profile.php - User ID: ' . ($_SESSION['user_id'] ?? 'NOT SET'));
 error_log('Profile.php - User Type: ' . ($_SESSION['user_type'] ?? 'NOT SET'));
@@ -37,7 +42,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         if ($architect) {
             // Remove duplicate fields from JOIN (email, phone_number, profile_image already in user)
             unset($architect['email'], $architect['phone_number'], $architect['profile_image']);
-            $profile['architect'] = $architect;
+            // Ensure all nullable fields are included, even if NULL
+            $profile['architect'] = array_merge([
+                'statement' => null,
+                'software_proficiency' => null,
+                'projects_worked_on' => null,
+            ], $architect);
         } else {
             $profile['architect'] = null;
         }
@@ -62,7 +72,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 // PUT/POST - Update profile
 if ($_SERVER['REQUEST_METHOD'] === 'PUT' || $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+    // Handle both JSON and FormData (multipart/form-data)
+    $input = [];
+    if ($_SERVER['CONTENT_TYPE'] && strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false) {
+        // FormData - merge POST and handle file uploads
+        $input = $_POST;
+        // Handle profile image upload
+        if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = __DIR__ . '/../../../assets/uploads/profile_images/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $fileName = uniqid() . '_' . basename($_FILES['profile_image']['name']);
+            $targetPath = $uploadDir . $fileName;
+            if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetPath)) {
+                $input['profile_image'] = 'assets/uploads/profile_images/' . $fileName;
+            }
+        }
+    } else {
+        // JSON input
+        $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+    }
 
     $userModel = new User($pdo);
     $user = $userModel->findById($userId);
@@ -87,7 +117,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT' || $_SERVER['REQUEST_METHOD'] === 'POST
         if (isset($input['phone_number'])) {
             $stmt = $pdo->prepare('UPDATE users SET phone_number = :phone_number, updated_at = NOW() WHERE id = :id');
             $stmt->execute([
-                'phone_number' => $input['phone_number'],
+                'phone_number' => $input['phone_number'] ?: null,
+                'id' => $userId,
+            ]);
+        }
+        
+        // Update profile image if provided
+        if (isset($input['profile_image'])) {
+            $stmt = $pdo->prepare('UPDATE users SET profile_image = :profile_image, updated_at = NOW() WHERE id = :id');
+            $stmt->execute([
+                'profile_image' => $input['profile_image'] ?: null,
                 'id' => $userId,
             ]);
         }
@@ -104,28 +143,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT' || $_SERVER['REQUEST_METHOD'] === 'POST
             ]);
         } elseif ($userType === 'architect') {
             $architectModel = new Architect($pdo);
-            $architectModel->update($userId, [
-                'first_name' => $input['first_name'] ?? '',
-                'last_name' => $input['last_name'] ?? '',
-                'date_of_birth' => $input['date_of_birth'] ?? null,
-                'gender' => $input['gender'] ?? null,
-                'city' => $input['city'] ?? null,
-                'address' => $input['address'] ?? null,
-                'bio' => $input['bio'] ?? null,
-                'years_of_experience' => $input['years_of_experience'] ?? null,
-                'portfolio_url' => $input['portfolio_url'] ?? null,
-                'linkedin_url' => $input['linkedin_url'] ?? null,
-                'primary_expertise' => $input['primary_expertise'] ?? null,
-            ]);
+            
+            // Build update array - only include fields that are explicitly provided
+            // The update method will only update provided fields, preserving others
+            $updateData = [];
+            
+            if (isset($input['first_name'])) $updateData['first_name'] = $input['first_name'] ?: '';
+            if (isset($input['last_name'])) $updateData['last_name'] = $input['last_name'] ?: '';
+            if (isset($input['date_of_birth'])) $updateData['date_of_birth'] = $input['date_of_birth'] ?: null;
+            if (isset($input['gender'])) $updateData['gender'] = $input['gender'] ?: null;
+            if (isset($input['city'])) $updateData['city'] = $input['city'] ?: null;
+            if (isset($input['address'])) $updateData['address'] = $input['address'] ?: null;
+            if (isset($input['bio'])) $updateData['bio'] = $input['bio'] ?: null;
+            if (isset($input['years_of_experience'])) {
+                $updateData['years_of_experience'] = $input['years_of_experience'] !== '' && $input['years_of_experience'] !== null 
+                    ? (int)$input['years_of_experience'] : null;
+            }
+            if (isset($input['portfolio_url'])) $updateData['portfolio_url'] = $input['portfolio_url'] ?: null;
+            if (isset($input['linkedin_url'])) $updateData['linkedin_url'] = $input['linkedin_url'] ?: null;
+            if (isset($input['primary_expertise'])) $updateData['primary_expertise'] = $input['primary_expertise'] ?: null;
+            if (isset($input['statement'])) $updateData['statement'] = $input['statement'] ?: null;
+            if (isset($input['software_proficiency'])) $updateData['software_proficiency'] = $input['software_proficiency'] ?: null;
+            if (isset($input['projects_worked_on'])) {
+                // Handle SET type - can be comma-separated string or array
+                $projects = is_array($input['projects_worked_on']) 
+                    ? $input['projects_worked_on'] 
+                    : explode(',', $input['projects_worked_on']);
+                $updateData['projects_worked_on'] = !empty($projects) ? implode(',', array_filter($projects)) : null;
+            }
+            
+            // Only update if there are fields to update
+            if (!empty($updateData)) {
+                $architectModel->update($userId, $updateData);
+            }
 
         } elseif ($userType === 'agency') {
             $agencyModel = new Agency($pdo);
-            $agencyModel->update($userId, [
-                'name' => $input['name'] ?? '',
-                'city' => $input['city'] ?? null,
-                'address' => $input['address'] ?? null,
-                'bio' => $input['bio'] ?? null,
-            ]);
+            
+            // Handle legal document upload if provided
+            if (isset($_FILES['legal_document']) && $_FILES['legal_document']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../../assets/uploads/documents/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+                $fileName = uniqid() . '_' . basename($_FILES['legal_document']['name']);
+                $targetPath = $uploadDir . $fileName;
+                if (move_uploaded_file($_FILES['legal_document']['tmp_name'], $targetPath)) {
+                    $input['legal_document'] = 'assets/uploads/documents/' . $fileName;
+                }
+            }
+            
+            // Update phone number in users table if provided
+            if (isset($input['phone_number'])) {
+                $stmt = $pdo->prepare('UPDATE users SET phone_number = :phone_number, updated_at = NOW() WHERE id = :id');
+                $stmt->execute([
+                    'phone_number' => $input['phone_number'] ?: null,
+                    'id' => $userId,
+                ]);
+            }
+            
+            // Update agency profile
+            $updateData = [];
+            if (isset($input['name'])) $updateData['name'] = $input['name'] ?: '';
+            if (isset($input['city'])) $updateData['city'] = $input['city'] ?: null;
+            if (isset($input['address'])) $updateData['address'] = $input['address'] ?: null;
+            if (isset($input['bio'])) $updateData['bio'] = $input['bio'] ?: null;
+            if (isset($input['legal_document'])) {
+                // Update legal document in agencies table
+                $stmt = $pdo->prepare('UPDATE agencies SET legal_document = :legal_document WHERE id = :id');
+                $stmt->execute([
+                    'legal_document' => $input['legal_document'],
+                    'id' => $userId,
+                ]);
+            }
+            
+            if (!empty($updateData)) {
+                $agencyModel->update($userId, $updateData);
+            }
         }
 
         $pdo->commit();

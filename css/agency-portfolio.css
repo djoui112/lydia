@@ -918,6 +918,70 @@ button {
   height: 100%;
   object-fit: cover;
 }
+/* Portfolio Action Buttons */
+.portfolio-actions {
+  max-width: 1200px;
+  margin: 40px auto 20px;
+  padding: 0 50px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-request-project,
+.btn-apply-job {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.btn-request-project {
+  background-color: #5B7E98;
+}
+
+.btn-request-project:hover {
+  background-color: #4a6a7f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(91, 126, 152, 0.3);
+}
+
+.btn-apply-job {
+  background-color: #1B2B41;
+}
+
+.btn-apply-job:hover {
+  background-color: #0f1a28;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(27, 43, 65, 0.3);
+}
+
+.portfolio-actions .error-message {
+  width: 100%;
+  text-align: center;
+  color: #bf3030;
+  font-size: 14px;
+  margin-top: 10px;
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .portfolio-actions {
+    padding: 0 20px;
+    flex-direction: column;
+  }
+  
+  .btn-request-project,
+  .btn-apply-job {
+    width: 100%;
+  }
+}
+
 /* footer section*/
 .footer {
   background-color: #1B2B41;

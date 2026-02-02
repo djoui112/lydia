@@ -2,7 +2,35 @@ const API_BASE = '../../php/api';
 
 // Shared validation patterns
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+// Backend only requires minimum 8 characters - align frontend validation
+const PASSWORD_MIN_LENGTH = 8;
+
+// Check if user is already authenticated
+window.addEventListener('load', async function() {
+    try {
+        const res = await fetch(`${API_BASE}/users/profile.php`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.data?.user?.user_type) {
+                // User already logged in - redirect based on user_type
+                const userType = data.data.user.user_type;
+                let target = '../clientinterface.html';
+                if (userType === 'architect') {
+                    target = '../architect-interface.html';
+                } else if (userType === 'agency') {
+                    target = '../agency-interface.html';
+                }
+                window.location.href = target;
+            }
+        }
+    } catch (err) {
+        // Not logged in or error - allow login form to show
+    }
+});
 
 const loginForm = document.getElementById('login-form');
 if (loginForm) {
@@ -27,11 +55,11 @@ if (loginForm) {
         if (!password.value.trim()) {
             showError(password, 'password-error', 'Password is required');
             isValid = false;
-        } else if (!PASSWORD_REGEX.test(password.value)) {
+        } else if (password.value.length < PASSWORD_MIN_LENGTH) {
             showError(
                 password,
                 'password-error',
-                'Password must be at least 8 characters and include uppercase, lowercase, number and symbol'
+                'Password must be at least 8 characters'
             );
             isValid = false;
         }

@@ -99,16 +99,53 @@ document.getElementById('login-architect-1').addEventListener('submit', function
 
     if (!isValid) return;
 
-    sessionStorage.setItem('architectData1', JSON.stringify({
-        fname: fname.value.trim(),
-        lname: lname.value.trim(),
-        email: email.value.trim(),
-        password: password.value,
-        address: address.value.trim(),
-        bio: bio.value.trim()
-    }));
+    // Security fix: Register immediately with password, don't store it
+    // Step 1 registers user, step 2 will update profile with additional fields
+    const ARCH_API_BASE = '../../php/api';
+    
+    // Use FormData to handle profile image upload
+    const formData = new FormData();
+    formData.append('user_type', 'architect');
+    formData.append('email', email.value.trim());
+    formData.append('password', password.value); // Send password directly, don't store
+    formData.append('first_name', fname.value.trim());
+    formData.append('last_name', lname.value.trim());
+    formData.append('address', address.value.trim());
+    formData.append('bio', bio.value.trim());
+    
+    // Handle profile image upload if selected
+    const profileUpload = document.getElementById('profile-upload-arch');
+    if (profileUpload && profileUpload.files[0]) {
+        formData.append('profile_image', profileUpload.files[0]);
+    }
+    
+    try {
+        const res = await fetch(`${ARCH_API_BASE}/auth/register.php`, {
+            method: 'POST',
+            credentials: 'include',
+            body: formData // Use FormData instead of JSON
+        });
 
-    window.location.href = 'archiLogin2.html';
+        const data = await res.json();
+        if (!res.ok || data.success === false) {
+            showError(email, 'email-error', data.message || 'Registration failed');
+            return;
+        }
+
+        // Store only non-sensitive data for step 2 profile update
+        sessionStorage.setItem('architectData1', JSON.stringify({
+            fname: fname.value.trim(),
+            lname: lname.value.trim(),
+            email: email.value.trim(),
+            address: address.value.trim(),
+            bio: bio.value.trim()
+        }));
+
+        // User is now registered and logged in - proceed to step 2
+        window.location.href = 'archiLogin2.html';
+    } catch (err) {
+        showError(email, 'email-error', 'Network error. Please try again.');
+    }
 });
 
 // Helpers

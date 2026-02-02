@@ -47,21 +47,33 @@ class Agency
 
     public function update($userId, $data)
     {
-        $stmt = $this->db->prepare(
-            'UPDATE agencies SET
-                name = :name,
-                city = :city,
-                address = :address,
-                bio = :bio
-             WHERE id = :id'
-        );
-
-        $stmt->execute([
-            'id' => (int)$userId,
-            'name' => $data['name'],
-            'city' => $data['city'] ?? null,
-            'address' => $data['address'] ?? null,
-            'bio' => $data['bio'] ?? null,
-        ]);
+        // Build dynamic UPDATE query based on provided fields
+        $fields = [];
+        $params = ['id' => (int)$userId];
+        
+        if (isset($data['name'])) {
+            $fields[] = 'name = :name';
+            $params['name'] = $data['name'];
+        }
+        if (isset($data['city'])) {
+            $fields[] = 'city = :city';
+            $params['city'] = $data['city'] ?: null;
+        }
+        if (isset($data['address'])) {
+            $fields[] = 'address = :address';
+            $params['address'] = $data['address'] ?: null;
+        }
+        if (isset($data['bio'])) {
+            $fields[] = 'bio = :bio';
+            $params['bio'] = $data['bio'] ?: null;
+        }
+        
+        if (empty($fields)) {
+            return; // No fields to update
+        }
+        
+        $sql = 'UPDATE agencies SET ' . implode(', ', $fields) . ' WHERE id = :id';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
     }
 }

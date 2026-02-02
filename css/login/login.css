@@ -184,8 +184,10 @@ background-color: #595F34;
 }
 
 .pfp img{
-    height: auto;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    object-position: center;
     border-radius: 50%; 
 }
 
@@ -364,52 +366,44 @@ background-color: #2e496e;
     
 }
 /*reset password */
-#reset-form {
-    width: 80%;
-    font-weight: 600;
-    margin-top: 1.5rem;
+
+#reset-form label {
+    display: block;
+    margin-left: 1.8rem;
+    margin-bottom: 0.4rem;
+    line-height: 1.2;
 }
 
-#reset-form div{
+#reset-form > div > div {
     display: flex;
-    border: 2px solid white;
-    border-radius: 50px;
-    padding: 0.5rem 1rem 0.5rem 1.5rem;
-    margin-bottom: 4rem;
-    margin-top: 0.3rem;
+    align-items: center;
+    padding: 0.5rem 1rem 0.5rem 1.5rem; 
+    margin-bottom: 2rem;   
+     border: 2px solid white;  
+     border-radius:  50px;        
 }
-#reset-form div img{
+
+
+#reset-form input {
+    height: 2.2rem;
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+  
+}
+
+#reset-form div img {
     height: 2rem;
 }
 
-
-#reset-form div:focus-within {
-  border-color: #1B2B41; 
-   
+.reset-info {
+    margin: -0.5rem 0 1.2rem 0;
+    line-height: 1.3;
 }
 
-#reset-form a{
-    text-decoration: none;
-    font-weight: 500;
-    margin-left: 1.8rem;
-    margin-top:  -0.7rem;
-    font-size: 0.9rem ;
-    color: #2e496e;
-    transition: text-decoration 0.4s ease;
+#reset-form button {
+    margin: 1rem auto;
+    display: block;
+    background-color:#1B2B41
 }
-
-#reset-form a:hover{
-text-decoration: underline;
-}
-
-#reset-form button{
-    background-color: #1B2B41;
-    margin-bottom: 1rem;
-}
-
-.reset-info{
-text-align: center;
-
-}
-
-

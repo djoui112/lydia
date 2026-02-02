@@ -78,10 +78,10 @@ document.getElementById('login-agency-1').addEventListener('submit', function(e)
     }
 
     if (isValid) {
-        // Store data for page 2
+        // Store only non-sensitive data for step 2
+        // Password must NOT be stored - security requirement
         sessionStorage.setItem('agencyData1', JSON.stringify({
             email: email.value,
-            password: password.value,
             name: name.value,
             phone: phone.value
         }));

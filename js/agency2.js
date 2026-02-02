@@ -87,32 +87,34 @@ document.getElementById('login-agency-2').addEventListener('submit', async funct
 
     if (!isValid) return;
 
-    // Get data from page 1
+    // Get data from page 1 (user already registered in step 1)
     const data1 = JSON.parse(sessionStorage.getItem('agencyData1') || '{}');
 
-    if (!data1.email || !data1.password || !data1.name || !data1.phone) {
+    if (!data1.email || !data1.name || !data1.phone) {
         showError(city, 'city-error', 'Previous step data is missing. Please go back.');
         return;
     }
 
+    // User is already registered and logged in from step 1
+    // Update profile with additional fields and handle file upload
+    const formData = new FormData();
+    formData.append('name', data1.name.trim());
+    formData.append('phone_number', data1.phone.trim());
+    formData.append('city', city.value);
+    formData.append('address', address.value.trim());
+    formData.append('bio', bio.value.trim());
+    
+    // Handle file upload properly
+    if (agencyDocument.files[0]) {
+        formData.append('legal_document', agencyDocument.files[0]);
+    }
+
     try {
-        const res = await fetch(`${AGENCY_API_BASE}/auth/register.php`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+        // Update profile (user already registered in step 1)
+        const res = await fetch(`${AGENCY_API_BASE}/users/profile.php`, {
+            method: 'PUT',
             credentials: 'include',
-            body: JSON.stringify({
-                user_type: 'agency',
-                email: data1.email.trim(),
-                password: data1.password,
-                first_name: data1.name.trim(),
-                last_name: '',
-                agency_name: data1.name.trim(),
-                phone_number: data1.phone.trim(),
-                city: city.value,
-                address: address.value.trim(),
-                bio: bio.value.trim(),
-                legal_document: agencyDocument.files[0].name
-            })
+            body: formData
         });
 
         const data = await res.json();

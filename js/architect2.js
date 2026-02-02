@@ -82,42 +82,40 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!isValid) return;
 
-        // Get step 1 data
+        // Get step 1 data (user already registered in step 1)
         const data1 = JSON.parse(sessionStorage.getItem('architectData1') || '{}');
         if (!data1.email) {
             showError(phone, 'phone-error', 'Previous step missing');
             return;
         }
 
-        const registerData = {
-            user_type: 'architect',
-            email: data1.email,
-            password: data1.password,
-            first_name: data1.fname,
-            last_name: data1.lname,
+        // User is already registered and logged in from step 1
+        // Now update profile with additional fields via profile.php
+        const updateData = {
             phone_number: phone.value.trim(),
             city: city.value,
             date_of_birth: birth.value,
-            gender: document.querySelector('input[name="gender"]:checked').value,
+            gender: document.querySelector('input[name="gender"]:checked')?.value || null,
             address: data1.address,
             bio: data1.bio,
             years_of_experience: experience && experience.value ? Number(experience.value) : null,
-            portfolio_url: portfolio.value.trim(),
-            linkedin_url: linkedin.value.trim(),
-            primary_expertise: expertise.value.trim()
+            portfolio_url: portfolio.value.trim() || null,
+            linkedin_url: linkedin.value.trim() || null,
+            primary_expertise: expertise.value.trim() || null
         };
 
         try {
-            const res = await fetch(`${ARCH_API_BASE}/auth/register.php`, {
-                method: 'POST',
+            // Update profile with additional fields (user already registered in step 1)
+            const res = await fetch(`${ARCH_API_BASE}/users/profile.php`, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify(registerData)
+                body: JSON.stringify(updateData)
             });
 
             const data = await res.json();
             if (!res.ok || data.success === false) {
-                showError(phone, 'phone-error', data.message || 'Registration failed');
+                showError(phone, 'phone-error', data.message || 'Failed to update profile');
                 return;
             }
 

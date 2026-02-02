@@ -32,8 +32,10 @@ if ((int)$user['is_active'] === 0) {
 
 $userModel->updateLastLogin((int)$user['id']);
 
+// Persist authenticated session before returning the response
 $_SESSION['user_id'] = (int)$user['id'];
 $_SESSION['user_type'] = $user['user_type'];
+session_write_close();
 
 json_success([
     'user_id' => (int)$user['id'],

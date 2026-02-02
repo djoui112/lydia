@@ -126,7 +126,12 @@ submitNewPasswordBtn.addEventListener('click', async (e) => {
 
         if (!res.ok || data.success === false) {
             const msg = data.message || 'Failed to reset password';
-            setFieldError(codeInput, codeError, msg);
+            // Show error under code input if it's a code-related error
+            if (msg.toLowerCase().includes('code') || msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('expired')) {
+                setFieldError(codeInput, codeError, msg);
+            } else {
+                setFieldError(newPasswordInput, newPasswordError, msg);
+            }
             submitNewPasswordBtn.disabled = false;
             submitNewPasswordBtn.textContent = 'Change Password';
             return;

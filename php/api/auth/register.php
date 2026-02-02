@@ -16,7 +16,38 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     json_error('Method not allowed', 405);
 }
 
-$input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+// Handle both JSON and FormData (multipart/form-data)
+$input = [];
+if ($_SERVER['CONTENT_TYPE'] && strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false) {
+    // FormData - merge POST and FILES
+    $input = $_POST;
+    // Handle file uploads
+    if (isset($_FILES['legal_document']) && $_FILES['legal_document']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = __DIR__ . '/../../../assets/uploads/documents/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        $fileName = uniqid() . '_' . basename($_FILES['legal_document']['name']);
+        $targetPath = $uploadDir . $fileName;
+        if (move_uploaded_file($_FILES['legal_document']['tmp_name'], $targetPath)) {
+            $input['legal_document'] = 'assets/uploads/documents/' . $fileName;
+        }
+    }
+    if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = __DIR__ . '/../../../assets/uploads/profile_images/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        $fileName = uniqid() . '_' . basename($_FILES['profile_image']['name']);
+        $targetPath = $uploadDir . $fileName;
+        if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetPath)) {
+            $input['profile_image'] = 'assets/uploads/profile_images/' . $fileName;
+        }
+    }
+} else {
+    // JSON input
+    $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+}
 
 $userType = $input['user_type'] ?? '';
 $email = trim($input['email'] ?? '');
@@ -63,7 +94,7 @@ try {
         'password_hash' => $passwordHash,
         'user_type' => $userType,
         'phone_number' => $input['phone_number'] ?? null,
-        'profile_image' => null,
+        'profile_image' => $input['profile_image'] ?? null,
     ]);
 
     // Create type-specific record
@@ -106,9 +137,10 @@ try {
 
     $pdo->commit();
 
-    // Set session
+    // Set session and persist it before sending the response
     $_SESSION['user_id'] = $userId;
     $_SESSION['user_type'] = $userType;
+    session_write_close();
 
     // Log success
     error_log("User registered successfully: ID=$userId, Type=$userType, Email=$email");

@@ -1,5 +1,4 @@
 <?php
-require_once 'database.php';
 
 ini_set('session.use_strict_mode', 1);
 

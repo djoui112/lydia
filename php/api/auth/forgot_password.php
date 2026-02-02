@@ -42,10 +42,20 @@ $stmt->execute([
 
 // Send email - configure your server/mail settings as needed
 $subject = 'Your Mimaria password reset code';
-$message = "Your password reset code is: {$code}\n\nThis code will expire in 15 minutes.";
-$headers = 'From: no-reply@mimaria.local';
+$message = "Your password reset code is: {$code}\n\nThis code will expire in 15 minutes.\n\nIf you did not request this code, please ignore this email.";
+$headers = [
+    'From: Mimaria Platform <no-reply@mimaria.local>',
+    'Reply-To: support@mimaria.local',
+    'X-Mailer: PHP/' . phpversion(),
+    'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset=UTF-8'
+];
 
-@mail($email, $subject, $message, $headers);
+// Use mail() function with proper headers
+$mailSent = @mail($email, $subject, $message, implode("\r\n", $headers));
+
+// Log email attempt (for debugging - remove in production or use proper logging)
+error_log("Password reset email sent to {$email}: " . ($mailSent ? 'SUCCESS' : 'FAILED'));
 
 json_success([
     'message' => 'If that email exists, a code has been sent.',

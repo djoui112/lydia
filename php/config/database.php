@@ -1,5 +1,4 @@
 <?php
-require_once 'session.php';
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'mimaria');
 define('DB_USER', 'root');

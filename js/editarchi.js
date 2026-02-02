@@ -76,6 +76,12 @@ window.addEventListener('load', async () => {
       credentials: 'include',
     });
     
+    if (res.status === 401) {
+      // Unauthorized - redirect to login
+      window.location.href = 'login/login.html';
+      return;
+    }
+    
     if (!res.ok) {
       console.error('Failed to load profile:', res.status, res.statusText);
       const text = await res.text();
@@ -122,7 +128,35 @@ window.addEventListener('load', async () => {
     }
     if (portfolio && architect.portfolio_url) portfolio.value = architect.portfolio_url;
     if (linkedin && architect.linkedin_url) linkedin.value = architect.linkedin_url;
-    if (expertise && architect.primary_expertise) expertise.value = architect.primary_expertise;
+    // Conditional population - only populate if value is NOT NULL
+    if (expertise && architect.primary_expertise !== null && architect.primary_expertise !== undefined) {
+        expertise.value = architect.primary_expertise;
+    }
+    
+    // Handle nullable fields: statement, software_proficiency, projects_worked_on
+    const statementEl = document.querySelector('input[name="edit-architect-statement"]:checked');
+    if (statementEl && architect.statement !== null && architect.statement !== undefined) {
+        const statementInput = document.querySelector(`input[name="edit-architect-statement"][value="${architect.statement}"]`);
+        if (statementInput) statementInput.checked = true;
+    }
+    
+    const softwareProficiencyEl = document.getElementById('edit-architect-software');
+    if (softwareProficiencyEl && architect.software_proficiency !== null && architect.software_proficiency !== undefined) {
+        softwareProficiencyEl.value = architect.software_proficiency;
+    }
+    
+    // projects_worked_on is a SET type - handle as comma-separated or array
+    const projectsEl = document.querySelectorAll('input[name="edit-architect-projects"]');
+    if (projectsEl.length > 0 && architect.projects_worked_on !== null && architect.projects_worked_on !== undefined) {
+        const projects = typeof architect.projects_worked_on === 'string' 
+            ? architect.projects_worked_on.split(',') 
+            : architect.projects_worked_on;
+        projectsEl.forEach(input => {
+            if (projects.includes(input.value)) {
+                input.checked = true;
+            }
+        });
+    }
 
     if (architect.gender) {
       const genderInput = document.querySelector(
@@ -134,9 +168,14 @@ window.addEventListener('load', async () => {
     // Load profile image if available
     const profilePreview = document.getElementById('edit-architect-profile-preview');
     if (profilePreview && user.profile_image) {
-      profilePreview.src = user.profile_image.startsWith('http') 
-        ? user.profile_image 
-        : `../${user.profile_image}`;
+      // Fix path - ensure correct relative path
+      if (user.profile_image.startsWith('http')) {
+        profilePreview.src = user.profile_image;
+      } else if (user.profile_image.startsWith('assets/')) {
+        profilePreview.src = `../${user.profile_image}`;
+      } else {
+        profilePreview.src = `../assets/uploads/profile_images/${user.profile_image.split('/').pop()}`;
+      }
     }
   } catch (err) {
     console.error('Error loading profile:', err);
@@ -277,26 +316,75 @@ if (profileForm) {
       'input[name="edit-architect-gender"]:checked'
     )?.value;
 
+    // Use FormData for file uploads if profile image is selected
+    const profileImageFile = profileUploadInput?.files[0];
+    const useFormData = !!profileImageFile;
+    
+    let requestBody;
+    let headers = {};
+    
+    if (useFormData) {
+      const formData = new FormData();
+      formData.append('email', email.value.trim());
+      formData.append('phone_number', phone.value.trim());
+      formData.append('first_name', fname.value.trim());
+      formData.append('last_name', lname.value.trim());
+      formData.append('city', city.value);
+      formData.append('date_of_birth', birth.value);
+      formData.append('gender', gender || '');
+      formData.append('address', address.value.trim());
+      formData.append('bio', bio.value.trim());
+      formData.append('years_of_experience', experience.value ? Number(experience.value) : '');
+      formData.append('portfolio_url', portfolio.value.trim());
+      formData.append('linkedin_url', linkedin.value.trim());
+      formData.append('primary_expertise', expertise.value.trim());
+      
+      // Handle nullable fields - only send if provided
+      const statementInput = document.querySelector('input[name="edit-architect-statement"]:checked');
+      if (statementInput) formData.append('statement', statementInput.value);
+      
+      const softwareProficiencyEl = document.getElementById('edit-architect-software');
+      if (softwareProficiencyEl && softwareProficiencyEl.value) {
+        formData.append('software_proficiency', softwareProficiencyEl.value);
+      }
+      
+      const projectsChecked = Array.from(document.querySelectorAll('input[name="edit-architect-projects"]:checked'))
+        .map(input => input.value);
+      if (projectsChecked.length > 0) {
+        formData.append('projects_worked_on', projectsChecked.join(','));
+      }
+      
+      if (profileImageFile) {
+        formData.append('profile_image', profileImageFile);
+      }
+      
+      requestBody = formData;
+      // Don't set Content-Type header - browser will set it with boundary for FormData
+    } else {
+      headers['Content-Type'] = 'application/json';
+      requestBody = JSON.stringify({
+        email: email.value.trim(),
+        phone_number: phone.value.trim(),
+        first_name: fname.value.trim(),
+        last_name: lname.value.trim(),
+        city: city.value,
+        date_of_birth: birth.value,
+        gender: gender || null,
+        address: address.value.trim(),
+        bio: bio.value.trim(),
+        years_of_experience: experience.value ? Number(experience.value) : null,
+        portfolio_url: portfolio.value.trim(),
+        linkedin_url: linkedin.value.trim(),
+        primary_expertise: expertise.value.trim(),
+      });
+    }
+    
     try {
       const res = await fetch(`${API_BASE}/users/profile.php`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers,
         credentials: 'include',
-        body: JSON.stringify({
-          email: email.value.trim(),
-          phone_number: phone.value.trim(),
-          first_name: fname.value.trim(),
-          last_name: lname.value.trim(),
-          city: city.value,
-          date_of_birth: birth.value,
-          gender: gender || null,
-          address: address.value.trim(),
-          bio: bio.value.trim(),
-          years_of_experience: experience.value ? Number(experience.value) : null,
-          portfolio_url: portfolio.value.trim(),
-          linkedin_url: linkedin.value.trim(),
-          primary_expertise: expertise.value.trim(),
-        }),
+        body: requestBody,
       });
       const contentType = res.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
