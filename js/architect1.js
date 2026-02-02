@@ -1,30 +1,36 @@
-document.getElementById('profile-upload-arch').addEventListener('change', function(e) {
+// Shared validation patterns
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+// Profile image preview
+document.getElementById('profile-upload-arch').addEventListener('change', function (e) {
     const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            document.getElementById('profile-preview-arch').src = event.target.result;
-            sessionStorage.setItem('architectProfile', event.target.result);
-        };
-        reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+        document.getElementById('profile-preview-arch').src = event.target.result;
+        sessionStorage.setItem('architectProfile', event.target.result);
+    };
+    reader.readAsDataURL(file);
 });
 
 // Form validation
-document.getElementById('login-architect-1').addEventListener('submit', function(e) {
+document.getElementById('login-architect-1').addEventListener('submit', function (e) {
     e.preventDefault();
-    
+
     const fname = document.getElementById('architect-fname');
     const lname = document.getElementById('architect-lname');
     const email = document.getElementById('architect-email');
     const password = document.getElementById('architect-password');
     const cpassword = document.getElementById('architect-cpassword');
-    let isValid = true;
+    const address = document.getElementById('architect-address');
+    const bio = document.getElementById('architect-bio');
 
-    // Reset errors
+    let isValid = true;
     clearErrors();
 
-    // First name validation
+    // First name
     if (!fname.value.trim()) {
         showError(fname, 'fname-error', 'First name is required');
         isValid = false;
@@ -36,7 +42,7 @@ document.getElementById('login-architect-1').addEventListener('submit', function
         isValid = false;
     }
 
-    // Last name validation
+    // Last name
     if (!lname.value.trim()) {
         showError(lname, 'lname-error', 'Last name is required');
         isValid = false;
@@ -48,29 +54,29 @@ document.getElementById('login-architect-1').addEventListener('submit', function
         isValid = false;
     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Email
     if (!email.value.trim()) {
         showError(email, 'email-error', 'Email is required');
         isValid = false;
-    } else if (!emailRegex.test(email.value)) {
+    } else if (!EMAIL_REGEX.test(email.value.trim())) {
         showError(email, 'email-error', 'Please enter a valid email address');
         isValid = false;
     }
 
-    // Password validation
+    // Password
     if (!password.value) {
         showError(password, 'password-error', 'Password is required');
         isValid = false;
-    } else if (password.value.length < 8) {
-        showError(password, 'password-error', 'Password must be at least 8 characters');
-        isValid = false;
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password.value)) {
-        showError(password, 'password-error', 'Password must contain uppercase, lowercase and number');
+    } else if (!PASSWORD_REGEX.test(password.value)) {
+        showError(
+            password,
+            'password-error',
+            'Password must be at least 8 characters and include uppercase, lowercase, number and symbol'
+        );
         isValid = false;
     }
 
-    // Confirm password validation
+    // Confirm password
     if (!cpassword.value) {
         showError(cpassword, 'cpassword-error', 'Please confirm your password');
         isValid = false;
@@ -79,33 +85,39 @@ document.getElementById('login-architect-1').addEventListener('submit', function
         isValid = false;
     }
 
-    if (isValid) {
-        sessionStorage.setItem('architectData1', JSON.stringify({
-            fname: fname.value,
-            lname: lname.value,
-            email: email.value,
-            password: password.value
-        }));
-        // Go to architect login step 2 (same login folder)
-        window.location.href = 'archiLogin2.html';
+    // Address
+    if (address.value.trim().length < 10) {
+        showError(address, 'address-error', 'Address must be at least 10 characters');
+        isValid = false;
     }
+
+    // Bio
+    if (bio.value.trim().length < 30) {
+        showError(bio, 'bio-error', 'Bio must be at least 30 characters');
+        isValid = false;
+    }
+
+    if (!isValid) return;
+
+    sessionStorage.setItem('architectData1', JSON.stringify({
+        fname: fname.value.trim(),
+        lname: lname.value.trim(),
+        email: email.value.trim(),
+        password: password.value,
+        address: address.value.trim(),
+        bio: bio.value.trim()
+    }));
+
+    window.location.href = 'archiLogin2.html';
 });
 
+// Helpers
 function showError(input, errorId, message) {
     input.parentElement.classList.add('error');
     document.getElementById(errorId).textContent = message;
 }
 
 function clearErrors() {
-    document.querySelectorAll('.error-message').forEach(err => err.textContent = '');
-    document.querySelectorAll('input').forEach(inp => {
-        if (inp.parentElement.classList) {
-            inp.parentElement.classList.remove('error');
-        }
-    });
+    document.querySelectorAll('.error-message').forEach(e => e.textContent = '');
+    document.querySelectorAll('.error').forEach(e => e.classList.remove('error'));
 }
-
-
-//archiValidation2
-
-

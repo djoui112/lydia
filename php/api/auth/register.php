@@ -91,8 +91,6 @@ try {
             'portfolio_url' => $input['portfolio_url'] ?? null,
             'linkedin_url' => $input['linkedin_url'] ?? null,
             'primary_expertise' => $input['primary_expertise'] ?? null,
-            'software_proficiency' => $input['software_proficiency'] ?? null,
-            'statement' => $input['statement'] ?? 'graduate_architect',
         ]);
     } elseif ($userType === 'agency') {
         $agencyModel = new Agency($pdo);

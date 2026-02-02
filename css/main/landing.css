@@ -105,7 +105,7 @@
     filter: drop-shadow(0 0 3px #5B7E98 );
 }
 .menu.cancel{
-  content: url("/assets/main/cancel.png");
+  content: url("../../assets/main/cancel.png");
   height: 3rem;
 }
 
@@ -194,6 +194,7 @@
   overflow-x: hidden;
 }
 }
+
 @media(min-width:705px) and (max-width:798px){
     .landing-pic{
     height: 20rem;

@@ -33,14 +33,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     if ($userType === 'architect') {
         $architectModel = new Architect($pdo);
-        $profile['architect'] = $architectModel->findByUserId($userId);
+        $architect = $architectModel->findByUserId($userId);
+        if ($architect) {
+            // Remove duplicate fields from JOIN (email, phone_number, profile_image already in user)
+            unset($architect['email'], $architect['phone_number'], $architect['profile_image']);
+            $profile['architect'] = $architect;
+        } else {
+            $profile['architect'] = null;
+        }
     } elseif ($userType === 'agency') {
         $agencyModel = new Agency($pdo);
-        $profile['agency'] = $agencyModel->findByUserId($userId);
+        $agency = $agencyModel->findByUserId($userId);
+        if ($agency) {
+            // Remove duplicate fields from JOIN
+            unset($agency['email'], $agency['phone_number'], $agency['profile_image']);
+            $profile['agency'] = $agency;
+        } else {
+            $profile['agency'] = null;
+        }
     } elseif ($userType === 'client') {
         $stmt = $pdo->prepare('SELECT * FROM clients WHERE id = :id');
         $stmt->execute(['id' => $userId]);
-        $profile['client'] = $stmt->fetch(PDO::FETCH_ASSOC);
+        $profile['client'] = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
     json_success($profile);
@@ -97,7 +111,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT' || $_SERVER['REQUEST_METHOD'] === 'POST
                 'gender' => $input['gender'] ?? null,
                 'city' => $input['city'] ?? null,
                 'address' => $input['address'] ?? null,
+                'bio' => $input['bio'] ?? null,
+                'years_of_experience' => $input['years_of_experience'] ?? null,
+                'portfolio_url' => $input['portfolio_url'] ?? null,
+                'linkedin_url' => $input['linkedin_url'] ?? null,
+                'primary_expertise' => $input['primary_expertise'] ?? null,
             ]);
+
         } elseif ($userType === 'agency') {
             $agencyModel = new Agency($pdo);
             $agencyModel->update($userId, [

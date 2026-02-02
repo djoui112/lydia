@@ -7,7 +7,6 @@
         <meta name="keywords" content="architecture,architect,agency,client,login">
         <meta name="description" content="connect architects and clients- make an account">
         <meta name="author" content="Mimaria team" >
-        <meta http-equiv="refresh" content="60">
         <link rel="icon" href="assets/main/Department.png" type="image/png">
         <link rel="stylesheet" href="../../css/general.css">    
         <link rel="stylesheet" href="../../css/login/generalSignup.css">  
@@ -22,7 +21,7 @@
 
         <div class="form-shape ar">
         <img src="../../assets/create-account/Department r.png" class="logo" alt="mimaria">
-        <form id="login-architect-2" novalidate>
+        <form id="login-architect-2" method="post" novalidate>
             <label for="architect-phone">Phone number</label>
             <div>
                 <input type="tel" id="architect-phone" name="phone" placeholder="+213******" required>
@@ -99,10 +98,38 @@
             <label for="architect-birth">Date of birth</label>
             <div class="date-wrapper">
                 <input type="text" id="architect-birth-display" placeholder="DD/MM/YYYY" readonly required>
-                <input type="date" id="architect-birth" name="birth" required>
+                <input type="date" id="architect-birth" name="birth" required >
                 <img src="../../assets/create-account/Calendar.png" class="label-icon date-icon" onclick="document.getElementById('architect-birth').showPicker()">
             </div>
             <span class="error-message" id="birth-error"></span>
+            <label for="architect-experience">Years of experience</label>
+            <div>
+                <input type="number" id="architect-experience" name="years_of_experience" min="0" placeholder="e.g. 3">
+                <img src="../../assets/create-account/Calendar.png" class="label-icon">
+            </div>
+            <span class="error-message" id="experience-error"></span>
+
+            <label for="architect-portfolio">Portfolio URL</label>
+            <div>
+                <input type="url" id="architect-portfolio" name="portfolio_url" placeholder="https://yourportfolio.com">
+                <img src="../../assets/create-account/Link.png" class="label-icon">
+            </div>
+            <span class="error-message" id="portfolio-error"></span>
+
+            <label for="architect-linkedin">LinkedIn URL</label>
+            <div>
+                <input type="url" id="architect-linkedin" name="linkedin_url" placeholder="https://linkedin.com/in/username">
+                <img src="../../assets/create-account/Link.png" class="label-icon">
+            </div>
+            <span class="error-message" id="linkedin-error"></span>
+            <label for="architect-expertise">Primary expertise</label>
+        <div>
+            <input type="text" id="architect-expertise" name="primary_expertise" placeholder="e.g. Urban design">
+            <img src="../../assets/create-account/Profile.png" class="label-icon">
+        </div>
+        <span class="error-message" id="expertise-error"></span>
+
+
 
             <label>Gender</label>
             <section class="gender">

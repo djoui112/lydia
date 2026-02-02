@@ -1,184 +1,152 @@
 const ARCH_API_BASE = '../../php/api';
 
-// Wait for DOM to be ready
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('architect2.js loaded, DOM ready');
-
-    // Date picker handling
-    const dateInput = document.getElementById('architect-birth');
-    const dateDisplay = document.getElementById('architect-birth-display');
-
-    if (dateInput && dateDisplay) {
-        // Update display when date changes
-        dateInput.addEventListener('change', function() {
-            if (this.value) {
-                // Split the date string (format: YYYY-MM-DD)
-                const [year, month, day] = this.value.split('-');
-                // Format as DD/MM/YYYY
-                dateDisplay.value = `${day}/${month}/${year}`;
-            }
-        });
-
-        // Trigger date picker when clicking the icon
-        const dateIcon = document.querySelector('.date-icon');
-        if (dateIcon) {
-            dateIcon.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                try {
-                    dateInput.showPicker();
-                } catch (e) {
-                    // Fallback: focus and click the input
-                    dateInput.focus();
-                    dateInput.click();
-                }
-            });
-        }
-
-        // Also allow clicking the display input to open picker
-        dateDisplay.addEventListener('click', function(e) {
-            e.preventDefault();
-            try {
-                dateInput.showPicker();
-            } catch (e) {
-                dateInput.focus();
-                dateInput.click();
-            }
-        });
-    }
+document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('login-architect-2');
-    if (!form) {
-        console.error('Form #login-architect-2 not found!');
-        return;
-    }
-    console.log('Form found, attaching submit handler');
+    if (!form) return;
 
-    // Form validation + final registration
-    form.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
     const phone = document.getElementById('architect-phone');
     const city = document.getElementById('architect-city');
     const birth = document.getElementById('architect-birth');
-    const gender = document.querySelector('input[name="gender"]:checked');
-    
-    let isValid = true;
+    const birthDisplay = document.getElementById('architect-birth-display');
 
-    // Reset errors
-    clearErrors();
 
-    // Phone validation
-    const phoneRegex = /^[0]{1}[5-7]{1}[0-9]{8}$/;
-    if (!phone.value.trim()) {
-        showError(phone, 'phone-error', 'Phone number is required');
-        isValid = false;
-    } else if (!phoneRegex.test(phone.value.trim())) {
-        showError(phone, 'phone-error', 'Phone must start with 05,06 or 07 and contain 10 numbers');
-        isValid = false;
-    }
+    const experience = document.getElementById('architect-experience');
+    const portfolio = document.getElementById('architect-portfolio');
+    const linkedin = document.getElementById('architect-linkedin');
+    const expertise = document.getElementById('architect-expertise');
 
-    // City validation
-    if (!city.value) {
-        showError(city, 'city-error', 'Please select a city');
-        isValid = false;
-    }
+    birth.addEventListener('change', function () {
+    if (!this.value) return;
 
-    // Birth date validation
-    if (!birth.value) {
-        showError(birth, 'birth-error', 'Date of birth is required');
-        isValid = false;
-    } else {
-        const birthDate = new Date(birth.value);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        if (age < 18) {
-            showError(birth, 'birth-error', 'You must be at least 18 years old');
+    // this.value format: YYYY-MM-DD
+    const [year, month, day] = this.value.split('-');
+
+    // Display as DD/MM/YYYY
+    birthDisplay.value = `${day}/${month}/${year}`;
+});
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        clearErrors();
+
+        let isValid = true;
+
+        // Phone
+        const phoneRegex = /^[0]{1}[5-7]{1}[0-9]{8}$/;
+        if (!phone.value.trim()) {
+            showError(phone, 'phone-error', 'Phone number is required');
             isValid = false;
-        } else if (age > 100) {
-            showError(birth, 'birth-error', 'Please enter a valid date of birth');
+        } else if (!phoneRegex.test(phone.value.trim())) {
+            showError(phone, 'phone-error', 'Phone must start with 05, 06 or 07');
             isValid = false;
         }
-    }
 
-    if (!isValid) {
-        console.log('Validation failed');
-        return;
-    }
+        // City
+        if (!city.value) {
+            showError(city, 'city-error', 'Please select a city');
+            isValid = false;
+        }
 
-    // Get data from page 1
-    const data1 = JSON.parse(sessionStorage.getItem('architectData1') || '{}');
-    console.log('Data from step 1:', data1);
+        // Birth date
+        if (!birth.value) {
+            showError(birth, 'birth-error', 'Date of birth is required');
+            isValid = false;
+        }
 
-    if (!data1.email || !data1.password || !data1.fname || !data1.lname) {
-        console.error('Missing data from step 1');
-        showError(phone, 'phone-error', 'Previous step data is missing. Please go back.');
-        return;
-    }
+        // Years of experience (optional but must be >= 0 if provided)
+        if (experience && experience.value) {
+            const years = Number(experience.value);
+            if (Number.isNaN(years) || years < 0) {
+                showError(experience, 'experience-error', 'Years of experience must be a positive number');
+                isValid = false;
+            }
+        }
 
-    const registerUrl = `${ARCH_API_BASE}/auth/register.php`;
-    console.log('Registering architect at:', registerUrl);
+        // Portfolio URL
+        if (portfolio.value && !isValidURL(portfolio.value)) {
+            showError(portfolio, 'portfolio-error', 'Invalid portfolio URL');
+            isValid = false;
+        }
 
-    const registerData = {
-        user_type: 'architect',
-        email: data1.email.trim(),
-        password: data1.password,
-        first_name: data1.fname.trim(),
-        last_name: data1.lname.trim(),
-        phone_number: phone.value.trim(),
-        city: city.value,
-        date_of_birth: birth.value,
-        gender: gender.value
-    };
-    console.log('Sending data:', { ...registerData, password: '***' });
+        // LinkedIn URL
+        if (linkedin.value && !isValidURL(linkedin.value)) {
+            showError(linkedin, 'linkedin-error', 'Invalid LinkedIn URL');
+            isValid = false;
+        }
 
-    try {
-        const res = await fetch(registerUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify(registerData)
-        });
+        // Expertise
+        if (!expertise.value.trim()) {
+            showError(expertise, 'expertise-error', 'Primary expertise is required');
+            isValid = false;
+        }
 
-        console.log('Response status:', res.status, res.statusText);
-        console.log('Response headers:', Object.fromEntries(res.headers.entries()));
+        if (!isValid) return;
 
-        const data = await res.json();
-        console.log('Response data:', data);
-
-        if (!res.ok || data.success === false) {
-            console.error('Registration failed:', data.message);
-            showError(phone, 'phone-error', data.message || 'Registration failed');
+        // Get step 1 data
+        const data1 = JSON.parse(sessionStorage.getItem('architectData1') || '{}');
+        if (!data1.email) {
+            showError(phone, 'phone-error', 'Previous step missing');
             return;
         }
 
-        console.log('Registration successful!');
-        sessionStorage.removeItem('architectData1');
-        // Go to architect interface (relative to pages/login/)
-        window.location.href = '../architect-interface.html';
-    } catch (err) {
-        console.error('Network error:', err);
-        showError(phone, 'phone-error', 'Network error: ' + err.message);
-    }
+        const registerData = {
+            user_type: 'architect',
+            email: data1.email,
+            password: data1.password,
+            first_name: data1.fname,
+            last_name: data1.lname,
+            phone_number: phone.value.trim(),
+            city: city.value,
+            date_of_birth: birth.value,
+            gender: document.querySelector('input[name="gender"]:checked').value,
+            address: data1.address,
+            bio: data1.bio,
+            years_of_experience: experience && experience.value ? Number(experience.value) : null,
+            portfolio_url: portfolio.value.trim(),
+            linkedin_url: linkedin.value.trim(),
+            primary_expertise: expertise.value.trim()
+        };
+
+        try {
+            const res = await fetch(`${ARCH_API_BASE}/auth/register.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(registerData)
+            });
+
+            const data = await res.json();
+            if (!res.ok || data.success === false) {
+                showError(phone, 'phone-error', data.message || 'Registration failed');
+                return;
+            }
+
+            sessionStorage.clear();
+            window.location.href = '../architect-interface.html';
+
+        } catch (err) {
+            showError(phone, 'phone-error', 'Network error');
+        }
     });
 });
 
-function showError(input, errorId, message) {
-    const wrapper = input.closest('div, .date-wrapper, .select-wrapper');
-    if (wrapper) {
-        wrapper.classList.add('error');
+// Helpers
+function isValidURL(url) {
+    try {
+        new URL(url);
+        return true;
+    } catch {
+        return false;
     }
+}
+
+function showError(input, errorId, message) {
+    const wrapper = input.closest('div, .select-wrapper, .date-wrapper');
+    if (wrapper) wrapper.classList.add('error');
     document.getElementById(errorId).textContent = message;
 }
 
 function clearErrors() {
-    document.querySelectorAll('.error-message').forEach(err => err.textContent = '');
-    document.querySelectorAll('.date-wrapper, .select-wrapper, div').forEach(el => {
-        el.classList.remove('error');
-    });
+    document.querySelectorAll('.error-message').forEach(e => e.textContent = '');
+    document.querySelectorAll('.error').forEach(e => e.classList.remove('error'));
 }
-
-

@@ -1,6 +1,10 @@
 
 const CLIENT_API_BASE = '../../php/api';
 
+// Shared validation patterns
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
 // Profile image upload
 document.getElementById('profile-upload').addEventListener('change', function(e) {
     const file = e.target.files[0];
@@ -53,11 +57,10 @@ document.getElementById('login-client').addEventListener('submit', async functio
     }
 
     // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.value.trim()) {
         showError(email, 'email-error', 'Email is required');
         isValid = false;
-    } else if (!emailRegex.test(email.value)) {
+    } else if (!EMAIL_REGEX.test(email.value.trim())) {
         showError(email, 'email-error', 'Please enter a valid email address');
         isValid = false;
     }
@@ -66,11 +69,12 @@ document.getElementById('login-client').addEventListener('submit', async functio
     if (!password.value) {
         showError(password, 'password-error', 'Password is required');
         isValid = false;
-    } else if (password.value.length < 8) {
-        showError(password, 'password-error', 'Password must be at least 8 characters');
-        isValid = false;
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password.value)) {
-        showError(password, 'password-error', 'Password must contain uppercase, lowercase and number');
+    } else if (!PASSWORD_REGEX.test(password.value)) {
+        showError(
+            password,
+            'password-error',
+            'Password must be at least 8 characters and include uppercase, lowercase, number and symbol'
+        );
         isValid = false;
     }
 

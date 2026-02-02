@@ -9,39 +9,56 @@ class Architect
         $this->db = $db;
     }
 
-    public function create($userId, $data)
-    {
-        $stmt = $this->db->prepare(
-            'INSERT INTO architects (
-                id, first_name, last_name, date_of_birth, gender,
-                city, address, bio, years_of_experience, portfolio_url,
-                linkedin_url, primary_expertise, software_proficiency, statement
-            ) VALUES (
-                :id, :first_name, :last_name, :date_of_birth, :gender,
-                :city, :address, :bio, :years_of_experience, :portfolio_url,
-                :linkedin_url, :primary_expertise, :software_proficiency, :statement
-            )'
-        );
+   public function create($userId, $data)
+{
+    $stmt = $this->db->prepare(
+        'INSERT INTO architects (
+            id,
+            first_name,
+            last_name,
+            date_of_birth,
+            gender,
+            city,
+            address,
+            bio,
+            years_of_experience,
+            portfolio_url,
+            linkedin_url,
+            primary_expertise
+        ) VALUES (
+            :id,
+            :first_name,
+            :last_name,
+            :date_of_birth,
+            :gender,
+            :city,
+            :address,
+            :bio,
+            :years_of_experience,
+            :portfolio_url,
+            :linkedin_url,
+            :primary_expertise
+        )'
+    );
 
-        $stmt->execute([
-            'id' => (int)$userId,
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'date_of_birth' => $data['date_of_birth'] ?? null,
-            'gender' => $data['gender'] ?? null,
-            'city' => $data['city'] ?? null,
-            'address' => $data['address'] ?? null,
-            'bio' => $data['bio'] ?? null,
-            'years_of_experience' => $data['years_of_experience'] ?? null,
-            'portfolio_url' => $data['portfolio_url'] ?? null,
-            'linkedin_url' => $data['linkedin_url'] ?? null,
-            'primary_expertise' => $data['primary_expertise'] ?? null,
-            'software_proficiency' => $data['software_proficiency'] ?? null,
-            'statement' => $data['statement'] ?? 'graduate_architect',
-        ]);
+    $stmt->execute([
+        'id' => (int) $userId,
+        'first_name' => $data['first_name'],
+        'last_name' => $data['last_name'],
+        'date_of_birth' => $data['date_of_birth'] ?? null,
+        'gender' => $data['gender'] ?? null,
+        'city' => $data['city'] ?? null,
+        'address' => $data['address'] ?? null,
+        'bio' => $data['bio'] ?? null,
+        'years_of_experience' => $data['years_of_experience'] ?? null,
+        'portfolio_url' => $data['portfolio_url'] ?? null,
+        'linkedin_url' => $data['linkedin_url'] ?? null,
+        'primary_expertise' => $data['primary_expertise'] ?? null
+    ]);
 
-        return (int)$userId;
-    }
+    return (int) $userId;
+}
+
 
     public function findByUserId($userId)
     {
@@ -65,7 +82,12 @@ class Architect
                 date_of_birth = :date_of_birth,
                 gender = :gender,
                 city = :city,
-                address = :address
+                address = :address,
+                bio = :bio,
+                years_of_experience = :years_of_experience,
+                portfolio_url = :portfolio_url,
+                linkedin_url = :linkedin_url,
+                primary_expertise = :primary_expertise
              WHERE id = :id'
         );
 
@@ -77,6 +99,11 @@ class Architect
             'gender' => $data['gender'] ?? null,
             'city' => $data['city'] ?? null,
             'address' => $data['address'] ?? null,
+            'bio' => $data['bio'] ?? null,
+            'years_of_experience' => $data['years_of_experience'] ?? null,
+            'portfolio_url' => $data['portfolio_url'] ?? null,
+            'linkedin_url' => $data['linkedin_url'] ?? null,
+            'primary_expertise' => $data['primary_expertise'] ?? null
         ]);
     }
 }

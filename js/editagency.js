@@ -1,6 +1,10 @@
 const API_BASE = '../php/api';
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^0[5-7][0-9]{8}$/;
 
-document.getElementById('edit-agency-profile-upload').addEventListener('change', function (e) {
+const agencyProfileUpload = document.getElementById('edit-agency-profile-upload');
+if (agencyProfileUpload) {
+  agencyProfileUpload.addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
@@ -9,7 +13,8 @@ document.getElementById('edit-agency-profile-upload').addEventListener('change',
         };
         reader.readAsDataURL(file);
     }
-});
+  });
+}
 
 window.addEventListener('load', async function () {
     try {
@@ -17,19 +22,60 @@ window.addEventListener('load', async function () {
             method: 'GET',
             credentials: 'include',
         });
+        
+        if (!res.ok) {
+            console.error('Failed to load profile:', res.status, res.statusText);
+            const text = await res.text();
+            console.error('Response:', text.substring(0, 200));
+            return;
+        }
+        
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            console.error('Response is not JSON. Content-Type:', contentType);
+            const text = await res.text();
+            console.error('Response:', text.substring(0, 200));
+            return;
+        }
+        
         const data = await res.json();
-        if (!res.ok || data.success === false) return;
+        
+        if (!data.success || !data.data) {
+            console.error('Invalid response:', data);
+            return;
+        }
 
         const agency = data.data.agency || {};
         const user = data.data.user || {};
 
-        if (agency.name) document.getElementById('edit-agency-name').value = agency.name;
-        if (user.email) document.getElementById('edit-agency-email').value = user.email;
-        if (user.phone_number) document.getElementById('edit-agency-phone').value = user.phone_number;
-        if (agency.city) document.getElementById('edit-agency-city').value = agency.city;
-        if (agency.address) document.getElementById('edit-agency-address').value = agency.address;
+        console.log('Loaded user:', user);
+        console.log('Loaded agency:', agency);
+
+        const nameEl = document.getElementById('edit-agency-name');
+        const emailEl = document.getElementById('edit-agency-email');
+        const phoneEl = document.getElementById('edit-agency-phone');
+        const cityEl = document.getElementById('edit-agency-city');
+        const addressEl = document.getElementById('edit-agency-address');
+        const bioEl = document.getElementById('edit-agency-bio');
+
+        if (nameEl && agency.name) nameEl.value = agency.name;
+        if (emailEl && user.email) emailEl.value = user.email;
+        if (phoneEl && user.phone_number) phoneEl.value = user.phone_number;
+        if (cityEl && agency.city) {
+            cityEl.value = agency.city;
+        }
+        if (addressEl && agency.address) addressEl.value = agency.address;
+        if (bioEl && agency.bio) bioEl.value = agency.bio;
+
+        // Load profile image if available
+        const profilePreview = document.getElementById('edit-agency-profile-preview');
+        if (profilePreview && user.profile_image) {
+            profilePreview.src = user.profile_image.startsWith('http') 
+                ? user.profile_image 
+                : `../${user.profile_image}`;
+        }
     } catch (e) {
-        // ignore
+        console.error('Error loading profile:', e);
     }
 });
 
@@ -41,6 +87,7 @@ document.getElementById('edit-profile-agency').addEventListener('submit', async 
     const phone = document.getElementById('edit-agency-phone');
     const city = document.getElementById('edit-agency-city');
     const address = document.getElementById('edit-agency-address');
+    const bio = document.getElementById('edit-agency-bio');
     let isValid = true;
 
     clearErrors();
@@ -53,20 +100,18 @@ document.getElementById('edit-profile-agency').addEventListener('submit', async 
         isValid = false;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.value.trim()) {
         showError(email, 'edit-agency-email-error', 'Email is required');
         isValid = false;
-    } else if (!emailRegex.test(email.value)) {
+    } else if (!EMAIL_REGEX.test(email.value.trim())) {
         showError(email, 'edit-agency-email-error', 'Please enter a valid email address');
         isValid = false;
     }
 
-    const phoneRegex = /^[0]{1}[5-7]{1}[0-9]{8}$/;
     if (!phone.value.trim()) {
         showError(phone, 'edit-agency-phone-error', 'Phone number is required');
         isValid = false;
-    } else if (!phoneRegex.test(phone.value.trim())) {
+    } else if (!PHONE_REGEX.test(phone.value.trim())) {
         showError(phone, 'edit-agency-phone-error', 'Phone must be 10 digits starting with 05, 06, or 07');
         isValid = false;
     }
@@ -84,6 +129,11 @@ document.getElementById('edit-profile-agency').addEventListener('submit', async 
         isValid = false;
     }
 
+    if (bio.value.trim().length < 10) {
+        showError(bio, 'edit-agency-bio-error', 'Bio must be at least 10 characters');
+        isValid = false;
+    }
+
     if (!isValid) return;
 
     try {
@@ -97,8 +147,17 @@ document.getElementById('edit-profile-agency').addEventListener('submit', async 
                 phone_number: phone.value.trim(),
                 city: city.value,
                 address: address.value.trim(),
+                bio: bio.value.trim(),
             }),
         });
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await res.text();
+            console.error('Update response is not JSON:', text.substring(0, 200));
+            alert('Server returned an error. Please check the console.');
+            return;
+        }
+        
         const data = await res.json();
         if (!res.ok || data.success === false) {
             alert(data.message || 'Failed to save changes');
