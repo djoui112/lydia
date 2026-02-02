@@ -134,8 +134,7 @@ window.addEventListener('load', async () => {
     }
     
     // Handle nullable fields: statement, software_proficiency, projects_worked_on
-    const statementEl = document.querySelector('input[name="edit-architect-statement"]:checked');
-    if (statementEl && architect.statement !== null && architect.statement !== undefined) {
+    if (architect.statement !== null && architect.statement !== undefined) {
         const statementInput = document.querySelector(`input[name="edit-architect-statement"][value="${architect.statement}"]`);
         if (statementInput) statementInput.checked = true;
     }
@@ -380,8 +379,9 @@ if (profileForm) {
     }
     
     try {
+      // Use POST when sending FormData - PHP does not populate $_POST/$_FILES for PUT requests
       const res = await fetch(`${API_BASE}/users/profile.php`, {
-        method: 'PUT',
+        method: useFormData ? 'POST' : 'PUT',
         headers: headers,
         credentials: 'include',
         body: requestBody,

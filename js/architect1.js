@@ -16,7 +16,7 @@ document.getElementById('profile-upload-arch').addEventListener('change', functi
 });
 
 // Form validation
-document.getElementById('login-architect-1').addEventListener('submit', function (e) {
+document.getElementById('login-architect-1').addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const fname = document.getElementById('architect-fname');

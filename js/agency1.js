@@ -18,7 +18,7 @@ document.getElementById('profile-upload-agency').addEventListener('change', func
 });
 
 // Form validation
-document.getElementById('login-agency-1').addEventListener('submit', function(e) {
+document.getElementById('login-agency-1').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const email = document.getElementById('agency-email');

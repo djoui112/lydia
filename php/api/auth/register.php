@@ -60,9 +60,12 @@ if (!in_array($userType, ['client', 'architect', 'agency'], true)) {
     json_error('Invalid user type', 422);
 }
 
-// Validate required fields
-if ($email === '' || $password === '' || $firstName === '' || $lastName === '') {
+// Validate required fields (agency can have empty last_name)
+if ($email === '' || $password === '' || $firstName === '') {
     json_error('Missing required fields', 422);
+}
+if ($userType !== 'agency' && $lastName === '') {
+    json_error('Last name is required', 422);
 }
 
 // Validate email format

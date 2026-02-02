@@ -81,7 +81,9 @@ window.addEventListener('load', async function () {
     }
 });
 
-document.getElementById('edit-profile-client').addEventListener('submit', async function (e) {
+const editClientForm = document.getElementById('edit-profile-client');
+if (editClientForm) {
+editClientForm.addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const fname = document.getElementById('edit-client-fname');
@@ -149,8 +151,9 @@ document.getElementById('edit-profile-client').addEventListener('submit', async 
     }
     
     try {
+        // Use POST when sending FormData - PHP does not populate $_POST/$_FILES for PUT requests
         const res = await fetch(`${API_BASE}/users/profile.php`, {
-            method: 'PUT',
+            method: useFormData ? 'POST' : 'PUT',
             headers: headers,
             credentials: 'include',
             body: requestBody,
@@ -174,6 +177,7 @@ document.getElementById('edit-profile-client').addEventListener('submit', async 
         alert('Network error. Please try again.');
     }
 });
+}
 
 function showError(input, errorId, message) {
     input.parentElement.classList.add('error');

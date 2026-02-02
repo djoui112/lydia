@@ -110,9 +110,9 @@ document.getElementById('login-agency-2').addEventListener('submit', async funct
     }
 
     try {
-        // Update profile (user already registered in step 1)
+        // Use POST for FormData - PHP does not populate $_POST/$_FILES for PUT requests
         const res = await fetch(`${AGENCY_API_BASE}/users/profile.php`, {
-            method: 'PUT',
+            method: 'POST',
             credentials: 'include',
             body: formData
         });
