@@ -42,7 +42,7 @@ try {
         }
         
         $formattedArchitects[] = [
-            'architect_id' => $architect['id'],
+            'architect_~id' => $architect['id'],
             'first_name' => $architect['first_name'],
             'last_name' => $architect['last_name'],
             'city' => $architect['city'],
