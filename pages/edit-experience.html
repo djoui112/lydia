@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Experience - Mimaria</title>
+    <link rel="icon" href="../assets/main/Department.png" type="image/png">
+    <link rel="stylesheet" href="../css/add-experience.css">
+</head>
+<body>
+    <!-- Experience Form Modal -->
+    <div class="modal active" id="experienceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Edit Experience</h2>
+                <a href="javascript:history.back()" class="close-btn" id="closeModal">&times;</a>
+            </div>
+
+            <form id="experienceForm" novalidate>
+                <!-- Role/Title -->
+                <div class="form-group">
+                    <label for="role">Title *</label>
+                    <input 
+                        type="text" 
+                        id="role" 
+                        name="role" 
+                        placeholder="Ex: Architect"
+                        required
+                    >
+                    <span class="error-message" id="role-error"></span>
+                </div>
+
+                <!-- Agency/Company Name -->
+                <div class="form-group">
+                    <label for="agencyName">Company name *</label>
+                    <input 
+                        type="text" 
+                        id="agencyName" 
+                        name="agencyName" 
+                        placeholder="Ex: Architecture Design Studio"
+                        required
+                    >
+                    <span class="error-message" id="agencyName-error"></span>
+                </div>
+
+                <!-- Start Date -->
+                <div class="form-group date-group">
+                    <label for="startDate">Start date *</label>
+                    <div class="date-inputs">
+                        <select id="startMonth" name="startMonth" required>
+                            <option value="">Month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <select id="startYear" name="startYear" required>
+                            <option value="">Year</option>
+                        </select>
+                    </div>
+                    <span class="error-message" id="startDate-error"></span>
+                </div>
+
+                <!-- End Date -->
+                <div class="form-group date-group">
+                    <label for="endDate">End date (or expected) *</label>
+                    <div class="date-inputs">
+                        <select id="endMonth" name="endMonth" required>
+                            <option value="">Month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <select id="endYear" name="endYear" required>
+                            <option value="">Year</option>
+                        </select>
+                    </div>
+                    <span class="error-message" id="endDate-error"></span>
+                </div>
+
+                <!-- Currently Working Checkbox -->
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input 
+                            type="checkbox" 
+                            id="currentlyWorking" 
+                            name="currentlyWorking"
+                        >
+                        <span>I am currently working in this role</span>
+                    </label>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        placeholder="Describe your role, key responsibilities, and achievements..."
+                        rows="5"
+                        maxlength="1000"
+                    ></textarea>
+                    <div class="char-counter">
+                        <span id="charCount">0</span>/1000
+                    </div>
+                    <span class="error-message" id="description-error"></span>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-save">Save</button>
+                    <a href="javascript:history.back()" class="btn btn-cancel">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/edit-experience.js"></script>
+</body>
+</html>

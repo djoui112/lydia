@@ -143,7 +143,7 @@ function renderTeamMembers(members) {
                         <p>${yearsOfExp}</p>
                     </div>
                 </div>
-                <a href="architect-portfolio.html?id=${member.architect_id}" class="see-more">See more</a>
+                <a href="architect-portfolio.html?architect_id=${member.architect_id}" class="see-more">See more</a>
             </div>
         `;
         
@@ -881,7 +881,7 @@ function initNavigation() {
         const navigateToArchitect = (e) => {
             e.stopPropagation();
             // Navigate to architect portfolio page
-            window.location.href = `architectportfolio.html?id=${memberId || '1'}`;
+            window.location.href = `architect-portfolio.html?architect_id=${memberId || '1'}`;
         };
 
         if (seeMoreBtn) {

@@ -1,9 +1,9 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../config/session.php';
 header('Content-Type: application/json');
 
-if (isset($_SESSION['architect_id'])) {
-    echo json_encode(['architect_id' => $_SESSION['architect_id']]);
+if (isset($_SESSION['user_id']) && isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'architect') {
+    echo json_encode(['architect_id' => (int)$_SESSION['user_id']]);
 } else {
     echo json_encode(['architect_id' => null]);
 }

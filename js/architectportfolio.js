@@ -1,7 +1,7 @@
-const API_BASE = '/mimaria/php/api';
+const API_BASE = '../php/api';
 
 const urlParams = new URLSearchParams(window.location.search);
-const architectId = urlParams.get('architect_id');
+const architectId = urlParams.get('architect_id') || urlParams.get('id');
 
 document.addEventListener("DOMContentLoaded", async () => {
     

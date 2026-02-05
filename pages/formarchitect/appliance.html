@@ -28,19 +28,19 @@
     
 
     <label>First name</label>
-    <input type="text" placeholder="your first name" required>
+    <input type="text" id="first_name" name="first_name" placeholder="your first name" required>
 
     <label>Last name</label>
-    <input type="text" placeholder="your last name" required>
+    <input type="text" id="last_name" name="last_name" placeholder="your last name" required>
 
     <label>Phone number</label>
-    <input type="tel" placeholder="+213 --- ---- --" required>
+    <input type="tel" id="phone_number" name="phone_number" placeholder="+213 --- ---- --" required>
 
     <label>Address</label>
-    <input type="text" placeholder="your current adress" required>
+    <input type="text" id="address" name="address" placeholder="your current adress" required>
 
     <label>Date of birth</label>
-    <input type="text" placeholder="xx/xx/xxxx" required>
+    <input type="date" id="date_of_birth" name="date_of_birth" placeholder="xx/xx/xxxx" required>
 
     <button type="button" class="next-btn" onclick="handleNextClick(event, 'appliancestyle.html')"> Next </button>
   </form>
@@ -48,5 +48,17 @@
   <script src="../../js/appliance.js"></script>
   <script src="../../js/form-persistence.js"></script>
   <script src="../../js/form-validation.js"></script>
+  <script src="../../js/form-autofill.js"></script>
+  <script src="../../js/form-submission.js"></script>
+  <script>
+    // Save agency_id from URL when form page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const agencyId = urlParams.get('agency_id');
+      if (agencyId && typeof saveAgencyId === 'function') {
+        saveAgencyId(agencyId);
+      }
+    });
+  </script>
 </body>
 </html>

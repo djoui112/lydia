@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Request Details</title>
+  <link rel="stylesheet" href="project_portfolio.css" />
+</head>
+<body>
+  <div class="page-container">
+    <header class="form-header">
+      <button class="back-btn" onclick="history.back()"><</button>
+      <h1>Project Request Details</h1>
+    </header>
+
+    <div class="preview-container">
+      <!-- Project Information Section -->
+      <div class="info-section">
+        <h2>Project Information</h2>
+        <div class="info-row">
+          <div class="info-label">Project Name</div>
+          <div class="info-value" id="projectName">Modern House Design</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Project Type</div>
+          <div class="info-value">
+            <span class="choice-display" id="projectType">Residential</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Service(s) Requested</div>
+          <div class="info-value">
+            <span class="choice-display" id="serviceRequested">Architecture</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Description Section -->
+      <div class="info-section">
+        <h2>Project Description</h2>
+        <div class="info-row">
+          <div class="info-label">Description</div>
+          <div class="info-value" id="projectDescription">I want to build a house with 5 rooms with modern design and spacious living areas.</div>
+        </div>
+      </div>
+
+      <!-- Project Photos Section -->
+      <div class="info-section">
+        <h2>Project Photos</h2>
+        <div class="info-row">
+          <div class="info-label">Uploaded Files</div>
+          <div class="info-value" id="projectPhotos">
+            <div id="photosList">No photos uploaded</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // template_preview.js - Load and display project request data
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadProjectData();
+    });
+
+    function loadProjectData() {
+        // Get form data from localStorage
+        const projectName = localStorage.getItem('template-projectName') || 'Not provided';
+        const projectType = localStorage.getItem('template-projectType') || 'Not selected';
+        const serviceRequested = localStorage.getItem('template-serviceRequested') || 'Not selected';
+        const projectDescription = localStorage.getItem('template-projectDescription') || 'No description provided';
+        const projectPhotos = localStorage.getItem('template-projectPhotos') || '';
+
+        // Populate the fields
+        document.getElementById('projectName').textContent = projectName;
+        document.getElementById('projectType').textContent = formatOptionText(projectType);
+        document.getElementById('serviceRequested').textContent = formatOptionText(serviceRequested);
+        document.getElementById('projectDescription').textContent = projectDescription;
+
+        // Handle photos
+        displayPhotos(projectPhotos);
+    }
+
+    function formatOptionText(value) {
+        if (!value || value === 'Not selected') {
+            return value;
+        }
+        
+        // Convert option values to readable format
+        const formatMap = {
+            'residential': 'Residential',
+            'commercial': 'Commercial',
+            'landscape': 'Landscape',
+            'interior-design': 'Interior Design',
+            'architecture': 'Architecture',
+            'landscape-design': 'Landscape Design',
+            'consultation': 'Consultation'
+        };
+        
+        return formatMap[value] || value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    function displayPhotos(photosString) {
+        const photosList = document.getElementById('photosList');
+        
+        if (!photosString || photosString.trim() === '') {
+            photosList.innerHTML = '<span style="color: #999; font-style: italic;">No photos uploaded</span>';
+            return;
+        }
+        
+        // Parse the photos (assuming comma-separated file names)
+        const photoNames = photosString.split(',').map(name => name.trim()).filter(name => name);
+        
+        if (photoNames.length === 0) {
+            photosList.innerHTML = '<span style="color: #999; font-style: italic;">No photos uploaded</span>';
+            return;
+        }
+        
+        // Create a list of photo names
+        let photosHTML = '<div style="display: flex; flex-direction: column; gap: 8px;">';
+        photoNames.forEach(name => {
+            photosHTML += `
+                <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background-color: #f8f8f8; border-radius: 8px;">
+                    <span style="font-size: 1.2rem;">📷</span>
+                    <span style="color: #780000; font-weight: 500;">${name}</span>
+                </div>
+            `;
+        });
+        photosHTML += '</div>';
+        
+        photosList.innerHTML = photosHTML;
+    }
+  </script>
+</body>
+</html>

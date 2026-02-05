@@ -47,12 +47,61 @@
       <label>Additional Notes</label>
       <textarea placeholder="Any additional information about your exterior project..." rows="4"></textarea>
 
-      <button type="button" class="next-btn" onclick="handleNextClick(event, 'exterior_ext_success.html')"> Submit </button>
+      <button type="button" class="next-btn" onclick="handleProjectRequestSubmit(event)"> Submit </button>
     </form>
   </div>
   <script src="../../js/project.js"></script>
   <script src="../../js/form-persistence.js"></script>
   <script src="../../js/form-validation.js"></script>
+  <script src="../../js/form-submission.js"></script>
+  <script>
+    // Handle project request form submission
+    async function handleProjectRequestSubmit(event) {
+      const form = event.target.closest('form');
+      
+      // Validate form first
+      if (form && typeof validateForm === 'function' && !validateForm(form)) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+      }
+      
+      // Save form data before submitting
+      if (typeof saveFormData === 'function') {
+        saveFormData();
+      }
+      
+      // Get agency_id from URL and save it
+      const urlParams = new URLSearchParams(window.location.search);
+      const agencyId = urlParams.get('agency_id');
+      if (agencyId && typeof saveAgencyId === 'function') {
+        saveAgencyId(agencyId);
+      }
+      
+      // Save special requirements and additional notes
+      const specialRequirements = form.querySelector('textarea[placeholder*="specific requirements"]');
+      const additionalNotes = form.querySelector('textarea[placeholder*="additional information"]');
+      
+      if (specialRequirements) {
+        localStorage.setItem('form-exterior_special_requirements', specialRequirements.value);
+      }
+      if (additionalNotes) {
+        const currentDesc = localStorage.getItem('form-description') || '';
+        localStorage.setItem('form-description', currentDesc + (currentDesc ? '\n\n' : '') + additionalNotes.value);
+      }
+      
+      // Submit project request
+      const success = await submitProjectRequest();
+      
+      if (success) {
+        // Navigate to success page
+        window.location.href = 'exterior_ext_success.html';
+      } else {
+        // Show error message
+        alert('Failed to submit project request. Please try again.');
+      }
+    }
+  </script>
 </body>
 </html>
 

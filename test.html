@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+<button onclick="testAPI()">Test API</button>
+<pre id="result"></pre>
+
+<script>
+async function testAPI() {
+  const response = await fetch('api/agencies/profile.php');
+  const data = await response.json();
+  document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+}
+</script>
+</body>
+</html>

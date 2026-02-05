@@ -39,19 +39,26 @@
       
     </div>
   </div>
+  <script src="../../js/form-submission.js"></script>
   <script>
-    // Clear all form data on success page
-    if (typeof clearFormData === 'function') {
-      clearFormData();
-    } else {
-      // Fallback: clear all form-* keys
-      const keys = Object.keys(localStorage);
-      keys.forEach(key => {
-        if (key.startsWith('form-')) {
-          localStorage.removeItem(key);
+    // Submit application when page loads
+    document.addEventListener('DOMContentLoaded', async function() {
+      const success = await submitApplication();
+      if (success) {
+        // Clear all form data on success
+        if (typeof clearFormData === 'function') {
+          clearFormData();
+        } else {
+          // Fallback: clear all form-* keys
+          const keys = Object.keys(localStorage);
+          keys.forEach(key => {
+            if (key.startsWith('form-')) {
+              localStorage.removeItem(key);
+            }
+          });
         }
-      });
-    }
+      }
+    });
   </script>
 </body>
 </html>

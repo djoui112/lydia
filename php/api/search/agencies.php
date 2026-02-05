@@ -17,8 +17,9 @@ try {
     $usePagination = isset($_GET['page']) || isset($_GET['limit']);
     $pagination = $usePagination ? getPaginationParams() : ['limit' => 10000, 'offset' => 0];
 
-    // Build query
-    $whereClause = "WHERE is_approved = 1";
+    // Build query - show all agencies (remove is_approved filter to show all)
+    // If you want to filter by approval status later, you can add it back
+    $whereClause = "WHERE 1=1";
     $params = [];
 
     if (!empty($search)) {
@@ -51,10 +52,8 @@ try {
     
 } catch (Exception $e) {
     error_log("Error in search agencies: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
     http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'data' => [],
-        'message' => 'An error occurred while searching agencies'
-    ]);
+    // Return empty array to match expected format
+    echo json_encode([]);
 }

@@ -1,0 +1,213 @@
+// Form Submission Handler
+// Handles submission of project requests and architect applications
+
+const API_BASE = '../php/api';
+
+// Get agency_id from URL parameters
+function getAgencyIdFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('agency_id') || null;
+}
+
+// Save agency_id to localStorage so it persists across form pages
+function saveAgencyId(agencyId) {
+    if (agencyId) {
+        localStorage.setItem('form-agency-id', agencyId);
+    }
+}
+
+// Get agency_id from localStorage or URL
+function getAgencyId() {
+    return getAgencyIdFromURL() || localStorage.getItem('form-agency-id') || null;
+}
+
+// Submit architect application
+async function submitApplication() {
+    const agencyId = getAgencyId();
+    
+    if (!agencyId) {
+        console.error('Agency ID is required');
+        alert('Error: Agency ID not found. Please go back and try again.');
+        return false;
+    }
+
+    // Get form data from localStorage (saved by form-persistence.js)
+    const formData = {
+        agency_id: parseInt(agencyId),
+        motivation_letter: localStorage.getItem('form-motivationLetter') || '',
+        portfolio_url: localStorage.getItem('form-portfolio_url') || '',
+        linkedin_url: localStorage.getItem('form-linkedin_url') || '',
+        email: localStorage.getItem('form-email') || '',
+        // Get project types from form
+        project_types: getProjectTypes()
+    };
+
+    if (!formData.motivation_letter) {
+        alert('Motivation letter is required');
+        return false;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/applications/create.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Failed to submit application');
+        }
+
+        // Clear agency_id from localStorage after successful submission
+        localStorage.removeItem('form-agency-id');
+        
+        return true;
+    } catch (error) {
+        console.error('Error submitting application:', error);
+        alert('Error submitting application: ' + error.message);
+        return false;
+    }
+}
+
+// Get project types from form data
+function getProjectTypes() {
+    const projectTypes = [];
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+        if (key.startsWith('form-') && key.includes('project_type')) {
+            const value = localStorage.getItem(key);
+            if (value && value !== 'null' && value !== 'undefined') {
+                projectTypes.push(value);
+            }
+        }
+    });
+    
+    // Also check for selected choice buttons
+    const selectedChoices = document.querySelectorAll('.choice.active');
+    selectedChoices.forEach(choice => {
+        const text = choice.textContent.trim().toLowerCase();
+        if (text && !projectTypes.includes(text)) {
+            projectTypes.push(text);
+        }
+    });
+    
+    return projectTypes.length > 0 ? JSON.stringify(projectTypes) : null;
+}
+
+// Submit project request
+async function submitProjectRequest() {
+    const agencyId = getAgencyId();
+    
+    if (!agencyId) {
+        console.error('Agency ID is required');
+        alert('Error: Agency ID not found. Please go back and try again.');
+        return false;
+    }
+
+    // Collect all form data from localStorage
+    const projectType = localStorage.getItem('project-type') || 'exterior';
+    
+    const formData = {
+        agency_id: parseInt(agencyId),
+        project_name: localStorage.getItem('form-project_name') || 'Project Request',
+        project_type: projectType,
+        service_type: localStorage.getItem('form-service_type') || 'design_only',
+        project_location: localStorage.getItem('form-project_location') || '',
+        description: localStorage.getItem('form-description') || localStorage.getItem('form-project_description') || '',
+        min_budget: localStorage.getItem('form-min_budget') ? parseFloat(localStorage.getItem('form-min_budget')) : null,
+        max_budget: localStorage.getItem('form-max_budget') ? parseFloat(localStorage.getItem('form-max_budget')) : null,
+        preferred_timeline: localStorage.getItem('form-preferred_timeline') || null,
+        style_preference: localStorage.getItem('form-style_preference') || null,
+    };
+
+    // Add exterior details if applicable
+    if (projectType === 'exterior' || projectType === 'both') {
+        formData.exterior_property_type = localStorage.getItem('form-exterior_property_type') || null;
+        formData.number_of_floors = localStorage.getItem('form-number_of_floors') ? parseInt(localStorage.getItem('form-number_of_floors')) : null;
+        formData.exterior_area = localStorage.getItem('form-exterior_area') ? parseFloat(localStorage.getItem('form-exterior_area')) : null;
+        formData.exterior_style_preference = localStorage.getItem('form-exterior_style_preference') || null;
+        formData.exterior_special_requirements = localStorage.getItem('form-exterior_special_requirements') || null;
+    }
+
+    // Add interior details if applicable
+    if (projectType === 'interior' || projectType === 'both') {
+        formData.interior_location = localStorage.getItem('form-interior_location') || null;
+        formData.interior_property_type = localStorage.getItem('form-interior_property_type') || null;
+        formData.number_of_rooms = localStorage.getItem('form-number_of_rooms') ? parseInt(localStorage.getItem('form-number_of_rooms')) : null;
+        formData.interior_area = localStorage.getItem('form-interior_area') ? parseFloat(localStorage.getItem('form-interior_area')) : null;
+        formData.interior_style_preference = localStorage.getItem('form-interior_style_preference') || null;
+        formData.color_scheme = localStorage.getItem('form-color_scheme') || null;
+        formData.interior_special_requirements = localStorage.getItem('form-interior_special_requirements') || null;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/project-requests/create.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Failed to submit project request');
+        }
+
+        // Clear agency_id from localStorage after successful submission
+        localStorage.removeItem('form-agency-id');
+        
+        return true;
+    } catch (error) {
+        console.error('Error submitting project request:', error);
+        alert('Error submitting project request: ' + error.message);
+        return false;
+    }
+}
+
+// Initialize on page load
+(function() {
+    // Save agency_id from URL to localStorage
+    const agencyId = getAgencyIdFromURL();
+    if (agencyId) {
+        saveAgencyId(agencyId);
+    }
+
+    // Handle application form submission (on appliance-success.html)
+    if (window.location.pathname.includes('appliance-success.html')) {
+        // Submit application when success page loads
+        submitApplication().then(success => {
+            if (!success) {
+                // If submission fails, redirect back to form
+                window.location.href = 'appliancepro.html';
+            }
+        });
+    }
+
+    // Handle project request form submission (on success pages)
+    if (window.location.pathname.includes('_success.html') && 
+        window.location.pathname.includes('formclient')) {
+        // Submit project request when success page loads
+        submitProjectRequest().then(success => {
+            if (!success) {
+                // If submission fails, redirect back to form
+                const currentPath = window.location.pathname;
+                const prevPage = currentPath.replace('_success.html', '_3.html');
+                window.location.href = prevPage;
+            }
+        });
+    }
+})();
+
+// Export functions for use in other scripts
+window.submitApplication = submitApplication;
+window.submitProjectRequest = submitProjectRequest;
+window.getAgencyId = getAgencyId;
+window.saveAgencyId = saveAgencyId;

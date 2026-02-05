@@ -1,3 +1,6 @@
+// API base URL - consistent with other login files
+const ARCH_API_BASE = '../../php/api';
+
 // Shared validation patterns
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
@@ -101,7 +104,6 @@ document.getElementById('login-architect-1').addEventListener('submit', async fu
 
     // Security fix: Register immediately with password, don't store it
     // Step 1 registers user, step 2 will update profile with additional fields
-    const ARCH_API_BASE = '../../php/api';
     
     // Use FormData to handle profile image upload
     const formData = new FormData();
@@ -126,9 +128,24 @@ document.getElementById('login-architect-1').addEventListener('submit', async fu
             body: formData // Use FormData instead of JSON
         });
 
-        const data = await res.json();
+        // Read response as text first, then parse as JSON
+        const responseText = await res.text();
+        let data;
+        
+        try {
+            data = JSON.parse(responseText);
+        } catch {
+            // If response is not JSON, show the text or status
+            const errorMessage = responseText || `Server error: ${res.status} ${res.statusText}`;
+            showError(email, 'email-error', errorMessage);
+            console.error('Registration error:', res.status, errorMessage);
+            return;
+        }
+
+        // Check if response is ok and successful
         if (!res.ok || data.success === false) {
             showError(email, 'email-error', data.message || 'Registration failed');
+            console.error('Registration error:', res.status, data.message || 'Registration failed');
             return;
         }
 
@@ -144,7 +161,8 @@ document.getElementById('login-architect-1').addEventListener('submit', async fu
         // User is now registered and logged in - proceed to step 2
         window.location.href = 'archiLogin2.html';
     } catch (err) {
-        showError(email, 'email-error', 'Network error. Please try again.');
+        console.error('Network error details:', err);
+        showError(email, 'email-error', `Network error: ${err.message}. Please check your connection and try again.`);
     }
 });
 

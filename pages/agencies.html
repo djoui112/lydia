@@ -235,10 +235,21 @@
         }
 
         function loadAgencies(query = "") {
-          fetch("/mimaria/php/api/search/agencies.php?query=" + query)
-            .then(res => res.json())
-            .then(data => renderAgencies(data))
-            .catch(err => console.error(err));
+          fetch("../php/api/search/agencies.php?query=" + encodeURIComponent(query))
+            .then(res => {
+              if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+              }
+              return res.json();
+            })
+            .then(data => {
+              console.log("Agencies loaded:", data);
+              renderAgencies(data);
+            })
+            .catch(err => {
+              console.error("Error loading agencies:", err);
+              grid.innerHTML = "<p>Error loading agencies. Please try again later.</p>";
+            });
         }
 
         // load all agencies on page load

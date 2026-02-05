@@ -227,11 +227,12 @@
     </body>
 </html>
 <script>
-let architectId = new URLSearchParams(window.location.search).get('architect_id');
+let architectId = new URLSearchParams(window.location.search).get('architect_id') || 
+                 new URLSearchParams(window.location.search).get('id');
 
 // If missing, try fetching from backend session
 if (!architectId) {
-    fetch('../php/api/get-session-architect.php')
+    fetch('../php/api/get-session-architect.php', { credentials: 'include' })
         .then(res => res.json())
         .then(data => {
             if (data.architect_id) {
@@ -241,6 +242,10 @@ if (!architectId) {
                 console.error('No architect ID available');
                 document.querySelector('.generalcontainer').innerHTML = '<p>Error: No architect selected.</p>';
             }
+        })
+        .catch(err => {
+            console.error('Failed to fetch architect ID:', err);
+            document.querySelector('.generalcontainer').innerHTML = '<p>Error: Could not load portfolio.</p>';
         });
 } else {
     loadArchitectPortfolio(architectId);

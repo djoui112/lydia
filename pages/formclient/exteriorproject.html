@@ -24,16 +24,16 @@
     
 
     <label>Full name</label>
-    <input type="text" placeholder="your full name" required>
+    <input type="text" id="full_name" name="full_name" placeholder="your full name" required>
 
     <label>Phone number</label>
-    <input type="tel" placeholder="+213 --- ---- --" required>
+    <input type="tel" id="phone_number" name="phone_number" placeholder="+213 --- ---- --" required>
 
     <label>Project location</label>
-    <input type="text" placeholder="city or adress if possible" required>
+    <input type="text" id="project_location" name="project_location" placeholder="city or adress if possible" required>
 
     <label>Email</label>
-    <input type="email" placeholder="contact@gmail.com" required>
+    <input type="email" id="email" name="email" placeholder="contact@gmail.com" required>
 
     <button type="button" class="next-btn" onclick="handleNextClick(event, 'exterior_2.html')"> Next </button>
   </form>
@@ -41,5 +41,17 @@
   <script src="../../js/project.js"></script>
   <script src="../../js/form-persistence.js"></script>
   <script src="../../js/form-validation.js"></script>
+  <script src="../../js/form-autofill.js"></script>
+  <script src="../../js/form-submission.js"></script>
+  <script>
+    // Save agency_id from URL when form page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const agencyId = urlParams.get('agency_id');
+      if (agencyId && typeof saveAgencyId === 'function') {
+        saveAgencyId(agencyId);
+      }
+    });
+  </script>
 </body>
 </html>

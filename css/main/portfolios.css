@@ -102,32 +102,54 @@
 }
 .portfolio-info{
     height: 65%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    align-items: start;
+    justify-items: center;
     color: #1B2B41;
-    
+    padding: 0.4rem 0.5rem 0.3rem 0.5rem;
+    box-sizing: border-box;
+    position: relative;
+    gap: 0.3rem;
 }
 
 .user-name{
-    margin-top: 1.5rem;
-    font-size: 1.6rem;
+    margin: 0;
+    font-size: 1.3rem;
     font-weight: 600;
     transform: translateY(2rem);
     transition: all 0.4s ease;
-
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.15;
+    word-wrap: break-word;
+    hyphens: auto;
+    height: 2.8rem;
+    max-height: 2.8rem;
+    grid-row: 1;
+    align-self: start;
 }
+
 .user-name.current{
     transform: translateY(0.2rem);
     color: white;
 }
 .numb{
-    display: flex;
-    margin-top: 1.3rem;
-    margin-bottom: 1.3rem;
-    opacity: 0;
+    display: flex !important;
+    margin: 0;
+    opacity: 1 !important;
+    visibility: visible !important;
     transition: all 0.4s ease;
+    height: 2.5rem;
+    min-height: 2.5rem;
+    grid-row: 2;
+    color: #1B2B41;
+    align-self: start;
 }
 
 .numb.current{
@@ -147,29 +169,31 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-left: 1px #1B2B41 solid;
     width: 4rem;
 }
 
-.num-projects p:first-child,.num-years p:first-child{
-    font-size: 0.8rem;
+.num-years p:first-child{
+    font-size: 0.7rem;
 }
 
-.num-projects p:last-child,.num-years p:last-child{
-    font-size: 1.5rem;
+.num-years p:last-child{
+    font-size: 1.2rem;
 }
 
 .see-more{
     background-color:#1B2B41 ;
     color: white;
     border: none;
-    padding: 0.4rem 1rem;
+    padding: 0.35rem 0.9rem;
     border-radius: 1.5rem;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     text-decoration: none;
     display: inline-block;
-    
+    margin: 0;
+    white-space: nowrap;
+    grid-row: 4;
+    align-self: end;
 }
 .see-more.current{
     background-color: white;
@@ -195,21 +219,38 @@
             color: white;
             background-color: #5B7E98;
             text-align: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 2rem;
-            font-size: 1.6rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            font-weight: 600;
             cursor: pointer;
             pointer-events: all;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
             user-select: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            line-height: 1;
+            border: 2px solid transparent;
         }
 
         .nav-arrow:hover {
             background-color: #1B2B41;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-arrow:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-arrow:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(91, 126, 152, 0.3);
         }
 @media (min-height: 900px){
     .portfolio-slider-wrapper{

@@ -244,14 +244,50 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 document.addEventListener('DOMContentLoaded', async () => {
-  const link = document.querySelector('#portfolioLink'); // make sure your link has this id
+  const link = document.querySelector('#portfolioLink');
+  
+  if (!link) {
+    console.error('Portfolio link element not found');
+    return;
+  }
 
   try {
-    const res = await fetch('/mimaria/php/api/get-session-architect.php', { credentials: 'include' });
+    const res = await fetch('../php/api/get-session-architect.php', { 
+      credentials: 'include' 
+    });
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
     const data = await res.json();
+    console.log('Session architect data:', data);
 
     if (data.architect_id) {
-      link.href = `architect-portfolio.html?architect_id=${data.architect_id}`;
+      const portfolioUrl = `architect-portfolio.html?architect_id=${data.architect_id}`;
+      link.href = portfolioUrl;
+      
+      // Handle button click if it exists inside the link
+      const button = link.querySelector('button');
+      if (button) {
+        // Prevent button from blocking link navigation
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          window.location.href = portfolioUrl;
+        });
+      }
+      
+      // Also handle link click directly to ensure navigation works
+      link.addEventListener('click', (e) => {
+        if (link.href && link.href !== '#' && !link.href.endsWith('#')) {
+          // Allow navigation
+          return true;
+        }
+        e.preventDefault();
+      });
+      
+      console.log('Portfolio link set to:', portfolioUrl);
     } else {
       console.error('No architect ID in session');
       link.href = '#';

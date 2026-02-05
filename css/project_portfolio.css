@@ -1,0 +1,216 @@
+ /* Reset and Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Aileron', 'Poppins', 'Open Sans', sans-serif;
+      background-color: #fafafa;
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Page Container */
+    .page-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    /* Form Header */
+    .form-header {
+      background: linear-gradient(90deg, #780000 0%, #1B2B41 100%);
+      color: #ffffff;
+      padding: 20px 30px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateX(-3px);
+    }
+
+    .form-header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    /* Preview Container */
+    .preview-container {
+      padding: 30px;
+    }
+
+    /* Info Section */
+    .info-section {
+      margin-bottom: 35px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .info-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .info-section h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #780000;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(120, 0, 0, 0.15);
+    }
+
+    /* Info Row */
+    .info-row {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 20px;
+      padding: 15px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #780000;
+      display: flex;
+      align-items: flex-start;
+      padding-top: 2px;
+    }
+
+    .info-value {
+      font-size: 0.95rem;
+      color: #333;
+      line-height: 1.6;
+      word-wrap: break-word;
+    }
+
+    /* Choice Display (Pills/Badges) */
+    .choice-display {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(120, 0, 0, 0.1), rgba(27, 43, 65, 0.1));
+      color: #780000;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 1px solid rgba(120, 0, 0, 0.2);
+      margin: 2px 4px 2px 0;
+    }
+
+    /* Responsive Design - Tablet */
+    @media (max-width: 768px) {
+      .page-container {
+        border-radius: 15px;
+      }
+
+      .form-header {
+        padding: 18px 20px;
+      }
+
+      .form-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .preview-container {
+        padding: 20px;
+      }
+
+      .info-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 12px 0;
+      }
+
+      .info-label {
+        padding-bottom: 4px;
+      }
+
+      .info-section h2 {
+        font-size: 1.2rem;
+      }
+    }
+
+    /* Responsive Design - Mobile */
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .page-container {
+        border-radius: 12px;
+      }
+
+      .form-header {
+        padding: 15px;
+        gap: 15px;
+      }
+
+      .form-header h1 {
+        font-size: 1.3rem;
+      }
+
+      .back-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
+
+      .preview-container {
+        padding: 15px;
+      }
+
+      .info-section {
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+      }
+
+      .info-section h2 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+      }
+
+      .info-row {
+        padding: 10px 0;
+      }
+
+      .info-label,
+      .info-value {
+        font-size: 0.9rem;
+      }
+
+      .choice-display {
+        font-size: 0.85rem;
+        padding: 5px 12px;
+      }
+    }

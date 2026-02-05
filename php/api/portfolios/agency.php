@@ -11,8 +11,8 @@ header('Content-Type: application/json');
 try {
     $db = getDB();
     
-    // Get agency ID from query parameter
-    $agencyId = isset($_GET['agency_id']) ? (int)$_GET['agency_id'] : 0;
+    // Get agency ID from query parameter (support both 'id' and 'agency_id' for compatibility)
+    $agencyId = isset($_GET['agency_id']) ? (int)$_GET['agency_id'] : (isset($_GET['id']) ? (int)$_GET['id'] : 0);
     
     if ($agencyId <= 0) {
         http_response_code(400);

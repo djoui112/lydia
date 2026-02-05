@@ -740,6 +740,30 @@ document.addEventListener("DOMContentLoaded", function () {
       this.style.transition = "all 0.3s ease";
     });
   });
+
+  // Portfolio button - Link to agency portfolio with ID
+  const viewPortfolioBtn = document.getElementById('viewPortfolioBtn');
+  if (viewPortfolioBtn) {
+    // Fetch agency ID from session and update link
+    fetch('../php/api/get-session-agency.php', { 
+      credentials: 'include' 
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.agency_id) {
+        const portfolioUrl = `agency-portfolio.html?id=${data.agency_id}`;
+        viewPortfolioBtn.href = portfolioUrl;
+        console.log('Portfolio link set to:', portfolioUrl);
+      } else {
+        console.error('No agency ID in session');
+        viewPortfolioBtn.href = 'agency-portfolio.html';
+      }
+    })
+    .catch(err => {
+      console.error('Failed to get agency ID:', err);
+      viewPortfolioBtn.href = 'agency-portfolio.html';
+    });
+  }
 });
 
 // Bubbles are fixed in position - no dragging functionality

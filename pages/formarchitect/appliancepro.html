@@ -28,21 +28,65 @@
     
 
     <label>Portfolio</label>
-    <input type="url" placeholder="https://portfolio.com" required>
+    <input type="url" id="portfolio_url" name="portfolio_url" placeholder="https://portfolio.com" required>
 
     <label>LinkedIn</label>
-    <input type="url" placeholder="https://LinkedIn.com" required>
+    <input type="url" id="linkedin_url" name="linkedin_url" placeholder="https://LinkedIn.com" required>
 
     <label>Email</label>
-    <input type="email" placeholder="contact@gmail.com" required>
+    <input type="email" id="email" name="email" placeholder="contact@gmail.com" required>
 
     <label>Motivation Letter</label>
     <textarea name="motivationLetter" placeholder="your motivation letter" rows="5" required></textarea>
 
-    <button type="button" class="next-btn" onclick="handleNextClick(event, 'appliance-success.html')"> Submit </button>
+    <button type="button" class="next-btn" onclick="handleApplicationSubmit(event)"> Submit </button>
   </form>
   </div>
   <script src="../../js/form-persistence.js"></script>
   <script src="../../js/form-validation.js"></script>
+  <script src="../../js/form-autofill.js"></script>
+  <script src="../../js/form-submission.js"></script>
+  <script>
+    // Handle application form submission
+    async function handleApplicationSubmit(event) {
+      const form = event.target.closest('form');
+      
+      // Validate form first
+      if (form && typeof validateForm === 'function' && !validateForm(form)) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+      }
+      
+      // Save form data before submitting
+      if (typeof saveFormData === 'function') {
+        saveFormData();
+      }
+      
+      // Get agency_id from URL and save it
+      const urlParams = new URLSearchParams(window.location.search);
+      const agencyId = urlParams.get('agency_id');
+      if (agencyId && typeof saveAgencyId === 'function') {
+        saveAgencyId(agencyId);
+      }
+      
+      // Save motivation letter from textarea
+      const motivationLetter = form.querySelector('textarea[name="motivationLetter"]');
+      if (motivationLetter) {
+        localStorage.setItem('form-motivationLetter', motivationLetter.value);
+      }
+      
+      // Submit application
+      const success = await submitApplication();
+      
+      if (success) {
+        // Navigate to success page
+        window.location.href = 'appliance-success.html';
+      } else {
+        // Show error message
+        alert('Failed to submit application. Please try again.');
+      }
+    }
+  </script>
 </body>
 </html>

@@ -147,7 +147,7 @@ function injectArchitectData(architects) {
         // Backend returns 'id' (not 'architect_id')
         const seeMoreLink = card.querySelector('.see-more');
         if (seeMoreLink && architect.id) {
-            seeMoreLink.href = `pages/architect-portfolio.html?id=${architect.id}`;
+            seeMoreLink.href = `pages/architect-portfolio.html?architect_id=${architect.id}`;
         }
     }
     
