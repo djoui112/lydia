@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../css/team-members.css" />
+    <link rel="stylesheet" href="../css/job-appliance.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
-    <link rel="icon" href="../assets/team-members/logo.png" type="image/png" />
+    <link rel="icon" href="../assets/job-appliance/logo.png" type="image/png" />
     <title>Mimaria · Team Members</title>
   </head>
   <body>
@@ -22,104 +22,16 @@
           <i class="fa fa-search" aria-hidden="true"></i>
           <input
             type="search"
-            placeholder="Search talent, location, specialty"
-            aria-label="Search talent"
+              placeholder="Search team members"
+            aria-label="Search team members"
           />
         </div>
       </nav>
     </header>
 
     <main class="page-shell">
-      <section class="team-page" aria-label="Team members">
-        <div class="card-grid">
-          <article class="member-card">
-            <div class="member-card__arch" aria-hidden="true"></div>
-            <div class="member-card__avatar-wrap">
-              <img src="../assets/team-members/user-pic.jpg" alt="user name portrait" class="member-card__avatar" />
-            </div>
-            <div class="member-card__body">
-              <h3>user name</h3>
-              <a href="architect-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="member-card">
-            <div class="member-card__arch" aria-hidden="true"></div>
-            <div class="member-card__avatar-wrap">
-              <img src="../assets/team-members/user-pic.jpg" alt="user name portrait" class="member-card__avatar" />
-            </div>
-            <div class="member-card__body">
-              <h3>user name</h3>
-              <a href="architect-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="member-card">
-            <div class="member-card__arch" aria-hidden="true"></div>
-            <div class="member-card__avatar-wrap">
-              <img src="../assets/team-members/user-pic.jpg" alt="user name portrait" class="member-card__avatar" />
-            </div>
-            <div class="member-card__body">
-              <h3>user name</h3>
-              <a href="architect-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="member-card">
-            <div class="member-card__arch" aria-hidden="true"></div>
-            <div class="member-card__avatar-wrap">
-              <img src="../assets/team-members/user-pic.jpg" alt="user name portrait" class="member-card__avatar" />
-            </div>
-            <div class="member-card__body">
-              <h3>user name</h3>
-              <a href="architect-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="member-card">
-            <div class="member-card__arch" aria-hidden="true"></div>
-            <div class="member-card__avatar-wrap">
-              <img src="../assets/team-members/user-pic.jpg" alt="user name portrait" class="member-card__avatar" />
-            </div>
-            <div class="member-card__body">
-              <h3>user name</h3>
-              <a href="architect-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="member-card">
-            <div class="member-card__arch" aria-hidden="true"></div>
-            <div class="member-card__avatar-wrap">
-              <img src="../assets/team-members/user-pic.jpg" alt="user name portrait" class="member-card__avatar" />
-            </div>
-            <div class="member-card__body">
-              <h3>user name</h3>
-              <a href="architect-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="member-card">
-            <div class="member-card__arch" aria-hidden="true"></div>
-            <div class="member-card__avatar-wrap">
-              <img src="../assets/team-members/user-pic.jpg" alt="user name portrait" class="member-card__avatar" />
-            </div>
-            <div class="member-card__body">
-              <h3>user name</h3>
-              <a href="architect-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="member-card">
-            <div class="member-card__arch" aria-hidden="true"></div>
-            <div class="member-card__avatar-wrap">
-              <img src="../assets/team-members/user-pic.jpg" alt="user name portrait" class="member-card__avatar" />
-            </div>
-            <div class="member-card__body">
-              <h3>user name</h3>
-              <a href="architect-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-        </div>
+          <section class="team-page" aria-label="Team members">
+        <div class="card-grid" id="teamMembersGrid"></div>
       </section>
     </main>
 
@@ -164,10 +76,9 @@
         </div>
         <div class="footer-section">
           <nav class="footer-nav">
-            <a href="agency-interface.html#data-section">Recent Data & Deadlines</a>
-            <a href="agency-interface.html#team-management">Team Management</a>
-            <a href="agency-interface.html#project-management">Project Management</a>
-            <a href="agency-interface.html#portfolio-section">View Portfolio</a>
+            <a href="../index.html">Home</a>
+            <a href="../index.html#portfolios">Portfolios</a>
+            <a href="../index.html#agencies">Our Agencies</a>
           </nav>
         </div>
         <div class="footer-section">
@@ -285,6 +196,62 @@
         </div>
       </div>
     </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("JS LOADED");
+        const grid = document.getElementById("teamMembersGrid");
+        const searchInput = document.querySelector(".search-container input");
+
+        function renderTeamMembers(teamMembers) {
+          grid.innerHTML = "";
+
+          if (teamMembers.length === 0) {
+            grid.innerHTML = "<p>No team members found</p>";
+            return;
+          }
+
+          teamMembers.forEach(teamMember => {
+            const fullName = `${teamMember.last_name} ${teamMember.first_name}`;
+            grid.innerHTML += `
+              <article class="agency-card">
+                <div class="agency-card__arch" aria-hidden="true"></div>
+                <div class="agency-card__avatar-wrap">
+                  <img
+                    src="../assets/job-appliance/user-pic.jpg"
+                    alt="${fullName} portrait"
+                    class="agency-card__avatar"
+                  />
+                </div>
+                <div class="agency-card__body">
+                  <h3>${fullName}</h3>
+                  <p>${teamMember.role}</p>
+                  <a href="appliancepreview.html?id=${teamMember.id}" class="btn">
+                    See more
+                  </a>
+                </div>
+              </article>
+            `;
+          });
+        }
+
+          function loadTeamMembers(query = "") {
+          fetch("/mimaria/php/api/search/team-members.php?query=" + query)
+            .then(res => res.json())
+            .then(data => renderTeamMembers(data))
+            .catch(err => console.error(err));
+        }
+
+        // load all team members on page load
+        loadTeamMembers();
+
+        // live search
+        searchInput.addEventListener("input", () => {
+            loadTeamMembers(searchInput.value);
+        });
+      });
+    </script>
   </body>
 </html>
+
 

@@ -1,11 +1,379 @@
 // Timeline functionality for Project Preview
-document.addEventListener("DOMContentLoaded", function () {
+const API_BASE = '../php/api';
+
+document.addEventListener("DOMContentLoaded", async function () {
+  // Get project ID from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const projectId = urlParams.get('id');
+  
+  if (!projectId) {
+    console.error('No project ID provided');
+    return;
+  }
+  
+  // Load project data
+  await loadProjectPreview(projectId);
+  
+  // Initialize timeline (will use project milestones)
+  initTimeline();
+});
+
+// ====== Load Project Preview Data ======
+async function loadProjectPreview(projectId) {
+  try {
+    const response = await fetch(`${API_BASE}/projects/preview.php?id=${projectId}`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    
+    if (!result.success || !result.data) {
+      throw new Error('Invalid response format');
+    }
+    
+    const { project, photos, milestones, review, can_add_to_portfolio, is_client } = result.data;
+    
+    // Store data globally
+    window.projectPreviewData = { project, can_add_to_portfolio, is_client };
+    
+    // Render project info
+    renderProjectInfo(project);
+    
+    // Render timeline from milestones
+    renderTimeline(milestones);
+    
+    // Render client review
+    renderClientReview(review, is_client);
+    
+    // Show/hide "Add to Portfolio" button
+    renderPortfolioSection(can_add_to_portfolio);
+    
+  } catch (error) {
+    console.error('Error loading project preview:', error);
+    // Show error message
+    const container = document.querySelector('.container');
+    if (container) {
+      container.innerHTML = '<div style="padding: 40px; text-align: center;"><p>Error loading project. Please try again later.</p></div>';
+    }
+  }
+}
+
+// ====== Render Project Info ======
+function renderProjectInfo(project) {
+  if (!project) return;
+  
+  // Page title
+  const pageTitle = document.querySelector('.page-title');
+  if (pageTitle) {
+    pageTitle.textContent = project.project_name || 'Project';
+  }
+  
+  // Project title
+  const projectTitle = document.getElementById('projectTitle');
+  if (projectTitle) {
+    projectTitle.textContent = project.project_name || 'Project';
+  }
+  
+  // Project description
+  const projectDescription = document.getElementById('projectDescription');
+  if (projectDescription) {
+    projectDescription.textContent = project.description || 'No description available.';
+  }
+  
+  // More Details link
+  const moreDetailsLink = document.querySelector('.btn-more-details');
+  if (moreDetailsLink && project.request_id) {
+    moreDetailsLink.href = `c_reqpreview_view.html?id=${project.request_id}`;
+  }
+  
+  // Timeline project name
+  const timelineProjectName = document.getElementById('timelineProjectName');
+  if (timelineProjectName) {
+    timelineProjectName.textContent = project.project_name || 'project';
+  }
+}
+
+// ====== Render Timeline ======
+function renderTimeline(milestones) {
+  const timelineMilestones = document.getElementById("timelineMilestones");
+  const timelineFlags = document.getElementById("timelineFlags");
+  const progressCircle = document.getElementById("progressCircle");
+  const progressPercentage = document.getElementById("progressPercentage");
+  
+  if (!timelineMilestones) return;
+  
+  timelineMilestones.innerHTML = '';
+  if (timelineFlags) timelineFlags.innerHTML = '';
+  
+  if (!milestones || milestones.length === 0) {
+    timelineMilestones.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 40px;">No timeline data available.</p>';
+    if (progressCircle) progressCircle.style.setProperty("--progress", "0%");
+    if (progressPercentage) progressPercentage.textContent = "0%";
+    return;
+  }
+  
+  // Calculate progress
+  const completedCount = milestones.filter(m => m.is_completed).length;
+  const totalCount = milestones.length;
+  const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+  
+  if (progressCircle) {
+    progressCircle.style.setProperty("--progress", `${progress}%`);
+  }
+  if (progressPercentage) {
+    progressPercentage.textContent = `${Math.round(progress)}%`;
+  }
+  
+  // Create milestones
+  milestones.forEach((milestone, index) => {
+    const milestoneEl = document.createElement("div");
+    milestoneEl.className = "milestone";
+    if (milestone.is_completed) {
+      milestoneEl.classList.add("completed");
+    }
+    
+    const formattedDate = milestone.due_date_formatted || formatDate(new Date(milestone.due_date), 'M j');
+    
+    milestoneEl.innerHTML = `
+      <div class="milestone-date">${formattedDate}</div>
+      <div class="milestone-node">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="milestone-content">
+        <div class="milestone-title">${milestone.title || 'Milestone'}</div>
+        <div class="milestone-description">${milestone.description || ""}</div>
+      </div>
+    `;
+    
+    // Toggle completion on click
+    milestoneEl.addEventListener("click", (e) => {
+      if (e.target.closest(".milestone-node")) {
+        // Note: This would require an API call to update milestone status
+        // For now, just toggle visual state
+        milestone.is_completed = !milestone.is_completed;
+        milestoneEl.classList.toggle("completed");
+        updateTimelineProgress();
+      }
+    });
+    
+    timelineMilestones.appendChild(milestoneEl);
+  });
+  
+  // Update timeline line position
+  setTimeout(() => {
+    recalculateLinePosition();
+  }, 100);
+}
+
+// ====== Render Client Review ======
+function renderClientReview(review, isClient) {
+  const reviewSection = document.getElementById("client-review-section");
+  const reviewContent = reviewSection?.querySelector(".review-content");
+  
+  if (!reviewContent) return;
+  
+  // Hide review section if user is not the client and no review exists
+  if (!isClient && !review) {
+    if (reviewSection) {
+      reviewSection.style.display = 'none';
+    }
+    return;
+  }
+  
+  if (review) {
+    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+    reviewContent.innerHTML = `
+      <div class="review-item">
+        <div class="review-header">
+          <div class="review-rating">
+            ${stars}
+            <span class="rating-number">${review.rating}/5</span>
+          </div>
+          <div class="review-date">${review.created_at_formatted || ''}</div>
+        </div>
+        <div class="review-text">${review.review_text || ''}</div>
+      </div>
+    `;
+  } else if (isClient) {
+    // Show review form for client
+    reviewContent.innerHTML = `
+      <form id="clientReviewForm" style="max-width: 600px;">
+        <div class="form-group">
+          <label>Your Rating</label>
+          <div class="star-rating" id="clientStarRating">
+            <span class="star" data-rating="1">★</span>
+            <span class="star" data-rating="2">★</span>
+            <span class="star" data-rating="3">★</span>
+            <span class="star" data-rating="4">★</span>
+            <span class="star" data-rating="5">★</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Your Review</label>
+          <textarea id="clientReviewText" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn-submit-review">Submit Review</button>
+      </form>
+    `;
+    
+    // Initialize review form
+    initClientReviewForm();
+  }
+}
+
+// ====== Render Portfolio Section ======
+function renderPortfolioSection(canAddToPortfolio) {
+  const portfolioSection = document.getElementById("portfolio-section");
+  if (!portfolioSection) return;
+  
+  if (canAddToPortfolio) {
+    portfolioSection.style.display = 'block';
+    const addPortfolioBtn = document.getElementById("addPortfolioBtn");
+    if (addPortfolioBtn) {
+      addPortfolioBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Navigate to add project to portfolio page
+        window.location.href = 'template.html';
+      });
+    }
+  } else {
+    portfolioSection.style.display = 'none';
+  }
+}
+
+// ====== Helper Functions ======
+function formatDate(date, format = 'M j') {
+  if (!date) return '';
+  const d = new Date(date);
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  if (format === 'M j') {
+    return `${monthNames[d.getMonth()]} ${d.getDate()}`;
+  }
+  return d.toLocaleDateString();
+}
+
+function updateTimelineProgress() {
+  const milestones = document.querySelectorAll(".milestone");
+  const completedCount = Array.from(milestones).filter(m => m.classList.contains("completed")).length;
+  const totalCount = milestones.length;
+  const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+  
+  const progressCircle = document.getElementById("progressCircle");
+  const progressPercentage = document.getElementById("progressPercentage");
+  
+  if (progressCircle) {
+    progressCircle.style.setProperty("--progress", `${progress}%`);
+  }
+  if (progressPercentage) {
+    progressPercentage.textContent = `${Math.round(progress)}%`;
+  }
+}
+
+function recalculateLinePosition() {
+  const milestones = document.querySelectorAll(".milestone");
+  const timelineLine = document.getElementById("timelineLine");
+  const timelineMilestones = document.getElementById("timelineMilestones");
+  
+  if (!timelineLine || milestones.length < 2) {
+    if (timelineLine && milestones.length < 2) timelineLine.style.display = "none";
+    return;
+  }
+  
+  const firstNode = milestones[0].querySelector(".milestone-node");
+  const lastNode = milestones[milestones.length - 1].querySelector(".milestone-node");
+  
+  if (firstNode && lastNode) {
+    const firstRect = firstNode.getBoundingClientRect();
+    const lastRect = lastNode.getBoundingClientRect();
+    const containerRect = timelineMilestones.getBoundingClientRect();
+    const firstCenterX = firstRect.left + firstRect.width / 2 - containerRect.left;
+    const lastCenterX = lastRect.left + lastRect.width / 2 - containerRect.left;
+    timelineLine.style.left = `${firstCenterX}px`;
+    timelineLine.style.width = `${lastCenterX - firstCenterX}px`;
+    timelineLine.style.display = "block";
+  }
+}
+
+function initClientReviewForm() {
+  const form = document.getElementById("clientReviewForm");
+  const starRating = document.getElementById("clientStarRating");
+  const reviewText = document.getElementById("clientReviewText");
+  
+  if (!form || !starRating || !reviewText) return;
+  
+  let selectedRating = 0;
+  const stars = starRating.querySelectorAll(".star");
+  
+  stars.forEach((star, index) => {
+    star.addEventListener("click", () => {
+      selectedRating = index + 1;
+      stars.forEach((s, i) => {
+        s.style.color = i < selectedRating ? "gold" : "#bfbfbf";
+      });
+    });
+  });
+  
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    if (selectedRating === 0) {
+      alert("Please select a rating");
+      return;
+    }
+    
+    if (!reviewText.value.trim()) {
+      alert("Please write a review");
+      return;
+    }
+    
+    try {
+      const projectId = window.projectPreviewData?.project?.id;
+      if (!projectId) {
+        throw new Error("Project ID not found");
+      }
+      
+      const response = await fetch(`${API_BASE}/reviews/create.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          rating: selectedRating,
+          review_text: reviewText.value.trim(),
+          project_id: projectId
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to submit review');
+      }
+      
+      // Reload page to show the new review
+      window.location.reload();
+      
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert("Error submitting review. Please try again.");
+    }
+  });
+}
+
+function initTimeline() {
   const timelineMilestones = document.getElementById("timelineMilestones");
   const timelineFlags = document.getElementById("timelineFlags");
   const progressCircle = document.getElementById("progressCircle");
   const progressPercentage = document.getElementById("progressPercentage");
 
-  // Timeline data - will be loaded from localStorage
+  // Timeline data - will be loaded from project milestones via API
   let timelineData = [];
 
   function loadTimelineFromLocalStorage() {

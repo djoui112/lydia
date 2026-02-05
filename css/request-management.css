@@ -363,3 +363,96 @@ a{
     }
 }
 
+/* Style for the card grid container */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    justify-items: center;
+}
+
+/* Style for the agency card (adapted from .shape, keeping colors) */
+.agency-card {
+    min-height: 320px;
+    width: 100%;
+    max-width: 420px;
+    margin-inline: auto;
+    background-color: var(--color-secondary); /* darker top color */
+    border: 3px solid var(--color-primary);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.agency-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 28px rgba(0,0,0,0.18);
+}
+
+/* Top section: project name + client name */
+.agency-card__arch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2.5rem 1.5rem 1.75rem;
+    color: var(--color-primary);
+    border-bottom: 2px solid var(--color-primary);
+}
+
+.agency-card__arch h3 {
+    font-size: 1.4rem;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin: 0;
+}
+
+.agency-card__arch p {
+    font-size: 1rem;
+    color: var(--color-primary);
+    margin-top: 0.35rem;
+}
+
+/* Bottom section: description + button */
+.agency-card__body {
+    width: 100%;
+    align-self: stretch;
+    padding: 2.25rem 1.75rem 2rem;
+    background-color: var(--color-accent);
+    border-radius: 0 0 20px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.agency-card__body p {
+    color: #ffffff;
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* See more button */
+.btn {
+    display: inline-block;
+    padding: 0.55rem 1.4rem;
+    background-color: var(--color-primary);
+    color: #fff;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.btn:hover {
+    background-color: var(--color-secondary);
+    transform: translateY(-1px);
+}
+

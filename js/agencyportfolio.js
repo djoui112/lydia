@@ -1,13 +1,286 @@
-document.addEventListener("DOMContentLoaded", () => {
+const API_BASE = '../php/api';
+
+document.addEventListener("DOMContentLoaded", async () => {
+    // Get agency ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const agencyId = urlParams.get('id');
+    
+    if (!agencyId) {
+        console.error('No agency ID provided');
+        return;
+    }
+    
+    // Load portfolio data
+    await loadAgencyPortfolio(agencyId);
+    
+    // Initialize UI components after data is loaded
     initMenu();
-    initReviewForm();
+    initReviewForm(agencyId);
     initProjectReveal();
     initPortfolioSlider();
     initProgressTracker();
     initProjectStack();
     initImageLoader();
     initNavigation();
+    initPortfolioActions(agencyId);
 });
+
+// ====== Load Agency Portfolio Data ======
+async function loadAgencyPortfolio(agencyId) {
+    try {
+        const response = await fetch(`${API_BASE}/portfolios/agency.php?id=${agencyId}`, {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (!result.success || !result.data) {
+            throw new Error('Invalid response format');
+        }
+        
+        const { profile, members, projects, reviews, is_owner, user_type } = result.data;
+        
+        // Store data globally for use in other functions
+        window.agencyPortfolioData = { agencyId, is_owner, user_type };
+        
+        // Render profile
+        renderAgencyProfile(profile, is_owner);
+        
+        // Render team members
+        renderTeamMembers(members);
+        
+        // Render projects
+        renderAgencyProjects(projects, is_owner);
+        
+        // Render reviews
+        renderReviews(reviews, user_type);
+        
+    } catch (error) {
+        console.error('Error loading agency portfolio:', error);
+        // Show error message to user
+        const container = document.querySelector('.generalcontainer');
+        if (container) {
+            container.innerHTML = '<div style="padding: 40px; text-align: center;"><p>Error loading portfolio. Please try again later.</p></div>';
+        }
+    }
+}
+
+// ====== Render Agency Profile ======
+function renderAgencyProfile(profile, isOwner) {
+    if (!profile) return;
+    
+    // Profile picture
+    const profilePic = document.querySelector('.profile-pic');
+    if (profilePic) {
+        profilePic.src = profile.profile_image_url || profile.profile_image || '../assets/portfolios/user-pic.jpg';
+        profilePic.alt = profile.agency_name || 'Agency';
+    }
+    
+    // Agency name
+    const agencyName = document.querySelector('.titles');
+    if (agencyName) {
+        agencyName.textContent = (profile.agency_name || 'Agency Name').toUpperCase();
+    }
+    
+    // Location
+    const location = document.querySelector('.location');
+    if (location && profile.city) {
+        location.textContent = profile.city + (profile.address ? `, ${profile.address}` : '');
+    }
+    
+    // Bio
+    const bio = document.querySelector('.bio');
+    if (bio) {
+        bio.textContent = profile.bio || 'No bio available.';
+    }
+    
+    // Contact info link
+    const contactInfo = document.querySelector('.info');
+    if (contactInfo && profile.email) {
+        contactInfo.href = `mailto:${profile.email}`;
+    }
+}
+
+// ====== Render Team Members ======
+function renderTeamMembers(members) {
+    const slider = document.getElementById('slider');
+    if (!slider) return;
+    
+    // Clear existing static cards
+    slider.innerHTML = '';
+    
+    if (!members || members.length === 0) {
+        slider.innerHTML = '<div style="padding: 40px; text-align: center;"><p>No team members available.</p></div>';
+        return;
+    }
+    
+    members.forEach(member => {
+        const card = document.createElement('div');
+        card.className = 'port-card';
+        card.setAttribute('data-member-id', member.architect_id);
+        
+        const fullName = `${member.first_name || ''} ${member.last_name || ''}`.trim();
+        const profileImage = member.profile_image_url || member.profile_image || '../assets/main/Mask group.png';
+        const projectCount = member.project_count || 0;
+        const yearsOfExp = member.years_of_experience || 0;
+        
+        card.innerHTML = `
+            <img src="${profileImage}" class="user-pic" alt="${fullName}">
+            <div class="portfolio-cover"></div>
+            <div class="portfolio-info">
+                <p class="user-name">${fullName.toUpperCase()}</p>
+                <div class="numb">
+                    <div class="num-projects">
+                        <p>projects</p>
+                        <p>${projectCount}</p>
+                    </div>
+                    <div class="num-years">
+                        <p>years</p>
+                        <p>${yearsOfExp}</p>
+                    </div>
+                </div>
+                <a href="architect-portfolio.html?id=${member.architect_id}" class="see-more">See more</a>
+            </div>
+        `;
+        
+        slider.appendChild(card);
+    });
+    
+    // Re-initialize slider after rendering
+    setTimeout(() => {
+        initPortfolioSlider();
+    }, 100);
+}
+
+// ====== Render Agency Projects ======
+function renderAgencyProjects(projects, isOwner) {
+    const projectSliderTrack = document.getElementById('projectSliderTrack');
+    if (!projectSliderTrack) return;
+    
+    // Clear existing static cards
+    projectSliderTrack.innerHTML = '';
+    
+    if (!projects || projects.length === 0) {
+        projectSliderTrack.innerHTML = '<div style="padding: 40px; text-align: center;"><p>No projects available.</p></div>';
+        return;
+    }
+    
+    projects.forEach((project, index) => {
+        const card = document.createElement('div');
+        card.className = 'project-slider-card';
+        card.setAttribute('data-index', index);
+        card.setAttribute('data-project-id', project.project_id || project.portfolio_item_id);
+        
+        // Build project tags
+        const tags = project.project_type ? [project.project_type] : [];
+        
+        // Build project photo URL
+        const projectPhoto = project.project_photo_url || project.project_photo || 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&h=600&fit=crop';
+        
+        card.innerHTML = `
+            <div class="project-content">
+                <div class="project-info">
+                    <h3 class="project-name">${project.project_name || 'Project name'}</h3>
+                    <div class="project-details">
+                        ${project.client_name ? `<p class="project-agency">Client: ${project.client_name}</p>` : ''}
+                        ${project.architect_name ? `<p class="project-architect">Architect: ${project.architect_name}</p>` : ''}
+                        ${tags.length > 0 ? `
+                            <div class="project-tags-container">
+                                ${tags.map(tag => `<span class="project-tag">${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        ${project.completion_date_formatted ? `
+                            <div class="project-date">
+                                <span>Deadline: ${project.completion_date_formatted}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    ${project.project_id ? `<a href="projectpreview.html?id=${project.project_id}" class="btn-view-project">view project</a>` : '<span class="btn-view-project" style="opacity: 0.5; cursor: not-allowed;">view project</span>'}
+                </div>
+                <div class="project-image">
+                    <img src="${projectPhoto}" alt="${project.project_name || 'Project'}" />
+                </div>
+            </div>
+        `;
+        
+        projectSliderTrack.appendChild(card);
+    });
+    
+    // Re-initialize project stack after rendering
+    setTimeout(() => {
+        initProjectStack();
+    }, 100);
+}
+
+// ====== Render Reviews ======
+function renderReviews(reviews, userType) {
+    const reviewsList = document.getElementById('reviews-list');
+    if (!reviewsList) return;
+    
+    // Clear existing static reviews
+    reviewsList.innerHTML = '';
+    
+    // Only show reviews section if user is a client OR if there are reviews to show
+    const reviewsSection = document.querySelector('.reviews-section');
+    const addReviewSection = document.querySelector('.add-review-section');
+    
+    if (userType === 'client') {
+        // Show review form for clients
+        if (addReviewSection) {
+            addReviewSection.style.display = 'block';
+        }
+    } else {
+        // Hide review form for non-clients
+        if (addReviewSection) {
+            addReviewSection.style.display = 'none';
+        }
+    }
+    
+    if (!reviews || reviews.length === 0) {
+        if (userType !== 'client') {
+            // Hide entire reviews section if no reviews and user is not a client
+            const reviewsContainer = document.querySelector('.container');
+            if (reviewsContainer) {
+                reviewsContainer.style.display = 'none';
+            }
+        } else {
+            reviewsList.innerHTML = '<p style="text-align: center; color: #666;">No reviews yet.</p>';
+        }
+        return;
+    }
+    
+    reviews.forEach(review => {
+        const card = document.createElement('div');
+        card.className = 'review-card';
+        
+        const profileImage = review.profile_image_url || review.profile_image || '../assets/portfolios/user-pic.jpg';
+        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+        
+        card.innerHTML = `
+            <div>
+                <img class="avatar" src="${profileImage}" alt="${review.client_name}">
+            </div>
+            <div class="review-info">
+                <div class="review-name">${review.client_name || 'Client'}</div>
+                <div class="review-stars">${stars}</div>
+                <div class="review-text">${review.review_text || ''}</div>
+            </div>
+        `;
+        
+        reviewsList.appendChild(card);
+    });
+}
+
+// ====== Initialize Portfolio Actions ======
+function initPortfolioActions(agencyId) {
+    // This will be handled by agency-portfolio-actions.js
+    // But we can set the agency ID here if needed
+    window.agencyId = agencyId;
+}
 
 // ====== Menu Toggle Functionality ======
 function initMenu() {
@@ -68,18 +341,22 @@ function initMenu() {
     });
 }
 
-function initReviewForm() {
+function initReviewForm(agencyId) {
     const starContainer = document.getElementById("starRating");
     const reviewForm = document.getElementById("reviewForm");
     const reviewsList = document.getElementById("reviews-list");
 
-    if (!starContainer || !reviewForm || !reviewsList) return;
+    if (!starContainer || !reviewForm || !reviewsList || !agencyId) return;
 
     const fields = {
-        name: reviewForm.querySelector("#name"),
-        email: reviewForm.querySelector("#email"),
         reviewText: reviewForm.querySelector("#reviewText"),
     };
+    
+    // Remove name and email fields if they exist (not needed for logged-in users)
+    const nameField = reviewForm.querySelector("#name");
+    const emailField = reviewForm.querySelector("#email");
+    if (nameField) nameField.style.display = 'none';
+    if (emailField) emailField.style.display = 'none';
 
     const ratingWrapper = starContainer.closest(".rating-area") || starContainer.parentElement;
     const ratingError = createHelperMessage(ratingWrapper, "rating");
@@ -182,14 +459,7 @@ function initReviewForm() {
         if (!field) return true;
         const value = field.value.trim();
 
-        if (field.id === "name") {
-            if (!value) return setFieldError(field, "Please enter your name.");
-            if (value.length < 2) return setFieldError(field, "Name must have at least 2 characters.");
-        } else if (field.id === "email") {
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!value) return setFieldError(field, "Email is required.");
-            if (!emailPattern.test(value)) return setFieldError(field, "Enter a valid email address.");
-        } else if (field.id === "reviewText") {
+        if (field.id === "reviewText") {
             if (!value) return setFieldError(field, "Please write a review.");
             if (value.length < 10) return setFieldError(field, "Review must be at least 10 characters.");
         }
@@ -208,14 +478,12 @@ function initReviewForm() {
     }
 
     function validateForm() {
-        const isNameValid = validateField(fields.name);
-        const isEmailValid = validateField(fields.email);
         const isReviewValid = validateField(fields.reviewText);
         const isRatingValid = validateRating();
-        return isNameValid && isEmailValid && isReviewValid && isRatingValid;
+        return isReviewValid && isRatingValid;
     }
 
-    reviewForm.addEventListener("submit", (e) => {
+    reviewForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         if (!validateForm()) {
@@ -229,23 +497,49 @@ function initReviewForm() {
             return;
         }
 
-        addReview(fields.name.value.trim(), selectedRating, fields.reviewText.value.trim());
-        showSuccessMessage("Thank you for your review!");
-        reviewForm.reset();
-        Object.values(fields).forEach(clearFieldError);
-        selectedRating = 0;
-        updateStars();
-        clearRatingError();
+        // Submit review to API
+        try {
+            const response = await fetch(`${API_BASE}/reviews/create.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    rating: selectedRating,
+                    review_text: fields.reviewText.value.trim(),
+                    agency_id: agencyId
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Failed to submit review');
+            }
+
+            // Add review to DOM
+            addReview(result.data.client_name, selectedRating, fields.reviewText.value.trim(), result.data);
+            showSuccessMessage("Thank you for your review!");
+            reviewForm.reset();
+            if (fields.reviewText) clearFieldError(fields.reviewText);
+            selectedRating = 0;
+            updateStars();
+            clearRatingError();
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            showSuccessMessage("Error submitting review. Please try again.");
+        }
     });
 
-    function addReview(name, rating, text) {
+    function addReview(name, rating, text, reviewData = null) {
         const card = document.createElement("div");
         card.className = "review-card";
 
         const avatarWrapper = document.createElement("div");
         const avatar = document.createElement("img");
         avatar.className = "avatar";
-        avatar.src = "../assets/portfolios/user-pic.jpg";
+        avatar.src = reviewData?.profile_image_url || reviewData?.profile_image || "../assets/portfolios/user-pic.jpg";
         avatar.alt = `${name} avatar`;
         avatarWrapper.appendChild(avatar);
 

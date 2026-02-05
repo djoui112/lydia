@@ -23,121 +23,8 @@
         </header>
 
         <main class="page-shell">
-            <section class="inner-body" aria-label="Project requests">
-                <div class="container">
-                    <a href="c_reqpreview.html" class="shape-link">
-                        <article class="shape">
-                            <div class="info">
-                                <p class="line email">sara.benali@gmail.com</p>
-                                <p class="line email">Mediterranean villa renovation</p>
-                                <p class="line email">Casablanca, Morocco</p>
-                                <p class="line email">3 floors · 420 m²</p>
-                            </div>
-                            <div class="rectangle">
-                                <p class="project_name">Azemmour Villa</p>
-                                <p class="architect_name">Assigned: Atelier Noor</p>
-                            </div>
-                        </article>
-                    </a>
-                    <a href="c_reqpreview.html" class="shape-link">
-                        <article class="shape">
-                            <div class="info">
-                            <p class="line email">khaled.haddad@outlook.com</p>
-                            <p class="line email">Corporate HQ new build</p>
-                            <p class="line email">Tunis, Tunisia</p>
-                            <p class="line email">7 floors · 12,000 m²</p>
-                        </div>
-                        <div class="rectangle">
-                            <p class="project_name">North Star Offices</p>
-                            <p class="architect_name">Assigned: Axis Studio</p>
-                        </div>
-                        </article>
-                    </a>
-                    <a href="c_reqpreview.html" class="shape-link">
-                        <article class="shape">
-                            <div class="info">
-                            <p class="line email">nadia.ait@proton.me</p>
-                            <p class="line email">Eco resort concept</p>
-                            <p class="line email">Taghazout, Morocco</p>
-                            <p class="line email">18 lodges · 5 ha</p>
-                        </div>
-                        <div class="rectangle">
-                            <p class="project_name">Dune Escape</p>
-                            <p class="architect_name">Assigned: TerraNomad</p>
-                        </div>
-                        </article>
-                    </a>
-                    <a href="c_reqpreview.html" class="shape-link">
-                        <article class="shape">
-                            <div class="info">
-                            <p class="line email">youssef.cherif@gmail.com</p>
-                            <p class="line email">Cultural center competition</p>
-                            <p class="line email">Oran, Algeria</p>
-                            <p class="line email">4 floors · 6,300 m²</p>
-                        </div>
-                        <div class="rectangle">
-                            <p class="project_name">El Bahia Culture Hub</p>
-                            <p class="architect_name">Assigned: Studio Meridian</p>
-                        </div>
-                        </article>
-                    </a>
-                    <a href="c_reqpreview.html" class="shape-link">
-                        <article class="shape">
-                            <div class="info">
-                            <p class="line email">amina.ghali@icloud.com</p>
-                            <p class="line email">Boutique hospitality upgrade</p>
-                            <p class="line email">La Marsa, Tunisia</p>
-                            <p class="line email">2 floors · 18 suites</p>
-                        </div>
-                        <div class="rectangle">
-                            <p class="project_name">Palm Cove Retreat</p>
-                            <p class="architect_name">Assigned: MIM Collective</p>
-                        </div>
-                        </article>
-                    </a>
-                    <a href="c_reqpreview.html" class="shape-link">
-                        <article class="shape">
-                            <div class="info">
-                            <p class="line email">tarik.ziani@studio.dz</p>
-                            <p class="line email">Mixed-use waterfront</p>
-                            <p class="line email">Annaba, Algeria</p>
-                            <p class="line email">5 towers · 54,000 m²</p>
-                        </div>
-                        <div class="rectangle">
-                            <p class="project_name">Harbor One</p>
-                            <p class="architect_name">Assigned: North + East</p>
-                        </div>
-                        </article>
-                    </a>
-                    <a href="c_reqpreview.html" class="shape-link">
-                        <article class="shape">
-                            <div class="info">
-                            <p class="line email">leila.derouiche@mail.com</p>
-                            <p class="line email">Adaptive reuse factory</p>
-                            <p class="line email">Sfax, Tunisia</p>
-                            <p class="line email">2 floors · 2,800 m²</p>
-                        </div>
-                        <div class="rectangle">
-                            <p class="project_name">Atelier Sidi Salem</p>
-                            <p class="architect_name">Assigned: Revive Lab</p>
-                        </div>
-                        </article>
-                    </a>
-                    <a href="c_reqpreview.html" class="shape-link">
-                        <article class="shape">
-                            <div class="info">
-                            <p class="line email">oussama.bouzar@client.dz</p>
-                            <p class="line email">Educational campus plan</p>
-                            <p class="line email">Setif, Algeria</p>
-                            <p class="line email">9 blocks · 24 classrooms</p>
-                        </div>
-                        <div class="rectangle">
-                            <p class="project_name">STEM Horizon</p>
-                            <p class="architect_name">Assigned: Future Grid</p>
-                        </div>
-                        </article>
-                    </a>
-                </div>
+            <section class="team-page" aria-label="Projects">
+                <div class="card-grid container" id="projectsGrid"></div>
             </section>
         </main>
 
@@ -290,7 +177,7 @@
                                     stroke-linejoin="round"
                                 />
                                 <path
-                                    d="L22 6L12 13L2 6"
+                                    d="M22 6L12 13L2 6"
                                     stroke="white"
                                     stroke-width="2"
                                     stroke-linecap="round"
@@ -303,6 +190,53 @@
                 </div>
             </div>
         </footer>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                console.log("JS LOADED");
+                const grid = document.getElementById("projectsGrid");
+                const searchInput = document.querySelector(".search-container input");
+
+                function renderProjects(projects) {
+                    grid.innerHTML = "";
+
+                    if (projects.length === 0) {
+                        grid.innerHTML = "<p>No projects found</p>";
+                        return;
+                    }
+
+                    projects.forEach(project => {
+                        grid.innerHTML += `
+                            <article class="agency-card">
+                                <div class="agency-card__arch">
+                                    <h3>${project.project_name}</h3>
+                                    <p>${project.client_name}</p>
+                                </div>
+                                <div class="agency-card__body">
+                                    <p>${project.description}</p>
+                                    <a href="c_reqpreview.html?id=${project.id}" class="btn">See more</a>
+                                </div>
+                            </article>
+                        `;
+                    });
+                }
+
+                function loadProjects(query = "") {
+                    fetch("/mimaria/php/api/search/requests.php?query=" + query)
+                        .then(res => res.json())
+                        .then(data => renderProjects(data))
+                        .catch(err => console.error(err));
+                }
+
+                // load all projects on page load
+                loadProjects();
+
+                // live search
+                searchInput.addEventListener("input", () => {
+                    loadProjects(searchInput.value);
+                });
+            });
+        </script>
     </body>
 </html>
 

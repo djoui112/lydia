@@ -1,4 +1,4 @@
-const API_BASE = '../../php/api';
+const API_BASE = 'mimaria/php/api';
 
 // Shared validation patterns
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../config/session.php';
+
 
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../models/User.php';
@@ -35,6 +35,12 @@ $userModel->updateLastLogin((int)$user['id']);
 // Persist authenticated session before returning the response
 $_SESSION['user_id'] = (int)$user['id'];
 $_SESSION['user_type'] = $user['user_type'];
+// add it to make sure architect specific data is easily accessible
+if ($user['user_type'] === 'architect') {
+    $_SESSION['architect_id'] = (int)$user['id'];
+}
+
+
 session_write_close();
 
 json_success([

@@ -243,3 +243,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+document.addEventListener('DOMContentLoaded', async () => {
+  const link = document.querySelector('#portfolioLink'); // make sure your link has this id
+
+  try {
+    const res = await fetch('/mimaria/php/api/get-architect-id.php', { credentials: 'include' });
+    const data = await res.json();
+
+    if (data.architect_id) {
+      link.href = `architect-portfolio.html?architect_id=${data.architect_id}`;
+    } else {
+      console.error('No architect ID in session');
+      link.href = '#';
+    }
+  } catch (err) {
+    console.error('Failed to get architect ID:', err);
+    link.href = '#';
+  }
+});

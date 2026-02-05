@@ -22,8 +22,8 @@
           <i class="fa fa-search" aria-hidden="true"></i>
           <input
             type="search"
-            placeholder="Search talent, location, specialty"
-            aria-label="Search talent"
+            placeholder="Search agencies"
+            aria-label="Search agencies"
           />
         </div>
       </nav>
@@ -31,103 +31,7 @@
 
     <main class="page-shell">
       <section class="team-page" aria-label="Agencies">
-        <div class="card-grid">
-          <article class="agency-card">
-            <div class="agency-card__arch" aria-hidden="true"></div>
-            <div class="agency-card__avatar-wrap">
-              <img src="../assets/agencies/user-pic.jpg" alt="Agency Name portrait" class="agency-card__avatar" />
-            </div>
-            <div class="agency-card__body">
-              <h3>Agency Name</h3>
-              <p>specialized in modern interior design</p>
-              <a href="agency-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="agency-card">
-            <div class="agency-card__arch" aria-hidden="true"></div>
-            <div class="agency-card__avatar-wrap">
-              <img src="../assets/agencies/user-pic.jpg" alt="Agency Name portrait" class="agency-card__avatar" />
-            </div>
-            <div class="agency-card__body">
-              <h3>Agency Name</h3>
-              <p>specialized in modern interior design</p>
-              <a href="agency-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="agency-card">
-            <div class="agency-card__arch" aria-hidden="true"></div>
-            <div class="agency-card__avatar-wrap">
-              <img src="../assets/agencies/user-pic.jpg" alt="Agency Name portrait" class="agency-card__avatar" />
-            </div>
-            <div class="agency-card__body">
-              <h3>Agency Name</h3>
-              <p>specialized in modern interior design</p>
-              <a href="agency-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="agency-card">
-            <div class="agency-card__arch" aria-hidden="true"></div>
-            <div class="agency-card__avatar-wrap">
-              <img src="../assets/agencies/user-pic.jpg" alt="Agency Name portrait" class="agency-card__avatar" />
-            </div>
-            <div class="agency-card__body">
-              <h3>Agency Name</h3>
-              <p>specialized in modern interior design</p>
-              <a href="agency-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="agency-card">
-            <div class="agency-card__arch" aria-hidden="true"></div>
-            <div class="agency-card__avatar-wrap">
-              <img src="../assets/agencies/user-pic.jpg" alt="Agency Name portrait" class="agency-card__avatar" />
-            </div>
-            <div class="agency-card__body">
-              <h3>Agency Name</h3>
-              <p>specialized in modern interior design</p>
-              <a href="agency-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="agency-card">
-            <div class="agency-card__arch" aria-hidden="true"></div>
-            <div class="agency-card__avatar-wrap">
-              <img src="../assets/agencies/user-pic.jpg" alt="Agency Name portrait" class="agency-card__avatar" />
-            </div>
-            <div class="agency-card__body">
-              <h3>Agency Name</h3>
-              <p>specialized in modern interior design</p>
-              <a href="agency-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="agency-card">
-            <div class="agency-card__arch" aria-hidden="true"></div>
-            <div class="agency-card__avatar-wrap">
-              <img src="../assets/agencies/user-pic.jpg" alt="Agency Name portrait" class="agency-card__avatar" />
-            </div>
-            <div class="agency-card__body">
-              <h3>Agency Name</h3>
-              <p>specialized in modern interior design</p>
-              <a href="agency-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-
-          <article class="agency-card">
-            <div class="agency-card__arch" aria-hidden="true"></div>
-            <div class="agency-card__avatar-wrap">
-              <img src="../assets/agencies/user-pic.jpg" alt="Agency Name portrait" class="agency-card__avatar" />
-            </div>
-            <div class="agency-card__body">
-              <h3>Agency Name</h3>
-              <p>specialized in modern interior design</p>
-              <a href="agency-portfolio.html" class="btn">See more</a>
-            </div>
-          </article>
-        </div>
+        <div class="card-grid" id="agenciesGrid"></div>
       </section>
     </main>
 
@@ -292,6 +196,61 @@
         </div>
       </div>
     </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("JS LOADED");
+        const grid = document.getElementById("agenciesGrid");
+        const searchInput = document.querySelector(".search-container input");
+
+        function renderAgencies(agencies) {
+          grid.innerHTML = "";
+
+          if (agencies.length === 0) {
+            grid.innerHTML = "<p>No agencies found</p>";
+            return;
+          }
+
+          agencies.forEach(agency => {
+            grid.innerHTML += `
+              <article class="agency-card">
+                <div class="agency-card__arch" aria-hidden="true"></div>
+                <div class="agency-card__avatar-wrap">
+                  <img
+                    src="../assets/agencies/user-pic.jpg"
+                    alt="${agency.name} portrait"
+                    class="agency-card__avatar"
+                  />
+                </div>
+                <div class="agency-card__body">
+                  <h3>${agency.name}</h3>
+                  <p>${agency.city}</p>
+                  <a href="agency-portfolio.html?id=${agency.id}" class="btn">
+                    See more
+                  </a>
+                </div>
+              </article>
+            `;
+          });
+        }
+
+        function loadAgencies(query = "") {
+          fetch("/mimaria/php/api/search/agencies.php?query=" + query)
+            .then(res => res.json())
+            .then(data => renderAgencies(data))
+            .catch(err => console.error(err));
+        }
+
+        // load all agencies on page load
+        loadAgencies();
+
+        // live search
+        searchInput.addEventListener("input", () => {
+          loadAgencies(searchInput.value);
+        });
+      });
+    </script>
   </body>
 </html>
+
 
