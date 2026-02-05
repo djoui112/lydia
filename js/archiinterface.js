@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const link = document.querySelector('#portfolioLink'); // make sure your link has this id
 
   try {
-    const res = await fetch('/mimaria/php/api/get-architect-id.php', { credentials: 'include' });
+    const res = await fetch('/mimaria/php/api/get-session-architect.php', { credentials: 'include' });
     const data = await res.json();
 
     if (data.architect_id) {
