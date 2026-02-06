@@ -764,7 +764,199 @@ document.addEventListener("DOMContentLoaded", function () {
       viewPortfolioBtn.href = 'agency-portfolio.html';
     });
   }
+
+  // Load dashboard statistics from database
+  loadDashboardStats();
+  
+  // Load recent applications
+  loadRecentApplications();
 });
+
+// Function to load and display dashboard statistics
+async function loadDashboardStats() {
+  try {
+    console.log('Loading dashboard statistics...');
+    const response = await fetch('../php/agency/dashboard.php', {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    console.log('Dashboard API response status:', response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('HTTP error! status:', response.status, 'Response:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error('Response is not JSON. Content-Type:', contentType, 'Response:', text.substring(0, 200));
+      return;
+    }
+
+    const result = await response.json();
+    console.log('Dashboard API result:', result);
+    
+    if (result.success && result.data) {
+      const stats = result.data;
+      console.log('Dashboard stats received:', stats);
+      
+      // Update bubble chart with real data
+      // Mapping based on CSS colors:
+      // bubble-2 = dark blue = clients
+      // bubble-1 = medium blue = architects  
+      // bubble-3 = light blue = projects
+      const bubble1 = document.querySelector('.bubble-1'); // Medium blue - architects
+      const bubble2 = document.querySelector('.bubble-2'); // Dark blue - clients
+      const bubble3 = document.querySelector('.bubble-3'); // Light blue - projects
+      
+      console.log('Bubble elements found:', {
+        bubble1: !!bubble1,
+        bubble2: !!bubble2,
+        bubble3: !!bubble3
+      });
+      
+      // bubble-2 is dark blue = clients
+      if (bubble2) {
+        const clientsCount = stats.total_clients ?? 0;
+        bubble2.textContent = clientsCount;
+        console.log('Updated bubble2 (dark blue - clients) to:', clientsCount);
+      } else {
+        console.error('Bubble2 element not found!');
+      }
+      
+      // bubble-1 is medium blue = architects
+      if (bubble1) {
+        const architectsCount = stats.total_architects ?? 0;
+        bubble1.textContent = architectsCount;
+        console.log('Updated bubble1 (medium blue - architects) to:', architectsCount);
+      } else {
+        console.error('Bubble1 element not found!');
+      }
+      
+      // bubble-3 is light blue = projects
+      if (bubble3) {
+        const projectsCount = stats.total_projects ?? 0;
+        bubble3.textContent = projectsCount;
+        console.log('Updated bubble3 (light blue - projects) to:', projectsCount);
+      } else {
+        console.error('Bubble3 element not found!');
+      }
+      
+      console.log('Dashboard stats successfully updated');
+    } else {
+      console.error('Failed to load dashboard stats - invalid response:', result);
+    }
+  } catch (error) {
+    console.error('Error loading dashboard statistics:', error);
+    // Show error state in bubbles
+    const bubble1 = document.querySelector('.bubble-1');
+    const bubble2 = document.querySelector('.bubble-2');
+    const bubble3 = document.querySelector('.bubble-3');
+    
+    if (bubble1) bubble1.textContent = '0';
+    if (bubble2) bubble2.textContent = '0';
+    if (bubble3) bubble3.textContent = '0';
+  }
+}
+
+// Function to load and display recent applications
+async function loadRecentApplications() {
+  try {
+    console.log('Loading recent applications...');
+    const response = await fetch('../php/agency/applications.php?status=pending', {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error('Response is not JSON. Content-Type:', contentType);
+      return;
+    }
+
+    const result = await response.json();
+    console.log('Applications API result:', result);
+    
+    const container = document.getElementById('applicationsContainer');
+    const noApplicationsMsg = document.getElementById('noApplicationsMessage');
+    
+    if (!container) {
+      console.error('Applications container not found!');
+      return;
+    }
+
+    if (result.success && result.data && result.data.length > 0) {
+      // Hide "no applications" message
+      if (noApplicationsMsg) {
+        noApplicationsMsg.style.display = 'none';
+      }
+
+      // Show only first 4 applications
+      const applications = result.data.slice(0, 4);
+      
+      // Clear container
+      container.innerHTML = '';
+      
+      // Create application cards
+      applications.forEach(application => {
+        const card = createApplicationCard(application);
+        container.appendChild(card);
+      });
+      
+      console.log(`Loaded ${applications.length} applications`);
+    } else {
+      // Show "no applications" message
+      if (noApplicationsMsg) {
+        noApplicationsMsg.style.display = 'block';
+      }
+      container.innerHTML = '';
+      if (noApplicationsMsg) {
+        container.appendChild(noApplicationsMsg);
+      }
+      console.log('No applications found');
+    }
+  } catch (error) {
+    console.error('Error loading applications:', error);
+    const container = document.getElementById('applicationsContainer');
+    const noApplicationsMsg = document.getElementById('noApplicationsMessage');
+    if (container && noApplicationsMsg) {
+      container.innerHTML = '';
+      noApplicationsMsg.style.display = 'block';
+      container.appendChild(noApplicationsMsg);
+    }
+  }
+}
+
+// Function to create an application card
+function createApplicationCard(application) {
+  const card = document.createElement('div');
+  card.className = 'profile-card appliance-card';
+  
+  const fullName = `${application.first_name || ''} ${application.last_name || ''}`.trim() || 'Unknown';
+  const profileImage = application.profile_image 
+    ? `../${application.profile_image}` 
+    : 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop';
+  
+  card.innerHTML = `
+    <div class="appliance-background"></div>
+    <div class="appliance-profile-picture">
+      <img src="${profileImage}" alt="${fullName}" />
+    </div>
+    <div class="profile-info">
+      <h4>${fullName}</h4>
+      <a href="appliancepreview.html?id=${application.id}" class="btn-see-more">See more</a>
+    </div>
+  `;
+  
+  return card;
+}
 
 // Bubbles are fixed in position - no dragging functionality
 // Positions are locked as defined in CSS

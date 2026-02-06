@@ -150,13 +150,15 @@
         </header>
 
         <!-- Data Cards Section -->
+        <!-- Dashboard statistics are loaded dynamically from ../php/agency/dashboard.php -->
         <section class="data-section" id="data-section">
           <div class="data-card recent-data">
             <h3>Recent data</h3>
             <div class="bubble-chart">
-              <div class="bubble bubble-1">28</div>
-              <div class="bubble bubble-2">45</div>
-              <div class="bubble bubble-3">67</div>
+              <!-- Data loaded from database via loadDashboardStats() in agency-interface.js -->
+              <div class="bubble bubble-1" data-stat="architects">-</div>
+              <div class="bubble bubble-2" data-stat="clients">-</div>
+              <div class="bubble bubble-3" data-stat="projects">-</div>
             </div>
             <div class="chart-legend">
               <div class="legend-item">
@@ -326,58 +328,10 @@
 
           <div class="subsection">
             <h3 class="subsection-title">Appliance</h3>
-            <div class="profile-cards appliance-cards">
-              <div class="profile-card appliance-card">
-                <div class="appliance-background"></div>
-                <div class="appliance-profile-picture">
-                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"
-                    alt="Badri Lydia"
-                  />
-                </div>
-                <div class="profile-info">
-                  <h4>badri lydia</h4>
-                  <a href="appliancepreview.html" class="btn-see-more">See more</a>
-                </div>
-              </div>
-              <div class="profile-card appliance-card">
-                <div class="appliance-background"></div>
-                <div class="appliance-profile-picture">
-                  <img
-                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop"
-                    alt="Profile"
-                  />
-                </div>
-                <div class="profile-info">
-                  <h4>badri lydia</h4>
-                  <a href="appliancepreview.html" class="btn-see-more">See more</a>
-                </div>
-              </div>
-              <div class="profile-card appliance-card">
-                <div class="appliance-background"></div>
-                <div class="appliance-profile-picture">
-                  <img
-                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop"
-                    alt="Profile"
-                  />
-                </div>
-                <div class="profile-info">
-                  <h4>badri lydia</h4>
-                  <a href="appliancepreview.html" class="btn-see-more">See more</a>
-                </div>
-              </div>
-              <div class="profile-card appliance-card">
-                <div class="appliance-background"></div>
-                <div class="appliance-profile-picture">
-                  <img
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
-                    alt="Profile"
-                  />
-                </div>
-                <div class="profile-info">
-                  <h4>badri lydia</h4>
-                  <a href="appliancepreview.html" class="btn-see-more">See more</a>
-                </div>
+            <div class="profile-cards appliance-cards" id="applicationsContainer">
+              <!-- Applications will be loaded dynamically from database -->
+              <div class="no-applications-message" id="noApplicationsMessage" style="display: none;">
+                <p>There are no recent applications</p>
               </div>
             </div>
             <a href="job-appliance.html" class="btn-see-all">See all</a>

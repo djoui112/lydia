@@ -1,14 +1,24 @@
 <?php
-require_once '../config.php';
-require_once '../auth.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/session.php';
 
+header('Content-Type: application/json');
+
+// Check if user is logged in as agency
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'agency') {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
+}
+
+$agencyId = (int)$_SESSION['user_id'];
 $method = $_SERVER['REQUEST_METHOD'];
-$agencyId = getCurrentAgencyId($pdo);
 
 switch ($method) {
     case 'GET':
-        // Get all applications for this agency
+        // Get applications for this agency
         $status = $_GET['status'] ?? null;
+        $applicationId = $_GET['id'] ?? null;
         
         $sql = "
             SELECT 
@@ -18,6 +28,12 @@ switch ($method) {
                 a.years_of_experience,
                 a.primary_expertise,
                 a.statement,
+                a.city,
+                a.address,
+                a.date_of_birth,
+                a.software_proficiency,
+                a.portfolio_url,
+                a.linkedin_url,
                 u.email,
                 u.profile_image,
                 u.phone_number
@@ -28,6 +44,25 @@ switch ($method) {
         ";
         
         $params = [$agencyId];
+        
+        // If specific application ID requested
+        if ($applicationId) {
+            $sql .= " AND aa.id = ?";
+            $params[] = $applicationId;
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            $application = $stmt->fetch();
+            
+            if ($application) {
+                echo json_encode(['success' => true, 'data' => $application]);
+            } else {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'Application not found']);
+            }
+            break;
+        }
+        
+        // Otherwise get all applications (optionally filtered by status)
         if ($status) {
             $sql .= " AND aa.status = ?";
             $params[] = $status;

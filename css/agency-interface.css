@@ -973,6 +973,19 @@ body {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.no-applications-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-light);
+  font-size: 16px;
+}
+
+.no-applications-message p {
+  margin: 0;
+  color: #666;
+}
+
 .members-cards {
   grid-template-columns: repeat(5, 1fr);
   justify-items: center;

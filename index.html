@@ -345,10 +345,10 @@ all in one place</pre>
                 const nextBtn = document.getElementById('nextBtn');
                 
                 if (prevBtn) {
-                    prevBtn.addEventListener('click', slideRight);  // Swapped
+                    prevBtn.addEventListener('click', slideLeft);
                 }
                 if (nextBtn) {
-                    nextBtn.addEventListener('click', slideLeft);   // Swapped
+                    nextBtn.addEventListener('click', slideRight);
                 }
                 // Load architects on page load
                 fetchArchitects().then(() => {
