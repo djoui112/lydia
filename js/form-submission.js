@@ -1,7 +1,20 @@
 // Form Submission Handler
 // Handles submission of project requests and architect applications
 
-const API_BASE = '../php/api';
+// Determine API base path based on current page location
+// If we're in pages/ subdirectory, go up two levels, otherwise one level
+const getApiBase = () => {
+    const path = window.location.pathname;
+    // Check if we're in a pages subdirectory (pages/formclient/, pages/formarchitect/, etc.)
+    if (path.includes('/pages/')) {
+        return '../../php/api';
+    }
+    // For root level pages
+    return '../php/api';
+};
+
+const API_BASE = getApiBase();
+console.log('API_BASE resolved to:', API_BASE, 'from path:', window.location.pathname);
 
 // Get agency_id from URL parameters
 function getAgencyIdFromURL() {
@@ -146,16 +159,32 @@ async function submitProjectRequest() {
     }
 
     try {
-        const response = await fetch(`${API_BASE}/project-requests/create.php`, {
+        const url = `${API_BASE}/project-requests/create.php`;
+        console.log('Submitting project request to:', url);
+        console.log('Form data:', formData);
+        console.log('Cookies being sent:', document.cookie);
+        
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include',
+            credentials: 'include', // This is crucial - sends cookies with the request
             body: JSON.stringify(formData)
         });
 
+        console.log('Response status:', response.status, response.statusText);
+        
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error('Non-JSON response:', text.substring(0, 500));
+            throw new Error('Server returned invalid response format. Please check console for details.');
+        }
+
         const result = await response.json();
+        console.log('Response data:', result);
 
         if (!response.ok || !result.success) {
             throw new Error(result.message || 'Failed to submit project request');
@@ -167,6 +196,11 @@ async function submitProjectRequest() {
         return true;
     } catch (error) {
         console.error('Error submitting project request:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
         alert('Error submitting project request: ' + error.message);
         return false;
     }

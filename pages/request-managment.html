@@ -192,10 +192,37 @@
         </footer>
 
         <script>
-            document.addEventListener("DOMContentLoaded", () => {
+            document.addEventListener("DOMContentLoaded", async () => {
                 console.log("JS LOADED");
                 const grid = document.getElementById("projectsGrid");
                 const searchInput = document.querySelector(".search-container input");
+                
+                // First, verify user is logged in and is an agency
+                try {
+                    const profileRes = await fetch('../php/api/users/profile.php', {
+                        credentials: 'include'
+                    });
+                    
+                    if (profileRes.ok) {
+                        const profileData = await profileRes.json();
+                        console.log('Profile data:', profileData);
+                        
+                        if (profileData.success && profileData.data?.user?.user_type === 'agency') {
+                            console.log('User is logged in as agency:', profileData.data.user);
+                        } else {
+                            grid.innerHTML = '<p>You must be logged in as an agency to view requests. <a href="login/login.html">Log in</a></p>';
+                            return;
+                        }
+                    } else {
+                        console.error('Profile check failed:', profileRes.status);
+                        grid.innerHTML = '<p>Please <a href="login/login.html">log in</a> as an agency first.</p>';
+                        return;
+                    }
+                } catch (err) {
+                    console.error('Error checking profile:', err);
+                    grid.innerHTML = '<p>Error verifying login. Please <a href="login/login.html">log in</a> again.</p>';
+                    return;
+                }
 
                 function renderProjects(projects) {
                     grid.innerHTML = "";
@@ -222,10 +249,54 @@
                 }
 
                 function loadProjects(query = "") {
-                    fetch("/mimaria/php/api/search/requests.php?query=" + query)
-                        .then(res => res.json())
-                        .then(data => renderProjects(data))
-                        .catch(err => console.error(err));
+                    const url = `../php/api/search/requests.php?query=${encodeURIComponent(query)}`;
+                    console.log('Loading requests from:', url);
+                    console.log('Session check - cookies:', document.cookie);
+                    
+                    fetch(url, {
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(res => {
+                            console.log('Response status:', res.status, res.statusText);
+                            console.log('Response headers:', [...res.headers.entries()]);
+                            
+                            if (res.status === 401) {
+                                throw new Error('Not logged in. Please log in as an agency first.');
+                            }
+                            
+                            if (res.status === 403) {
+                                throw new Error('Access denied. You must be logged in as an agency.');
+                            }
+                            
+                            if (!res.ok) {
+                                throw new Error(`HTTP error! status: ${res.status} ${res.statusText}`);
+                            }
+                            
+                            // Check if response is JSON
+                            const contentType = res.headers.get('content-type');
+                            if (!contentType || !contentType.includes('application/json')) {
+                                return res.text().then(text => {
+                                    console.error('Non-JSON response:', text.substring(0, 500));
+                                    throw new Error('Server returned invalid response format');
+                                });
+                            }
+                            
+                            return res.json();
+                        })
+                        .then(data => {
+                            console.log('Requests loaded:', data);
+                            if (!Array.isArray(data)) {
+                                throw new Error('Invalid response format: expected array');
+                            }
+                            renderProjects(data);
+                        })
+                        .catch(err => {
+                            console.error('Error loading requests:', err);
+                            grid.innerHTML = `<p>Error loading requests: ${err.message}. Please check console for details.</p>`;
+                        });
                 }
 
                 // load all projects on page load

@@ -1,17 +1,13 @@
 <?php
 
 // Common JSON response helpers for API endpoints
+// Note: CORS headers are handled by middleware/cors.php, so we don't set them here
+// to avoid conflicts. Only set Content-Type here.
 
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: http://localhost');
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204);
-    exit;
-}
+// Don't set CORS headers here - let the CORS middleware handle it
+// This prevents conflicts and ensures proper origin handling
 
 function json_success($data = [], int $status = 200): void
 {

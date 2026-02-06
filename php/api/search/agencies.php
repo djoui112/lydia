@@ -1,10 +1,15 @@
 <?php
 declare(strict_types=1);
 
+// Start output buffering to prevent any accidental output
+ob_start();
+
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../middleware/cors.php';
 require_once __DIR__ . '/../utils/helpers.php';
 
+// Clear any output that might have been generated
+ob_clean();
 
 header('Content-Type: application/json');
 
@@ -48,12 +53,16 @@ try {
     // calls `renderAgencies(data)` and expects `data` to be a plain array
     // of agencies, not wrapped in { success, data, message }.
     // To avoid breaking the existing UI, we intentionally return the raw array here.
+    ob_end_clean(); // Clear buffer before outputting JSON
     echo json_encode($agencies);
+    exit;
     
 } catch (Exception $e) {
     error_log("Error in search agencies: " . $e->getMessage());
     error_log("Stack trace: " . $e->getTraceAsString());
+    ob_end_clean(); // Clear any output before error response
     http_response_code(500);
     // Return empty array to match expected format
     echo json_encode([]);
+    exit;
 }

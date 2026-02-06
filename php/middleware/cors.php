@@ -8,7 +8,7 @@ function handleCORS(): void {
     // Get origin from request
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
     
-    // Allow all localhost variations for development
+    // Allow all localhost variations for development (including any port)
     $allowedPatterns = [
         'http://localhost',
         'http://127.0.0.1',
@@ -23,16 +23,17 @@ function handleCORS(): void {
         }
     }
     
-    // If no origin (same-origin request) or allowed origin, set CORS headers
-    if (empty($origin) || $isAllowed) {
-        if (!empty($origin)) {
-            header("Access-Control-Allow-Origin: $origin");
-        } else {
-            // Allow all for same-origin or when origin is missing
-            header("Access-Control-Allow-Origin: *");
-        }
+    // Also allow if origin is empty (same-origin request)
+    if (empty($origin)) {
+        $isAllowed = true;
+    }
+    
+    // Always set CORS headers - echo the origin if it's localhost/127.0.0.1, otherwise use *
+    if (!empty($origin) && $isAllowed) {
+        // Echo back the exact origin for allowed localhost requests
+        header("Access-Control-Allow-Origin: $origin");
     } else {
-        // Default fallback
+        // Default fallback - allow all for development
         header("Access-Control-Allow-Origin: *");
     }
     

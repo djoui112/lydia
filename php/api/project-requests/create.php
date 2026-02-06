@@ -1,12 +1,64 @@
 <?php
+// Disable error display to prevent HTML output
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING & ~E_DEPRECATED);
 
-require_once __DIR__ . '/../../config/session.php';
-require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../models/User.php';
-require_once __DIR__ . '/../utils/response.php';
+// Start output buffering at the very beginning
+if (ob_get_level() == 0) {
+    ob_start();
+}
+
+try {
+    require_once __DIR__ . '/../../config/database.php';
+    require_once __DIR__ . '/../../middleware/cors.php';
+    require_once __DIR__ . '/../../config/session.php';
+    require_once __DIR__ . '/../../models/User.php';
+    require_once __DIR__ . '/../utils/response.php';
+} catch (Exception $e) {
+    ob_end_clean();
+    header('Content-Type: application/json');
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Server configuration error']);
+    exit;
+}
+
+// Clear any output that might have been generated
+$output = ob_get_clean();
+if (!empty($output) && trim($output) !== '') {
+    error_log("Unexpected output before JSON: " . substr($output, 0, 200));
+}
+ob_start();
+
+// Ensure session is started and readable
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Debug session information
+error_log("Project Request API - Session ID: " . session_id());
+error_log("Project Request API - Session status: " . session_status());
+error_log("Project Request API - Session data: " . print_r($_SESSION, true));
+error_log("Project Request API - Cookies: " . print_r($_COOKIE, true));
 
 if (!isset($_SESSION['user_id'])) {
-    json_error('Unauthorized', 401);
+    error_log("Unauthorized - user_id not set in session");
+    error_log("Session ID: " . session_id());
+    error_log("Session status: " . session_status());
+    error_log("Session data: " . print_r($_SESSION, true));
+    error_log("Cookies received: " . print_r($_COOKIE, true));
+    ob_end_clean();
+    
+    // Return more helpful error message
+    header('Content-Type: application/json');
+    http_response_code(401);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Unauthorized - Please log in first. Session not found.',
+        'session_id' => session_id(),
+        'has_session_cookie' => isset($_COOKIE[session_name()])
+    ]);
+    exit;
 }
 
 $userId = (int)$_SESSION['user_id'];
@@ -74,56 +126,61 @@ try {
     }
     
     // Insert project request
-    $stmt = $pdo->prepare(
-        'INSERT INTO project_requests (
-            client_id,
-            agency_id,
-            project_name,
-            project_type,
-            service_type,
-            project_location,
-            description,
-            min_budget,
-            max_budget,
-            preferred_timeline,
-            style_preference,
-            status,
-            created_at,
-            updated_at
-        ) VALUES (
-            :client_id,
-            :agency_id,
-            :project_name,
-            :project_type,
-            :service_type,
-            :project_location,
-            :description,
-            :min_budget,
-            :max_budget,
-            :preferred_timeline,
-            :style_preference,
-            :status,
-            NOW(),
-            NOW()
-        )'
-    );
-    
-    $stmt->execute([
-        'client_id' => $clientId,
-        'agency_id' => $agencyId,
-        'project_name' => $projectName,
-        'project_type' => $projectType,
-        'service_type' => $serviceType,
-        'project_location' => $projectLocation ?: null,
-        'description' => $description ?: null,
-        'min_budget' => isset($input['min_budget']) ? (float)$input['min_budget'] : null,
-        'max_budget' => isset($input['max_budget']) ? (float)$input['max_budget'] : null,
-        'preferred_timeline' => isset($input['preferred_timeline']) ? trim($input['preferred_timeline']) : null,
-        'style_preference' => isset($input['style_preference']) ? trim($input['style_preference']) : null,
-        'status' => 'pending',
-    ]);
-    
-    $requestId = (int)$pdo->lastInsertId();
+    try {
+        $stmt = $pdo->prepare(
+            'INSERT INTO project_requests (
+                client_id,
+                agency_id,
+                project_name,
+                project_type,
+                service_type,
+                project_location,
+                description,
+                min_budget,
+                max_budget,
+                preferred_timeline,
+                style_preference,
+                status,
+                created_at,
+                updated_at
+            ) VALUES (
+                :client_id,
+                :agency_id,
+                :project_name,
+                :project_type,
+                :service_type,
+                :project_location,
+                :description,
+                :min_budget,
+                :max_budget,
+                :preferred_timeline,
+                :style_preference,
+                :status,
+                NOW(),
+                NOW()
+            )'
+        );
+        
+        $stmt->execute([
+            'client_id' => $clientId,
+            'agency_id' => $agencyId,
+            'project_name' => $projectName,
+            'project_type' => $projectType,
+            'service_type' => $serviceType,
+            'project_location' => $projectLocation ?: null,
+            'description' => $description ?: null,
+            'min_budget' => isset($input['min_budget']) ? (float)$input['min_budget'] : null,
+            'max_budget' => isset($input['max_budget']) ? (float)$input['max_budget'] : null,
+            'preferred_timeline' => isset($input['preferred_timeline']) ? trim($input['preferred_timeline']) : null,
+            'style_preference' => isset($input['style_preference']) ? trim($input['style_preference']) : null,
+            'status' => 'pending',
+        ]);
+        
+        $requestId = (int)$pdo->lastInsertId();
+    } catch (PDOException $e) {
+        error_log("Database error inserting project request: " . $e->getMessage());
+        throw new Exception("Failed to save project request: " . $e->getMessage());
+    }
     
     // Insert exterior details if project type is exterior or both
     if ($projectType === 'exterior' || $projectType === 'both') {
@@ -201,12 +258,27 @@ try {
         ]);
     }
     
+    ob_end_clean(); // Clear buffer before outputting JSON
+    ob_end_clean(); // Clear buffer before outputting JSON
     json_success([
         'request_id' => $requestId,
         'message' => 'Project request submitted successfully',
     ], 201);
+    exit;
     
 } catch (Throwable $e) {
     error_log('Project request creation error: ' . $e->getMessage());
-    json_error('Failed to create project request: ' . $e->getMessage(), 500);
+    error_log('Stack trace: ' . $e->getTraceAsString());
+    error_log('File: ' . $e->getFile() . ' Line: ' . $e->getLine());
+    ob_end_clean(); // Clear any output before error response
+    
+    // Make sure we return JSON, not HTML
+    header('Content-Type: application/json');
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Failed to create project request: ' . $e->getMessage(),
+        'error' => $e->getMessage()
+    ]);
+    exit;
 }

@@ -1,15 +1,71 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../middleware/cors.php';
-require_once __DIR__ . '/../utils/helpers.php';
+// Disable error display to prevent HTML output
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING & ~E_DEPRECATED);
 
+// Start output buffering
+if (ob_get_level() == 0) {
+    ob_start();
+}
+
+try {
+    require_once __DIR__ . '/../../config/database.php';
+    require_once __DIR__ . '/../../middleware/cors.php';
+    require_once __DIR__ . '/../../config/session.php';
+    require_once __DIR__ . '/../utils/helpers.php';
+} catch (Exception $e) {
+    ob_end_clean();
+    header('Content-Type: application/json');
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Server configuration error']);
+    exit;
+}
+
+// Clear any output
+$output = ob_get_clean();
+if (!empty($output) && trim($output) !== '') {
+    error_log("Unexpected output before JSON: " . substr($output, 0, 200));
+}
+ob_start();
 
 header('Content-Type: application/json');
 
+// Ensure session is started and readable
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 try {
     $db = getDB();
+    
+    // Debug session information
+    error_log("Requests API - Session ID: " . session_id());
+    error_log("Requests API - Session status: " . session_status());
+    error_log("Requests API - Session data: " . print_r($_SESSION, true));
+    error_log("Requests API - Cookies: " . print_r($_COOKIE, true));
+    
+    // Check if user is logged in and is an agency
+    if (!isset($_SESSION['user_id'])) {
+        error_log("Session check failed - user_id not set. Session data: " . print_r($_SESSION, true));
+        ob_end_clean();
+        http_response_code(401);
+        echo json_encode(['error' => 'Not logged in', 'session_id' => session_id(), 'session_status' => session_status()]);
+        exit;
+    }
+    
+    if ($_SESSION['user_type'] !== 'agency') {
+        error_log("Session check failed - user_type is '{$_SESSION['user_type']}', expected 'agency'");
+        ob_end_clean();
+        http_response_code(403);
+        echo json_encode(['error' => 'Not an agency account', 'user_type' => $_SESSION['user_type']]);
+        exit;
+    }
+    
+    $agencyId = (int)$_SESSION['user_id'];
+    
     // Support both 'query' and 'search' parameters for frontend compatibility
     $search = sanitize($_GET['query'] ?? $_GET['search'] ?? '');
     
@@ -17,29 +73,32 @@ try {
     $usePagination = isset($_GET['page']) || isset($_GET['limit']);
     $pagination = $usePagination ? getPaginationParams() : ['limit' => 10000, 'offset' => 0];
 
-    // Build query (search by project name, description, or client name)
-    $whereClause = "WHERE 1=1";
-    $params = [];
+    // Build query - query project_requests table, filter by agency_id
+    $whereClause = "WHERE pr.agency_id = :agency_id";
+    $params = [':agency_id' => $agencyId];
 
     if (!empty($search)) {
         $whereClause .= " AND (
-            p.project_name LIKE :search OR 
-            p.description LIKE :search OR
-            CONCAT(c.first_name, ' ', c.last_name) LIKE :search
+            pr.project_name LIKE :search OR 
+            pr.description LIKE :search OR
+            CONCAT(c.first_name, ' ', c.last_name) LIKE :search OR
+            pr.project_location LIKE :search
         )";
         $params[':search'] = "%$search%";
     }
 
     // Get paginated results (or all if no pagination requested)
     $query = "SELECT 
-                 p.id,
-                 p.project_name,
-                 p.description,
+                 pr.id,
+                 pr.project_name,
+                 pr.description,
+                 pr.status,
+                 pr.created_at,
                  CONCAT(c.first_name, ' ', c.last_name) AS client_name
-             FROM projects p
-             JOIN clients c ON p.client_id = c.id
+             FROM project_requests pr
+             JOIN clients c ON pr.client_id = c.id
              $whereClause 
-             ORDER BY p.created_at DESC 
+             ORDER BY pr.created_at DESC 
              LIMIT :limit OFFSET :offset";
 
     $stmt = $db->prepare($query);
@@ -50,20 +109,22 @@ try {
     $stmt->bindValue(':offset', $pagination['offset'], PDO::PARAM_INT);
     $stmt->execute();
 
-    $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // NOTE: The request management frontend (frontend/pages/request-managment.html)
-    // calls `renderProjects(data)` and expects `data` to be a plain array of projects
+    // calls `renderProjects(data)` and expects `data` to be a plain array
     // with fields: id, project_name, client_name, description. To keep that page
     // working without modification, we return the raw array here.
-    echo json_encode($projects);
+    ob_end_clean();
+    echo json_encode($requests);
+    exit;
     
 } catch (Exception $e) {
-    error_log("Error in search projects: " . $e->getMessage());
+    error_log("Error in search requests: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    ob_end_clean();
     http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'data' => [],
-        'message' => 'An error occurred while searching projects'
-    ]);
+    // Return empty array to match expected format
+    echo json_encode([]);
+    exit;
 }

@@ -235,20 +235,32 @@
         }
 
         function loadAgencies(query = "") {
-          fetch("../php/api/search/agencies.php?query=" + encodeURIComponent(query))
+          const url = "../php/api/search/agencies.php?query=" + encodeURIComponent(query);
+          console.log("Fetching agencies from:", url);
+          
+          fetch(url)
             .then(res => {
+              console.log("Response status:", res.status, res.statusText);
               if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
+                throw new Error(`HTTP error! status: ${res.status} ${res.statusText}`);
               }
               return res.json();
             })
             .then(data => {
               console.log("Agencies loaded:", data);
+              if (!Array.isArray(data)) {
+                throw new Error("Invalid response format: expected array");
+              }
               renderAgencies(data);
             })
             .catch(err => {
               console.error("Error loading agencies:", err);
-              grid.innerHTML = "<p>Error loading agencies. Please try again later.</p>";
+              console.error("Error details:", {
+                message: err.message,
+                stack: err.stack,
+                url: url
+              });
+              grid.innerHTML = `<p>Error loading agencies: ${err.message}. Please check the console for details.</p>`;
             });
         }
 

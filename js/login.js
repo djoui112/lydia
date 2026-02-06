@@ -67,7 +67,10 @@ if (loginForm) {
         if (!isValid) return;
 
         try {
-            const res = await fetch(`${API_BASE}/auth/login.php`, {
+            const url = `${API_BASE}/auth/login.php`;
+            console.log('Login attempt to:', url);
+            
+            const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -77,7 +80,19 @@ if (loginForm) {
                 }),
             });
 
+            console.log('Response status:', res.status, res.statusText);
+            
+            // Check if response is JSON
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await res.text();
+                console.error('Non-JSON response:', text.substring(0, 200));
+                showError(password, 'password-error', 'Server error: Invalid response format');
+                return;
+            }
+
             const data = await res.json();
+            console.log('Response data:', data);
 
             if (!res.ok || data.success === false) {
                 showError(password, 'password-error', data.message || 'Login failed');
@@ -94,7 +109,13 @@ if (loginForm) {
 
             window.location.href = target;
         } catch (err) {
-            showError(password, 'password-error', 'Network error. Please try again.');
+            console.error('Login error:', err);
+            console.error('Error details:', {
+                message: err.message,
+                stack: err.stack,
+                name: err.name
+            });
+            showError(password, 'password-error', 'Network error. Please check console for details.');
         }
     });
 }
