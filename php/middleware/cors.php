@@ -42,6 +42,12 @@ function handleCORS(): void {
     header("Access-Control-Allow-Credentials: true");
     header("Access-Control-Max-Age: 86400");
     
+    // Ensure credentials are allowed - this is critical for session cookies
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        // For preflight, explicitly allow credentials
+        header("Access-Control-Allow-Credentials: true", true);
+    }
+    
     // Handle preflight requests
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
         http_response_code(200);

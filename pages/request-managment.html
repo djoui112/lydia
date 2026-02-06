@@ -197,32 +197,8 @@
                 const grid = document.getElementById("projectsGrid");
                 const searchInput = document.querySelector(".search-container input");
                 
-                // First, verify user is logged in and is an agency
-                try {
-                    const profileRes = await fetch('../php/api/users/profile.php', {
-                        credentials: 'include'
-                    });
-                    
-                    if (profileRes.ok) {
-                        const profileData = await profileRes.json();
-                        console.log('Profile data:', profileData);
-                        
-                        if (profileData.success && profileData.data?.user?.user_type === 'agency') {
-                            console.log('User is logged in as agency:', profileData.data.user);
-                        } else {
-                            grid.innerHTML = '<p>You must be logged in as an agency to view requests. <a href="login/login.html">Log in</a></p>';
-                            return;
-                        }
-                    } else {
-                        console.error('Profile check failed:', profileRes.status);
-                        grid.innerHTML = '<p>Please <a href="login/login.html">log in</a> as an agency first.</p>';
-                        return;
-                    }
-                } catch (err) {
-                    console.error('Error checking profile:', err);
-                    grid.innerHTML = '<p>Error verifying login. Please <a href="login/login.html">log in</a> again.</p>';
-                    return;
-                }
+                // Try to load requests directly - the API will handle authentication
+                // If not logged in, loadProjects will show an appropriate error message
 
                 function renderProjects(projects) {
                     grid.innerHTML = "";
@@ -233,6 +209,23 @@
                     }
 
                     projects.forEach(project => {
+                        // Extract only "Additional Notes" from description
+                        let cleanDescription = 'No additional notes provided';
+                        const description = project.description || '';
+                        
+                        if (description.includes('Additional Notes:')) {
+                            // Extract just the Additional Notes section
+                            const notesMatch = description.match(/Additional Notes:\s*(.+?)(?:\n\n|$)/s);
+                            if (notesMatch && notesMatch[1]) {
+                                cleanDescription = notesMatch[1].trim();
+                            }
+                        }
+                        
+                        // Truncate if too long for card display
+                        if (cleanDescription.length > 150) {
+                            cleanDescription = cleanDescription.substring(0, 150) + '...';
+                        }
+                        
                         grid.innerHTML += `
                             <article class="agency-card">
                                 <div class="agency-card__arch">
@@ -240,7 +233,7 @@
                                     <p>${project.client_name}</p>
                                 </div>
                                 <div class="agency-card__body">
-                                    <p>${project.description}</p>
+                                    <p>${cleanDescription}</p>
                                     <a href="c_reqpreview.html?id=${project.id}" class="btn">See more</a>
                                 </div>
                             </article>
@@ -251,7 +244,7 @@
                 function loadProjects(query = "") {
                     const url = `../php/api/search/requests.php?query=${encodeURIComponent(query)}`;
                     console.log('Loading requests from:', url);
-                    console.log('Session check - cookies:', document.cookie);
+                    console.log('Cookies:', document.cookie);
                     
                     fetch(url, {
                         credentials: 'include',
@@ -261,14 +254,15 @@
                     })
                         .then(res => {
                             console.log('Response status:', res.status, res.statusText);
-                            console.log('Response headers:', [...res.headers.entries()]);
                             
                             if (res.status === 401) {
-                                throw new Error('Not logged in. Please log in as an agency first.');
+                                grid.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">⚠️ Not logged in. <a href="login/login.html" style="color: #4CAF50;">Please log in as an agency first</a>.</p>';
+                                return Promise.reject(new Error('Not logged in'));
                             }
                             
                             if (res.status === 403) {
-                                throw new Error('Access denied. You must be logged in as an agency.');
+                                grid.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">⚠️ Access denied. You must be logged in as an agency. <a href="login/login.html" style="color: #4CAF50;">Log in</a></p>';
+                                return Promise.reject(new Error('Not an agency'));
                             }
                             
                             if (!res.ok) {
@@ -295,7 +289,9 @@
                         })
                         .catch(err => {
                             console.error('Error loading requests:', err);
-                            grid.innerHTML = `<p>Error loading requests: ${err.message}. Please check console for details.</p>`;
+                            if (!grid.innerHTML.includes('⚠️')) {
+                                grid.innerHTML = `<p style="color: red; padding: 20px;">Error loading requests: ${err.message}. <a href="login/login.html">Try logging in again</a>.</p>`;
+                            }
                         });
                 }
 

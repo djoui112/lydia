@@ -770,6 +770,9 @@ document.addEventListener("DOMContentLoaded", function () {
   
   // Load recent applications
   loadRecentApplications();
+  
+  // Load team members
+  loadTeamMembers();
 });
 
 // Function to load and display dashboard statistics
@@ -956,6 +959,127 @@ function createApplicationCard(application) {
   `;
   
   return card;
+}
+
+// Function to load and display team members
+async function loadTeamMembers() {
+  try {
+    console.log('Loading team members...');
+    
+    // First, get the logged-in agency ID
+    const sessionResponse = await fetch('../php/api/get-session-agency.php', {
+      credentials: 'include'
+    });
+    
+    if (!sessionResponse.ok) {
+      throw new Error(`Failed to get agency ID: ${sessionResponse.status}`);
+    }
+    
+    const sessionData = await sessionResponse.json();
+    
+    if (!sessionData || !sessionData.agency_id) {
+      console.error('No agency ID in session');
+      showNoMembersMessage();
+      return;
+    }
+    
+    const agencyId = sessionData.agency_id;
+    console.log('Agency ID:', agencyId);
+    
+    // Fetch team members for this agency
+    const response = await fetch(`../php/api/search/team-members.php?agency_id=${agencyId}`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error('Response is not JSON. Content-Type:', contentType);
+      showNoMembersMessage();
+      return;
+    }
+
+    const result = await response.json();
+    console.log('Team members API result:', result);
+    
+    const container = document.getElementById('membersContainer');
+    const noMembersMsg = document.getElementById('noMembersMessage');
+    
+    if (!container) {
+      console.error('Members container not found!');
+      return;
+    }
+
+    if (result.success && result.data && result.data.length > 0) {
+      // Hide "no members" message
+      if (noMembersMsg) {
+        noMembersMsg.style.display = 'none';
+      }
+
+      // Show only first 5 members
+      const members = result.data.slice(0, 5);
+      
+      // Clear container
+      container.innerHTML = '';
+      
+      // Create member cards
+      members.forEach(member => {
+        const card = createMemberCard(member);
+        container.appendChild(card);
+      });
+      
+      console.log(`Loaded ${members.length} members`);
+    } else {
+      // Show "no members" message
+      showNoMembersMessage();
+      console.log('No team members found');
+    }
+  } catch (error) {
+    console.error('Error loading team members:', error);
+    showNoMembersMessage();
+  }
+}
+
+// Function to show "no members" message
+function showNoMembersMessage() {
+  const container = document.getElementById('membersContainer');
+  const noMembersMsg = document.getElementById('noMembersMessage');
+  
+  if (container && noMembersMsg) {
+    container.innerHTML = '';
+    noMembersMsg.style.display = 'block';
+  }
+}
+
+// Function to create a member card
+function createMemberCard(member) {
+  const cardLink = document.createElement('a');
+  cardLink.href = `architect-portfolio.html?architect_id=${member.architect_id}`;
+  cardLink.className = 'member-card-link';
+  
+  const fullName = `${member.first_name || ''} ${member.last_name || ''}`.trim() || 'Unknown';
+  const profileImage = member.profile_image_url || member.profile_image || '';
+  
+  cardLink.innerHTML = `
+    <div class="profile-card member-card">
+      <div class="member-avatar">
+        ${profileImage 
+          ? `<img src="${profileImage}" alt="${fullName}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;" />`
+          : `<svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="8" r="4" fill="#E0E0E0" />
+              <path d="M6 21C6 17.6863 8.68629 15 12 15C15.3137 15 18 17.6863 18 21" fill="#E0E0E0" />
+            </svg>`
+        }
+      </div>
+      <h4>${fullName}</h4>
+    </div>
+  `;
+  
+  return cardLink;
 }
 
 // Bubbles are fixed in position - no dragging functionality

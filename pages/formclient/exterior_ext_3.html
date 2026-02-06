@@ -47,7 +47,7 @@
       <label>Additional Notes</label>
       <textarea placeholder="Any additional information about your exterior project..." rows="4"></textarea>
 
-      <button type="button" class="next-btn" onclick="handleProjectRequestSubmit(event)"> Submit </button>
+      <button type="button" class="next-btn" id="submitBtn" onclick="handleProjectRequestSubmit(event)"> Submit </button>
     </form>
   </div>
   <script src="../../js/project.js"></script>
@@ -55,50 +55,310 @@
   <script src="../../js/form-validation.js"></script>
   <script src="../../js/form-submission.js"></script>
   <script>
-    // Handle project request form submission
-    async function handleProjectRequestSubmit(event) {
-      const form = event.target.closest('form');
+    // Extract form data from all pages and save with correct keys for submission
+    function extractFormDataToSubmissionFormat() {
+      console.log('Extracting form data from all pages...');
       
-      // Validate form first
-      if (form && typeof validateForm === 'function' && !validateForm(form)) {
-        event.preventDefault();
-        event.stopPropagation();
+      // Helper function to get value from structured data
+      function getValue(data, keys) {
+        if (!data || !data.inputs) return null;
+        for (const key of keys) {
+          if (data.inputs[key] !== undefined && data.inputs[key] !== '') {
+            return data.inputs[key];
+          }
+        }
+        return null;
+      }
+      
+      function getChoice(data, keys) {
+        if (!data || !data.choices) return null;
+        for (const key of keys) {
+          if (data.choices[key] && data.choices[key].length > 0) {
+            return data.choices[key];
+          }
+        }
+        return null;
+      }
+      
+      // Get data from first page (exteriorproject.html)
+      const page1Data = localStorage.getItem('form-exteriorproject');
+      if (page1Data) {
+        try {
+          const data = JSON.parse(page1Data);
+          const projectLocation = getValue(data, ['Project location', 'project_location', 'field_2']);
+          if (projectLocation) {
+            localStorage.setItem('form-project_location', projectLocation);
+          }
+          const fullName = getValue(data, ['Full name', 'full_name', 'field_0']);
+          if (fullName) {
+            localStorage.setItem('form-project_name', fullName + ' Project');
+          }
+          // Extract phone number from form
+          const phoneNumber = getValue(data, ['Phone number', 'phone_number', 'field_1']);
+          if (phoneNumber) {
+            localStorage.setItem('form-phone_number', phoneNumber);
+            // Add phone number to description if it's different from account phone
+            const currentDesc = localStorage.getItem('form-description') || '';
+            if (currentDesc && !currentDesc.includes('Contact Phone:')) {
+              localStorage.setItem('form-description', 'Contact Phone: ' + phoneNumber + '\n\n' + currentDesc);
+            } else if (!currentDesc) {
+              localStorage.setItem('form-description', 'Contact Phone: ' + phoneNumber);
+            }
+          }
+          // Extract email from form
+          const email = getValue(data, ['Email', 'email', 'field_3']);
+          if (email) {
+            localStorage.setItem('form-email', email);
+          }
+        } catch (e) {
+          console.error('Error parsing page 1 data:', e);
+        }
+      }
+      
+      // Get data from exterior_ext_1.html
+      const ext1Data = localStorage.getItem('form-exterior_ext_1');
+      if (ext1Data) {
+        try {
+          const data = JSON.parse(ext1Data);
+          // Project location (if not set from page 1)
+          if (!localStorage.getItem('form-project_location')) {
+            const projectLocation = getValue(data, ['Project Location', 'project_location', 'field_0']);
+            if (projectLocation) localStorage.setItem('form-project_location', projectLocation);
+          }
+          // Area
+          const area = getValue(data, ['Approximate Area', 'approximate_area', 'field_1']);
+          if (area) {
+            // Extract number from string like "150 m²" or just "150"
+            const areaNum = area.toString().replace(/[^\d.]/g, '');
+            if (areaNum) localStorage.setItem('form-exterior_area', areaNum);
+          }
+          // Property type - map to valid enum values
+          const propertyType = getChoice(data, ['Property Type', 'property_type']);
+          if (propertyType && propertyType.length > 0) {
+            const propTypeText = propertyType[0].toLowerCase();
+            // Map form values to database enum values
+            let mappedType = null;
+            if (propTypeText.includes('residential') || propTypeText.includes('facade')) {
+              mappedType = 'residential';
+            } else if (propTypeText.includes('commercial')) {
+              mappedType = 'commercial';
+            } else if (propTypeText.includes('landscap') || propTypeText.includes('garden')) {
+              mappedType = 'landscape';
+            } else if (propTypeText.includes('institutional')) {
+              mappedType = 'institutional';
+            } else {
+              mappedType = 'other';
+            }
+            localStorage.setItem('form-exterior_property_type', mappedType);
+            console.log('Mapped property type:', propTypeText, '->', mappedType);
+          }
+          // Number of floors
+          const floors = getValue(data, ['Number of Floors', 'number_of_floors', 'field_3']);
+          if (floors) {
+            // Extract number from string like "2 floors" or just "2"
+            const floorsNum = floors.toString().replace(/[^\d]/g, '');
+            if (floorsNum) localStorage.setItem('form-number_of_floors', floorsNum);
+          }
+        } catch (e) {
+          console.error('Error parsing exterior_ext_1 data:', e);
+        }
+      }
+      
+      // Get data from exterior_ext_2.html
+      const ext2Data = localStorage.getItem('form-exterior_ext_2');
+      if (ext2Data) {
+        try {
+          const data = JSON.parse(ext2Data);
+          // Service type
+          const serviceType = getChoice(data, ['Service Type', 'service_type']);
+          if (serviceType && serviceType.length > 0) {
+            const svcType = serviceType[0].toLowerCase().replace(/\s+/g, '_');
+            localStorage.setItem('form-service_type', svcType);
+          }
+          // Budget
+          const minBudget = getValue(data, ['Minimum Budget (in DZD)', 'minBudget', 'min_budget', 'field_1']);
+          if (minBudget) localStorage.setItem('form-min_budget', minBudget.toString());
+          const maxBudget = getValue(data, ['Maximum Budget (in DZD)', 'maxBudget', 'max_budget', 'field_2']);
+          if (maxBudget) localStorage.setItem('form-max_budget', maxBudget.toString());
+          // Timeline
+          const timeline = getValue(data, ['Preferred Timeline', 'preferred_timeline', 'field_3']);
+          if (timeline) localStorage.setItem('form-preferred_timeline', timeline);
+          // Style preference
+          const style = getValue(data, ['Style Preference', 'style_preference', 'field_4']);
+          if (style) localStorage.setItem('form-style_preference', style);
+          // Material preferences
+          const materials = getChoice(data, ['Material Preferences', 'material_preferences']);
+          if (materials && materials.length > 0) {
+            localStorage.setItem('form-material_preferences', materials.join(', '));
+          }
+        } catch (e) {
+          console.error('Error parsing exterior_ext_2 data:', e);
+        }
+      }
+      
+      console.log('Extracted form data:', {
+        project_location: localStorage.getItem('form-project_location'),
+        min_budget: localStorage.getItem('form-min_budget'),
+        max_budget: localStorage.getItem('form-max_budget'),
+        preferred_timeline: localStorage.getItem('form-preferred_timeline'),
+        style_preference: localStorage.getItem('form-style_preference'),
+        service_type: localStorage.getItem('form-service_type'),
+        exterior_property_type: localStorage.getItem('form-exterior_property_type'),
+        number_of_floors: localStorage.getItem('form-number_of_floors'),
+        exterior_area: localStorage.getItem('form-exterior_area')
+      });
+    }
+    
+    // Handle project request form submission
+    let isSubmitting = false;
+    
+    async function handleProjectRequestSubmit(event) {
+      // Prevent event from bubbling
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Get button reference IMMEDIATELY
+      const submitButton = document.getElementById('submitBtn') || event.target;
+      
+      // Check if already submitting - check button state FIRST
+      if (isSubmitting || submitButton.disabled || (typeof submissionInProgress !== 'undefined' && submissionInProgress)) {
+        console.warn('⚠️ Form submission already in progress - BLOCKED');
         return false;
       }
       
-      // Save form data before submitting
-      if (typeof saveFormData === 'function') {
-        saveFormData();
-      }
+      // Set flag IMMEDIATELY - before any other operations
+      isSubmitting = true;
       
-      // Get agency_id from URL and save it
-      const urlParams = new URLSearchParams(window.location.search);
-      const agencyId = urlParams.get('agency_id');
-      if (agencyId && typeof saveAgencyId === 'function') {
-        saveAgencyId(agencyId);
-      }
+      // Disable submit button IMMEDIATELY - before any async operations
+      const originalText = submitButton.textContent || 'Submit';
+      submitButton.disabled = true;
+      submitButton.textContent = 'Submitting...';
+      submitButton.style.opacity = '0.6';
+      submitButton.style.cursor = 'not-allowed';
       
-      // Save special requirements and additional notes
-      const specialRequirements = form.querySelector('textarea[placeholder*="specific requirements"]');
-      const additionalNotes = form.querySelector('textarea[placeholder*="additional information"]');
+      console.log('🔒 Button disabled, submission started');
       
-      if (specialRequirements) {
-        localStorage.setItem('form-exterior_special_requirements', specialRequirements.value);
-      }
-      if (additionalNotes) {
-        const currentDesc = localStorage.getItem('form-description') || '';
-        localStorage.setItem('form-description', currentDesc + (currentDesc ? '\n\n' : '') + additionalNotes.value);
-      }
-      
-      // Submit project request
-      const success = await submitProjectRequest();
-      
-      if (success) {
-        // Navigate to success page
-        window.location.href = 'exterior_ext_success.html';
-      } else {
-        // Show error message
-        alert('Failed to submit project request. Please try again.');
+      try {
+        const form = event.target.closest('form');
+        
+        // Validate form first
+        if (form && typeof validateForm === 'function' && !validateForm(form)) {
+          isSubmitting = false;
+          submitButton.disabled = false;
+          submitButton.textContent = originalText;
+          submitButton.style.opacity = '1';
+          submitButton.style.cursor = 'pointer';
+          return false;
+        }
+        
+        // Save form data before submitting
+        if (typeof saveFormData === 'function') {
+          saveFormData();
+        }
+        
+        // Extract and save form data with correct keys for submission
+        extractFormDataToSubmissionFormat();
+        
+        // Get agency_id from URL and save it
+        const urlParams = new URLSearchParams(window.location.search);
+        const agencyId = urlParams.get('agency_id');
+        if (agencyId && typeof saveAgencyId === 'function') {
+          saveAgencyId(agencyId);
+        }
+        
+        // Save special requirements and additional notes
+        const specialRequirements = form.querySelector('textarea[placeholder*="specific requirements"]');
+        const environmentalConsiderations = form.querySelector('input[placeholder*="Solar panels"]');
+        const additionalNotes = form.querySelector('textarea[placeholder*="additional information"]');
+        const contactMethod = form.querySelector('.choice.active');
+        
+        // Get existing description (without duplicates)
+        let existingDesc = localStorage.getItem('form-description') || '';
+        // Remove any existing "Special Requirements", "Environmental Considerations", "Additional Notes" to avoid duplicates
+        existingDesc = existingDesc.replace(/Special Requirements:.*?(?=\n\n|$)/g, '').trim();
+        existingDesc = existingDesc.replace(/Environmental Considerations:.*?(?=\n\n|$)/g, '').trim();
+        existingDesc = existingDesc.replace(/Additional Notes:.*?(?=\n\n|$)/g, '').trim();
+        existingDesc = existingDesc.replace(/Contact Method:.*?(?=\n\n|$)/g, '').trim();
+        
+        // Build description from all text fields - check if already added to avoid duplicates
+        let descriptionParts = [];
+        
+        // Check what's already in the description to avoid duplicates
+        const hasSpecialReqs = existingDesc.includes('Special Requirements:');
+        const hasEnvConsiderations = existingDesc.includes('Environmental Considerations:');
+        const hasAdditionalNotes = existingDesc.includes('Additional Notes:');
+        const hasContactMethod = existingDesc.includes('Contact Method:');
+        
+        if (specialRequirements && specialRequirements.value.trim() && !hasSpecialReqs) {
+          localStorage.setItem('form-exterior_special_requirements', specialRequirements.value);
+          descriptionParts.push('Special Requirements: ' + specialRequirements.value);
+        }
+        
+        if (environmentalConsiderations && environmentalConsiderations.value.trim() && !hasEnvConsiderations) {
+          descriptionParts.push('Environmental Considerations: ' + environmentalConsiderations.value);
+        }
+        
+        if (additionalNotes && additionalNotes.value.trim() && !hasAdditionalNotes) {
+          descriptionParts.push('Additional Notes: ' + additionalNotes.value);
+        }
+        
+        if (contactMethod && contactMethod.textContent.trim() && !hasContactMethod) {
+          descriptionParts.push('Contact Method: ' + contactMethod.textContent.trim());
+        }
+        
+        // Combine existing description with new parts (only if there are new parts)
+        if (descriptionParts.length > 0) {
+          const newParts = descriptionParts.join('\n\n');
+          const fullDescription = existingDesc ? existingDesc + '\n\n' + newParts : newParts;
+          localStorage.setItem('form-description', fullDescription);
+          console.log('Saved description (no duplicates):', fullDescription);
+        } else {
+          // Keep existing description as-is if no new parts
+          console.log('No new parts to add, keeping existing description:', existingDesc);
+        }
+        
+        // Submit project request
+        console.log('📤 Calling submitProjectRequest...');
+        const success = await submitProjectRequest();
+        console.log('📥 submitProjectRequest returned:', success);
+        
+        if (success) {
+          // Clear the flag and navigate - DON'T reset flag before navigation
+          console.log('✅ Submission successful, navigating to success page');
+          // Navigate immediately - don't reset flag (page will unload anyway)
+          window.location.href = 'exterior_ext_success.html';
+          return; // Exit immediately
+        } else {
+          // Show error message
+          console.error('❌ Submission returned false');
+          isSubmitting = false;
+          // Also reset the global flag
+          if (typeof submissionInProgress !== 'undefined') {
+            submissionInProgress = false;
+          }
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+            submitButton.style.opacity = '1';
+            submitButton.style.cursor = 'pointer';
+          }
+          // Don't show alert here - submitProjectRequest already shows alerts
+        }
+      } catch (error) {
+        console.error('❌ Error in form submission handler:', error);
+        console.error('Error stack:', error.stack);
+        alert('Error submitting form: ' + error.message);
+        isSubmitting = false;
+        // Also reset the global flag
+        if (typeof submissionInProgress !== 'undefined') {
+          submissionInProgress = false;
+        }
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = originalText;
+          submitButton.style.opacity = '1';
+          submitButton.style.cursor = 'pointer';
+        }
       }
     }
   </script>

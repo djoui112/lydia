@@ -206,13 +206,32 @@ try {
             )'
         );
         
+        // Validate property_type against enum values
+        $validPropertyTypes = ['residential', 'commercial', 'landscape', 'institutional', 'other'];
+        $propertyType = $input['exterior_property_type'] ?? null;
+        if ($propertyType && !in_array($propertyType, $validPropertyTypes)) {
+            // Try to map common variations
+            $propertyTypeLower = strtolower($propertyType);
+            if (strpos($propertyTypeLower, 'residential') !== false || strpos($propertyTypeLower, 'facade') !== false) {
+                $propertyType = 'residential';
+            } else if (strpos($propertyTypeLower, 'commercial') !== false) {
+                $propertyType = 'commercial';
+            } else if (strpos($propertyTypeLower, 'landscap') !== false || strpos($propertyTypeLower, 'garden') !== false) {
+                $propertyType = 'landscape';
+            } else if (strpos($propertyTypeLower, 'institutional') !== false) {
+                $propertyType = 'institutional';
+            } else {
+                $propertyType = 'other';
+            }
+        }
+        
         $stmt->execute([
             'request_id' => $requestId,
-            'property_type' => $input['exterior_property_type'] ?? null,
+            'property_type' => $propertyType,
             'number_of_floors' => isset($input['number_of_floors']) ? (int)$input['number_of_floors'] : null,
             'area' => isset($input['exterior_area']) ? (float)$input['exterior_area'] : null,
             'style_preference' => $input['exterior_style_preference'] ?? null,
-            'material_preferences' => isset($input['material_preferences']) ? json_encode($input['material_preferences']) : null,
+            'material_preferences' => isset($input['material_preferences']) ? (is_array($input['material_preferences']) ? json_encode($input['material_preferences']) : $input['material_preferences']) : null,
             'special_requirements' => $input['exterior_special_requirements'] ?? null,
         ]);
     }
@@ -253,7 +272,7 @@ try {
             'area' => isset($input['interior_area']) ? (float)$input['interior_area'] : null,
             'style_preference' => $input['interior_style_preference'] ?? null,
             'color_scheme' => $input['color_scheme'] ?? null,
-            'material_preferences' => isset($input['interior_material_preferences']) ? json_encode($input['interior_material_preferences']) : null,
+            'material_preferences' => isset($input['interior_material_preferences']) ? (is_array($input['interior_material_preferences']) ? json_encode($input['interior_material_preferences']) : $input['interior_material_preferences']) : null,
             'special_requirements' => $input['interior_special_requirements'] ?? null,
         ]);
     }

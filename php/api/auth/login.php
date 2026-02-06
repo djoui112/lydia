@@ -78,12 +78,16 @@ if ($user['user_type'] === 'architect') {
 }
 
 // Regenerate session ID for security (prevents session fixation)
+// Delete old session, create new one with same data
+$oldSessionId = session_id();
 session_regenerate_id(true);
+$newSessionId = session_id();
 
 // Log session info for debugging
 error_log("Login successful - User ID: " . (int)$user['id'] . ", Type: " . $user['user_type']);
-error_log("Session ID after login: " . session_id());
+error_log("Session ID changed from $oldSessionId to $newSessionId");
 error_log("Session data after login: " . print_r($_SESSION, true));
+error_log("Session cookie will be set with ID: " . session_id());
 
 // Don't call session_write_close() - let PHP handle it automatically
 // This ensures the session cookie is properly set

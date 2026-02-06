@@ -31,7 +31,16 @@ function saveAgencyId(agencyId) {
 
 // Get agency_id from localStorage or URL
 function getAgencyId() {
-    return getAgencyIdFromURL() || localStorage.getItem('form-agency-id') || null;
+    const agencyId = getAgencyIdFromURL() || localStorage.getItem('form-agency-id');
+    
+    // If no agency_id found, check if we can get it from the agencies page or use default DJO Agency
+    if (!agencyId) {
+        console.warn('Agency ID not found in URL or localStorage. Using DJO Agency (ID: 41) as default.');
+        // Default to DJO Agency for testing - in production, you'd want to show an agency selection
+        return '41'; // DJO Agency ID
+    }
+    
+    return agencyId;
 }
 
 // Submit architect application
@@ -112,13 +121,27 @@ function getProjectTypes() {
     return projectTypes.length > 0 ? JSON.stringify(projectTypes) : null;
 }
 
+// Prevent double submission - use a global flag
+let submissionInProgress = false;
+
 // Submit project request
 async function submitProjectRequest() {
+    // Prevent double submission - check flag FIRST
+    if (submissionInProgress) {
+        console.warn('⚠️ Submission already in progress, ignoring duplicate call');
+        return false;
+    }
+    
+    // Set flag IMMEDIATELY - before any async operations
+    submissionInProgress = true;
+    console.log('🔒 submissionInProgress set to true');
+    
     const agencyId = getAgencyId();
     
     if (!agencyId) {
         console.error('Agency ID is required');
         alert('Error: Agency ID not found. Please go back and try again.');
+        submissionInProgress = false;
         return false;
     }
 
@@ -193,6 +216,10 @@ async function submitProjectRequest() {
         // Clear agency_id from localStorage after successful submission
         localStorage.removeItem('form-agency-id');
         
+        // DON'T reset flag here - let the page navigation handle it
+        // The flag will be reset when the page unloads or if there's an error
+        console.log('✅ Submission successful - flag will reset on page navigation');
+        
         return true;
     } catch (error) {
         console.error('Error submitting project request:', error);
@@ -202,6 +229,7 @@ async function submitProjectRequest() {
             name: error.name
         });
         alert('Error submitting project request: ' + error.message);
+        submissionInProgress = false;
         return false;
     }
 }
