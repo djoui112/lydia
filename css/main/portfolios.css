@@ -164,20 +164,24 @@
     width: 4rem;
     
 }
-.num-years{
-    display: flex;
+.num-years-exp{
+    display: flex !important;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 4rem;
 }
 
-.num-years p:first-child{
+.num-years-exp p:first-child{
     font-size: 0.7rem;
+    color: #1B2B41;
+
 }
 
-.num-years p:last-child{
+.num-years-exp p:last-child{
     font-size: 1.2rem;
+    color: #1B2B41;
+
 }
 
 .see-more{

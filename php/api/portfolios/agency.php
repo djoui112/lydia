@@ -135,12 +135,14 @@ try {
                         r.rating,
                         r.review_text,
                         r.created_at,
+                        r.client_id,
                         CONCAT(c.first_name, ' ', c.last_name) as client_name,
                         u.profile_image
                      FROM reviews r
                      INNER JOIN clients c ON r.client_id = c.id
                      INNER JOIN users u ON c.id = u.id
                      WHERE r.agency_id = :id
+                     AND r.architect_id IS NULL
                      AND r.is_visible = 1
                      ORDER BY r.created_at DESC
                      LIMIT 10";
@@ -150,6 +152,11 @@ try {
     $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Format review data
+    $currentClientId = null;
+    if (isset($_SESSION['user_id']) && isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'client') {
+        $currentClientId = (int)$_SESSION['user_id'];
+    }
+
     foreach ($reviews as &$review) {
         if (!empty($review['profile_image'])) {
             $review['profile_image_url'] = buildFileUrl($review['profile_image']);
@@ -157,6 +164,7 @@ try {
         if ($review['created_at']) {
             $review['created_at_formatted'] = formatDate($review['created_at'], 'F j, Y');
         }
+        $review['is_owner'] = $currentClientId && ((int)$review['client_id'] === $currentClientId);
     }
     
     // Check if current user is the portfolio owner

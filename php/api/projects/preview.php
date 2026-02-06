@@ -115,12 +115,14 @@ try {
                        r.rating,
                        r.review_text,
                        r.created_at,
+                       r.client_id,
                        CONCAT(c.first_name, ' ', c.last_name) as client_name,
                        u.profile_image
                     FROM reviews r
                     INNER JOIN clients c ON r.client_id = c.id
                     INNER JOIN users u ON c.id = u.id
                     WHERE r.project_id = :id
+                    AND r.architect_id IS NOT NULL
                     AND r.is_visible = 1
                     ORDER BY r.created_at DESC
                     LIMIT 1";

@@ -1,206 +1,106 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const header = document.querySelector('.site-header');
-
-    if (header) {
-        const toggleHeaderState = () => {
-            if (window.scrollY > 10) {
-                header.classList.add('is-scrolled');
-            } else {
-                header.classList.remove('is-scrolled');
-            }
-        };
-
-        toggleHeaderState();
-        window.addEventListener('scroll', toggleHeaderState, { passive: true });
-    }
-
-    // ============================================
-    // Mobile Menu Functionality
-    // ============================================
-    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-    const body = document.body;
-
-    if (mobileMenuToggle && mobileMenuOverlay) {
-        // Function to close menu
-        const closeMenu = () => {
-            mobileMenuToggle.classList.remove('active');
-            mobileMenuOverlay.classList.remove('active');
-            body.classList.remove('menu-open');
-        };
-
-        // Function to open menu
-        const openMenu = () => {
-            mobileMenuToggle.classList.add('active');
-            mobileMenuOverlay.classList.add('active');
-            body.classList.add('menu-open');
-        };
-
-        // Toggle mobile menu
-        mobileMenuToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            if (mobileMenuOverlay.classList.contains('active')) {
-                closeMenu();
-            } else {
-                openMenu();
-            }
-        });
-
-        // Close button inside menu
-        const closeButton = mobileMenuOverlay.querySelector('.mobile-menu-close');
-        if (closeButton) {
-            closeButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeMenu();
-            });
-        }
-
-        // Close menu when clicking on overlay (outside menu)
-        mobileMenuOverlay.addEventListener('click', (e) => {
-            if (e.target === mobileMenuOverlay) {
-                closeMenu();
-            }
-        });
-
-        // Close menu when clicking on a menu link
-        const mobileMenuLinks = mobileMenuOverlay.querySelectorAll('.mobile-menu-link');
-        mobileMenuLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                closeMenu();
-            });
-        });
-
-        // Close menu on window resize (if resizing to desktop)
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 480) {
-                closeMenu();
-            }
-        });
-
-        // Close menu on ESC key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && mobileMenuOverlay.classList.contains('active')) {
-                closeMenu();
-            }
-        });
-    }
-
-    const container = document.querySelector('.projects-container');
-
-    if (!container) {
+    const API_BASE = '../php/api';
+    const track = document.getElementById('projectSliderTrack');
+    if (!track) {
         return;
     }
 
-    const cards = Array.from(container.querySelectorAll('.project-card'));
+    const setEmptyState = (message) => {
+        track.innerHTML = `
+            <p style="width:100%; text-align:center; margin:40px 0;">${message}</p>
+        `;
+    };
 
-    if (cards.length <= 1) {
-        return;
-    }
+    const normalizeImagePath = (path) => {
+        if (!path) return '';
+        if (path.startsWith('http')) return path;
+        const clean = path.replace(/^\/+/, '');
+        if (clean.startsWith('assets/')) return `../${clean}`;
+        if (clean.startsWith('uploads/')) return `../assets/${clean}`;
+        return `../${clean}`;
+    };
 
-    const computedStyles = getComputedStyle(container);
+    const formatDate = (dateValue) => {
+        if (!dateValue) return '';
+        const dt = new Date(dateValue);
+        if (Number.isNaN(dt.getTime())) return '';
+        const day = String(dt.getDate()).padStart(2, '0');
+        const month = String(dt.getMonth() + 1).padStart(2, '0');
+        const year = dt.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
 
-    // Tweak the CSS variables on `.projects-container` to adjust spacing, duration, and easing.
-    const gap = parseFloat(computedStyles.getPropertyValue('--stack-gap')) || 80;
-    const scaleStep = parseFloat(computedStyles.getPropertyValue('--card-scale-step')) || 0.05;
-    const durationValue = computedStyles.getPropertyValue('--card-transition-duration') || '0.6s';
-    const durationMs = durationValue.includes('ms')
-        ? parseFloat(durationValue)
-        : parseFloat(durationValue) * 1000;
+    const renderProjects = (projects) => {
+        track.innerHTML = '';
+        projects.forEach((project, index) => {
+            const agencyName = project.agency_name || '--';
+            const architectName = project.architect_name || '--';
+            const tags = project.project_type ? project.project_type.replace(/_/g, ' ') : 'project';
+            const dateLabel = formatDate(project.display_date);
+            const imageUrl = normalizeImagePath(project.project_photo_url);
 
-    let isAnimating = false;
-    let touchStartY = null;
-
-    container.tabIndex = 0;
-
-    const applyStack = () => {
-        cards.forEach((card, index) => {
-            const translateY = index * gap;
-            const scale = Math.max(1 - index * scaleStep, 0.85);
-            const opacity = Math.max(1 - index * 0.15, 0.25);
-
-            card.style.transform = `translateX(-50%) translateY(${translateY}px) scale(${scale})`;
-            card.style.zIndex = String(cards.length - index);
-            card.style.opacity = opacity.toString();
-            card.style.pointerEvents = index === 0 ? 'auto' : 'none';
-            card.dataset.stackIndex = String(index);
+            const card = document.createElement('div');
+            card.className = 'project-slider-card';
+            card.dataset.index = String(index);
+            card.innerHTML = `
+                <div class="project-content">
+                    <div class="project-info">
+                        <h3 class="project-name">${project.project_name || 'Project'}</h3>
+                        <div class="project-details">
+                            <p class="project-agency">Agency: ${agencyName}</p>
+                            <p class="project-architect">Architect: ${architectName}</p>
+                            <p class="project-tags">${tags}</p>
+                            ${dateLabel ? `
+                            <div class="project-date">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2" />
+                                </svg>
+                                <span>${dateLabel}</span>
+                            </div>` : ''}
+                        </div>
+                        <a href="clientproject.html?project_id=${project.project_id}" class="btn-view-project">view project</a>
+                    </div>
+                    <div class="project-image">
+                        <img src="${imageUrl || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop'}" alt="Client project" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop';" />
+                    </div>
+                </div>
+            `;
+            track.appendChild(card);
         });
     };
 
-    const cycle = (direction) => {
-        if (isAnimating) {
-            return;
-        }
+    const loadProjects = async () => {
+        try {
+            const res = await fetch(`${API_BASE}/projects/client.php`, {
+                method: 'GET',
+                credentials: 'include',
+            });
 
-        isAnimating = true;
-
-        if (direction === 'forward') {
-            const first = cards.shift();
-            if (!first) {
-                isAnimating = false;
+            if (res.status === 401) {
+                setEmptyState('No project yet');
                 return;
             }
-            cards.push(first);
-            container.appendChild(first);
-        } else {
-            const last = cards.pop();
-            if (!last) {
-                isAnimating = false;
+
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                setEmptyState('No project yet');
                 return;
             }
-            cards.unshift(last);
-            container.insertBefore(last, container.firstElementChild);
-        }
 
-        requestAnimationFrame(() => {
-            applyStack();
-            setTimeout(() => {
-                isAnimating = false;
-            }, durationMs);
-        });
-    };
+            const projects = Array.isArray(data.data) ? data.data : [];
+            if (projects.length === 0) {
+                setEmptyState('No project yet');
+                return;
+            }
 
-    const handleWheel = (event) => {
-        event.preventDefault();
-        const direction = event.deltaY > 0 ? 'forward' : 'backward';
-        cycle(direction);
-    };
-
-    const handleKey = (event) => {
-        if (event.key === 'ArrowDown' || event.key === 'PageDown') {
-            cycle('forward');
-        }
-
-        if (event.key === 'ArrowUp' || event.key === 'PageUp') {
-            cycle('backward');
+            renderProjects(projects);
+        } catch (err) {
+            setEmptyState('No project yet');
         }
     };
 
-    const handleTouchStart = (event) => {
-        touchStartY = event.touches[0].clientY;
-    };
-
-    const handleTouchMove = (event) => {
-        if (touchStartY === null) {
-            return;
-        }
-
-        const deltaY = touchStartY - event.touches[0].clientY;
-
-        if (Math.abs(deltaY) < 30) {
-            return;
-        }
-
-        cycle(deltaY > 0 ? 'forward' : 'backward');
-        touchStartY = null;
-        event.preventDefault();
-    };
-
-    applyStack();
-
-    container.addEventListener('wheel', handleWheel, { passive: false });
-    container.addEventListener('keydown', handleKey);
-    container.addEventListener('touchstart', handleTouchStart, { passive: true });
-    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    loadProjects();
 });
-

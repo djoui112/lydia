@@ -256,9 +256,12 @@ function renderReviews(reviews, userType) {
     reviews.forEach(review => {
         const card = document.createElement('div');
         card.className = 'review-card';
+        if (review.id) {
+            card.dataset.reviewId = review.id;
+        }
         
         const profileImage = review.profile_image_url || review.profile_image || '../assets/portfolios/user-pic.jpg';
-        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+        const stars = '?'.repeat(review.rating) + '?'.repeat(5 - review.rating);
         
         card.innerHTML = `
             <div>
@@ -270,11 +273,22 @@ function renderReviews(reviews, userType) {
                 <div class="review-text">${review.review_text || ''}</div>
             </div>
         `;
+
+        if (review.is_owner) {
+            const info = card.querySelector(".review-info");
+            const editBtn = document.createElement("button");
+            editBtn.type = "button";
+            editBtn.className = "btn-review-edit";
+            editBtn.textContent = "Edit";
+            editBtn.dataset.reviewId = review.id || "";
+            editBtn.dataset.reviewRating = String(review.rating || 0);
+            editBtn.dataset.reviewText = review.review_text || "";
+            info?.appendChild(editBtn);
+        }
         
         reviewsList.appendChild(card);
     });
 }
-
 // ====== Initialize Portfolio Actions ======
 function initPortfolioActions(agencyId) {
     // This will be handled by agency-portfolio-actions.js
@@ -361,12 +375,15 @@ function initReviewForm(agencyId) {
     const ratingWrapper = starContainer.closest(".rating-area") || starContainer.parentElement;
     const ratingError = createHelperMessage(ratingWrapper, "rating");
     let selectedRating = 0;
+    let editingReviewId = null;
+    let editingCard = null;
+    const submitBtn = reviewForm.querySelector(".btn-submit-review") || reviewForm.querySelector("button[type='submit']");
     const maxStars = 5;
 
     starContainer.innerHTML = "";
     for (let i = 0; i < maxStars; i++) {
         const span = document.createElement("span");
-        span.textContent = "★";
+        span.textContent = "?";
         span.setAttribute("role", "button");
         span.setAttribute("aria-label", `Select ${i + 1} star${i === 0 ? "" : "s"}`);
         span.addEventListener("click", () => {
@@ -381,6 +398,30 @@ function initReviewForm(agencyId) {
         if (!field) return;
         field.addEventListener("input", () => validateField(field));
         field.addEventListener("blur", () => validateField(field));
+    });
+
+    reviewsList.addEventListener("click", (e) => {
+        const editBtn = e.target.closest(".btn-review-edit");
+        if (!editBtn) return;
+        e.preventDefault();
+
+        const reviewId = parseInt(editBtn.dataset.reviewId || "0", 10);
+        const rating = parseInt(editBtn.dataset.reviewRating || "0", 10);
+        const text = editBtn.dataset.reviewText || "";
+
+        if (!reviewId) return;
+
+        editingReviewId = reviewId;
+        editingCard = editBtn.closest(".review-card");
+        if (fields.reviewText) {
+            fields.reviewText.value = text;
+            clearFieldError(fields.reviewText);
+        }
+        selectedRating = rating || 0;
+        updateStars();
+        clearRatingError();
+        if (submitBtn) submitBtn.textContent = "Update Review";
+        reviewForm.scrollIntoView({ behavior: "smooth", block: "center" });
     });
 
     function updateStars() {
@@ -483,6 +524,25 @@ function initReviewForm(agencyId) {
         return isReviewValid && isRatingValid;
     }
 
+    function resetEditState() {
+        editingReviewId = null;
+        editingCard = null;
+        if (submitBtn) submitBtn.textContent = "Submit Review";
+    }
+
+    function updateReviewCard(card, rating, text) {
+        if (!card) return;
+        const starsEl = card.querySelector(".review-stars");
+        const textEl = card.querySelector(".review-text");
+        if (starsEl) starsEl.textContent = `${"?".repeat(rating)}${"?".repeat(5 - rating)}`;
+        if (textEl) textEl.textContent = text;
+        const editBtn = card.querySelector(".btn-review-edit");
+        if (editBtn) {
+            editBtn.dataset.reviewRating = String(rating);
+            editBtn.dataset.reviewText = text;
+        }
+    }
+
     reviewForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -499,17 +559,27 @@ function initReviewForm(agencyId) {
 
         // Submit review to API
         try {
-            const response = await fetch(`${API_BASE}/reviews/create.php`, {
+            const isEditing = Boolean(editingReviewId);
+            const endpoint = isEditing ? 'update.php' : 'create.php';
+            const payload = isEditing
+                ? {
+                    review_id: editingReviewId,
+                    rating: selectedRating,
+                    review_text: fields.reviewText.value.trim()
+                }
+                : {
+                    rating: selectedRating,
+                    review_text: fields.reviewText.value.trim(),
+                    agency_id: agencyId
+                };
+
+            const response = await fetch(`${API_BASE}/reviews/${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 credentials: 'include',
-                body: JSON.stringify({
-                    rating: selectedRating,
-                    review_text: fields.reviewText.value.trim(),
-                    agency_id: agencyId
-                })
+                body: JSON.stringify(payload)
             });
 
             const result = await response.json();
@@ -518,14 +588,23 @@ function initReviewForm(agencyId) {
                 throw new Error(result.message || 'Failed to submit review');
             }
 
-            // Add review to DOM
-            addReview(result.data.client_name, selectedRating, fields.reviewText.value.trim(), result.data);
-            showSuccessMessage("Thank you for your review!");
+            if (isEditing) {
+                updateReviewCard(editingCard, selectedRating, fields.reviewText.value.trim());
+                showSuccessMessage("Review updated successfully!");
+            } else {
+                addReview(result.data.client_name, selectedRating, fields.reviewText.value.trim(), {
+                    ...result.data,
+                    is_owner: true
+                });
+                showSuccessMessage("Thank you for your review!");
+            }
+
             reviewForm.reset();
             if (fields.reviewText) clearFieldError(fields.reviewText);
             selectedRating = 0;
             updateStars();
             clearRatingError();
+            resetEditState();
         } catch (error) {
             console.error('Error submitting review:', error);
             showSuccessMessage("Error submitting review. Please try again.");
@@ -535,6 +614,9 @@ function initReviewForm(agencyId) {
     function addReview(name, rating, text, reviewData = null) {
         const card = document.createElement("div");
         card.className = "review-card";
+        if (reviewData?.id) {
+            card.dataset.reviewId = reviewData.id;
+        }
 
         const avatarWrapper = document.createElement("div");
         const avatar = document.createElement("img");
@@ -552,7 +634,7 @@ function initReviewForm(agencyId) {
 
         const reviewStars = document.createElement("div");
         reviewStars.className = "review-stars";
-        reviewStars.textContent = `${"★".repeat(rating)}${"☆".repeat(5 - rating)}`;
+        reviewStars.textContent = `${"?".repeat(rating)}${"?".repeat(5 - rating)}`;
 
         const reviewText = document.createElement("div");
         reviewText.className = "review-text";
@@ -561,6 +643,17 @@ function initReviewForm(agencyId) {
         info.appendChild(reviewName);
         info.appendChild(reviewStars);
         info.appendChild(reviewText);
+
+        if (reviewData?.is_owner) {
+            const editBtn = document.createElement("button");
+            editBtn.type = "button";
+            editBtn.className = "btn-review-edit";
+            editBtn.textContent = "Edit";
+            editBtn.dataset.reviewId = reviewData?.id || "";
+            editBtn.dataset.reviewRating = String(rating || 0);
+            editBtn.dataset.reviewText = text || "";
+            info.appendChild(editBtn);
+        }
 
         card.appendChild(avatarWrapper);
         card.appendChild(info);

@@ -65,19 +65,20 @@ try {
         exit;
     }
     
-    // At least one of project_id, agency_id, or architect_id must be provided
-    if (!$projectId && !$agencyId && !$architectId) {
+    // Exactly one of project_id, agency_id, or architect_id must be provided
+    $targetCount = ($projectId ? 1 : 0) + ($agencyId ? 1 : 0) + ($architectId ? 1 : 0);
+    if ($targetCount !== 1) {
         http_response_code(400);
         echo json_encode([
             'success' => false,
-            'message' => 'Must specify project_id, agency_id, or architect_id'
+            'message' => 'Must specify exactly one of project_id, agency_id, or architect_id'
         ]);
         exit;
     }
     
     // If project_id is provided, verify the client owns the project
     if ($projectId) {
-        $verifyQuery = "SELECT client_id FROM projects WHERE id = :id LIMIT 1";
+        $verifyQuery = "SELECT client_id, agency_id, assigned_architect_id FROM projects WHERE id = :id LIMIT 1";
         $stmt = $db->prepare($verifyQuery);
         $stmt->execute([':id' => $projectId]);
         $project = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -99,6 +100,19 @@ try {
             ]);
             exit;
         }
+
+        if (empty($project['assigned_architect_id'])) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Architect is not assigned yet for this project'
+            ]);
+            exit;
+        }
+
+        // Force agency/architect linkage from the project
+        $agencyId = (int)$project['agency_id'];
+        $architectId = (int)$project['assigned_architect_id'];
         
         // Check if review already exists for this project
         $checkQuery = "SELECT id FROM reviews WHERE project_id = :project_id AND client_id = :client_id LIMIT 1";
@@ -116,6 +130,10 @@ try {
             ]);
             exit;
         }
+    } elseif ($agencyId) {
+        // Agency reviews should not be tied to a project or architect
+        $projectId = null;
+        $architectId = null;
     }
     
     // Insert review

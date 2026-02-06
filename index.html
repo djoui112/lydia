@@ -21,7 +21,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="stylesheet" href="about us page/style.css">
-        <link rel="stylesheet" href="Contact us page/style.css">
+        <link rel="stylesheet" href="assets/Contact us page/style.css">
         <link rel="stylesheet" href="css/contact-footer.css">
     </head>
     <body>
@@ -199,175 +199,174 @@ all in one place</pre>
             </div>
             
             <script>
-            const slider = document.getElementById('architectSlider');
-            
-            // Fetch architects from API
-            async function fetchArchitects() {
-                try {
-                    const response = await fetch('php/api/discover/featured_architect.php?limit=12');
-                    const result = await response.json();
-                    
-                    if (result.success && result.data.length > 0) {
-                        displayArchitects(result.data);
-                    } else {
-                        slider.innerHTML = '<div class="error">No architects found.</div>';
-                    }
-                } catch (error) {
-                    console.error('Error fetching architects:', error);
-                    slider.innerHTML = '<div class="error">Failed to load architects. Please try again later.</div>';
-                }
-            }
-
-            // Display architects in cards
-            function displayArchitects(architects) {
-                console.log('Architects data:', architects);
-                slider.innerHTML = architects.map(architect => {
-                    console.log('Creating card for:', architect.first_name, 'Experience:', architect.years_of_experience);
-                    return createArchitectCard(architect);
-                }).join('');
+            (function() {
+                'use strict';
                 
-                // Ensure slider has proper width to contain all cards
-                const cards = slider.querySelectorAll('.port-card');
-                if (cards.length > 0) {
+                const slider = document.getElementById('architectSlider');
+                
+                // Fetch architects from API
+                async function fetchArchitects() {
+                    try {
+                        const response = await fetch('php/api/discover/featured_architect.php?limit=12');
+                        const result = await response.json();
+                        
+                        if (result.success && result.data.length > 0) {
+                            displayArchitects(result.data);
+                        } else {
+                            slider.innerHTML = '<div class="error">No architects found.</div>';
+                        }
+                    } catch (error) {
+                        console.error('Error fetching architects:', error);
+                        slider.innerHTML = '<div class="error">Failed to load architects. Please try again later.</div>';
+                    }
+                }
+
+                // Display architects in cards
+                function displayArchitects(architects) {
+                    console.log('Architects data:', architects);
+                    slider.innerHTML = architects.map(architect => {
+                        console.log('Creating card for:', architect.first_name, 'Experience:', architect.years_of_experience);
+                        return createArchitectCard(architect);
+                    }).join('');
+                    
+                    // Ensure slider has proper width to contain all cards
+                    const cards = slider.querySelectorAll('.port-card');
+                    if (cards.length > 0) {
+                        const cardWidth = cards[0].offsetWidth;
+                        const gap = parseFloat(window.getComputedStyle(slider).gap) || 32;
+                        const totalWidth = (cards.length * cardWidth) + ((cards.length - 1) * gap);
+                        slider.style.width = `${totalWidth}px`;
+                    }
+                    
+                    // Debug: Check if numb elements exist
+                    const numbElements = document.querySelectorAll('.numb');
+                    console.log('Number of .numb elements found:', numbElements.length);
+                    numbElements.forEach((numb, index) => {
+                        console.log(`Numb ${index}:`, {
+                            display: window.getComputedStyle(numb).display,
+                            opacity: window.getComputedStyle(numb).opacity,
+                            visibility: window.getComputedStyle(numb).visibility,
+                            height: window.getComputedStyle(numb).height,
+                            content: numb.textContent
+                        });
+                    });
+                }
+
+                // Create individual architect card
+              function createArchitectCard(architect) {
+                    const fullName = `${architect.first_name} ${architect.last_name}`;
+                    
+                    // Get profile image from user data or use default
+                    let profileImage = architect.profile_image || 'assets/main/Profile-blue.png';
+                    
+                    // Fix path if needed
+                    if (profileImage && !profileImage.startsWith('http')) {
+                        profileImage = profileImage.replace(/^\/+/, '');
+                    }
+                    
+                    const experience = architect.years_of_experience || 0;
+                    
+                    const architectId = architect.id || architect.architect_id || architect['architect_~id'] || '';
+                    
+                    return `
+                        <div class="port-card">
+                            <img src="${profileImage}" 
+                                class="user-pic" 
+                                alt="${fullName}"
+                                onerror="this.onerror=null; this.src='assets/main/profile.png';">
+                            <div class="portfolio-cover"></div>
+                            <div class="portfolio-info">
+                                <p class="user-name">${fullName}</p>
+                                <div class="numb">
+                                    <div class="num-years-exp">
+                                        <p>years</p>
+                                        <p>${experience}</p>
+                                    </div>
+                                </div>
+                                <a href="pages/architect-portfolio.html?architect_id=${architectId}" class="see-more">See more</a>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                let currentScrollPosition = 0;
+                
+                function slideLeft() {
+                    const cards = slider.querySelectorAll('.port-card');
+                    if (cards.length === 0) return;
+                    
+                    const cardWidth = cards[0].offsetWidth;
+                    const sliderStyle = window.getComputedStyle(slider);
+                    const gap = parseFloat(sliderStyle.gap) || 32;
+                    const scrollAmount = cardWidth + gap;
+                    
+                    // Move slider to the right (positive) to show previous cards
+                    currentScrollPosition += scrollAmount;
+                    updateSliderTransform();
+                }
+
+                function slideRight() {
+                    const cards = slider.querySelectorAll('.port-card');
+                    if (cards.length === 0) return;
+                    
+                    const cardWidth = cards[0].offsetWidth;
+                    const sliderStyle = window.getComputedStyle(slider);
+                    const gap = parseFloat(sliderStyle.gap) || 32;
+                    const scrollAmount = cardWidth + gap;
+                    
+                    // Move slider to the left (negative) to show next cards
+                    currentScrollPosition -= scrollAmount;
+                    updateSliderTransform();
+                }
+                
+                function updateSliderTransform() {
+                    // Get wrapper width to calculate bounds
+                    const wrapper = document.querySelector('.portfolio-slider-wrapper');
+                    if (!wrapper) return;
+                    
+                    const wrapperWidth = wrapper.offsetWidth;
+                    const cards = slider.querySelectorAll('.port-card');
+                    if (cards.length === 0) return;
+                    
                     const cardWidth = cards[0].offsetWidth;
                     const gap = parseFloat(window.getComputedStyle(slider).gap) || 32;
                     const totalWidth = (cards.length * cardWidth) + ((cards.length - 1) * gap);
-                    slider.style.width = `${totalWidth}px`;
+                    const maxScroll = Math.max(0, totalWidth - wrapperWidth);
+                    
+                    // Clamp the scroll position
+                    currentScrollPosition = Math.max(-maxScroll, Math.min(0, currentScrollPosition));
+                    
+                    // Apply transform
+                    slider.style.transform = `translateX(${currentScrollPosition}px)`;
                 }
-                
-                // Debug: Check if numb elements exist
-                const numbElements = document.querySelectorAll('.numb');
-                console.log('Number of .numb elements found:', numbElements.length);
-                numbElements.forEach((numb, index) => {
-                    console.log(`Numb ${index}:`, {
-                        display: window.getComputedStyle(numb).display,
-                        opacity: window.getComputedStyle(numb).opacity,
-                        visibility: window.getComputedStyle(numb).visibility,
-                        height: window.getComputedStyle(numb).height,
-                        content: numb.textContent
-                    });
-                });
-            }
 
-            // Create individual architect card
-            function createArchitectCard(architect) {
-                const fullName = `${architect.first_name} ${architect.last_name}`;
-                // Handle image path - ensure it's a valid URL
-                let profileImage = architect.profile_image || 'assets/main/Mask group.png';
+                // Connect navigation buttons
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
                 
-                // If it's a relative path starting with /, keep it
-                // If it's a relative path without /, add it
-                if (profileImage && !profileImage.startsWith('http') && !profileImage.startsWith('/')) {
-                    profileImage = '/' + profileImage;
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', slideRight);  // Swapped
                 }
-                
-                const city = architect.city || 'Location not specified';
-                const expertise = architect.primary_expertise || 'Architecture';
-                const experience = architect.years_of_experience || 0;
-                const projectCount = architect.project_count || 0;
-                const bio = architect.bio || architect.statement || 'No bio available';
-                // Handle both 'id' and 'architect_~id' for compatibility
-                const architectId = architect.id || architect.architect_id || architect['architect_~id'] || '';
-                
-                return `
-                    <div class="port-card ">
-                        <img src="${profileImage}" 
-                             class="user-pic" 
-                             alt="${fullName}"
-                             onerror="this.onerror=null; this.src='assets/main/Mask group.png';">
-                    <div class="portfolio-cover"></div>
-                    <div class="portfolio-info">
-                        <p class="user-name "> ${fullName}</p>
-                        <div class="numb">
-                            <div class="num-years">
-                                <p>years</p>
-                                <p>${experience || '0'}</p>
-                            </div>
-                        </div>
-                        <a href="pages/architect-portfolio.html?architect_id=${architectId}" class="see-more">See more</a>
-                    </div>
-                </div>
-                `;
-            }
-
-            // Slider navigation functions
-            let currentScrollPosition = 0;
-            
-            function slideLeft() {
-                const cards = slider.querySelectorAll('.port-card');
-                if (cards.length === 0) return;
-                
-                const cardWidth = cards[0].offsetWidth;
-                const sliderStyle = window.getComputedStyle(slider);
-                const gap = parseFloat(sliderStyle.gap) || 32;
-                const scrollAmount = cardWidth + gap;
-                
-                // Move slider to the right (positive) to show previous cards
-                currentScrollPosition += scrollAmount;
-                updateSliderTransform();
-            }
-
-            function slideRight() {
-                const cards = slider.querySelectorAll('.port-card');
-                if (cards.length === 0) return;
-                
-                const cardWidth = cards[0].offsetWidth;
-                const sliderStyle = window.getComputedStyle(slider);
-                const gap = parseFloat(sliderStyle.gap) || 32;
-                const scrollAmount = cardWidth + gap;
-                
-                // Move slider to the left (negative) to show next cards
-                currentScrollPosition -= scrollAmount;
-                updateSliderTransform();
-            }
-            
-            function updateSliderTransform() {
-                // Get wrapper width to calculate bounds
-                const wrapper = document.querySelector('.portfolio-slider-wrapper');
-                if (!wrapper) return;
-                
-                const wrapperWidth = wrapper.offsetWidth;
-                const cards = slider.querySelectorAll('.port-card');
-                if (cards.length === 0) return;
-                
-                const cardWidth = cards[0].offsetWidth;
-                const gap = parseFloat(window.getComputedStyle(slider).gap) || 32;
-                const totalWidth = (cards.length * cardWidth) + ((cards.length - 1) * gap);
-                const maxScroll = Math.max(0, totalWidth - wrapperWidth);
-                
-                // Clamp the scroll position
-                currentScrollPosition = Math.max(-maxScroll, Math.min(0, currentScrollPosition));
-                
-                // Apply transform
-                slider.style.transform = `translateX(${currentScrollPosition}px)`;
-            }
-
-            // Connect navigation buttons
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            
-            if (prevBtn) {
-                prevBtn.addEventListener('click', slideLeft);
-            }
-            if (nextBtn) {
-                nextBtn.addEventListener('click', slideRight);
-            }
-
-            // Load architects on page load
-            fetchArchitects().then(() => {
-                // Reset scroll position after cards are loaded
-                currentScrollPosition = 0;
-                updateSliderTransform();
-            });
-            
-            // Handle window resize
-            let resizeTimeout;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', slideLeft);   // Swapped
+                }
+                // Load architects on page load
+                fetchArchitects().then(() => {
+                    // Reset scroll position after cards are loaded
+                    currentScrollPosition = 0;
                     updateSliderTransform();
-                }, 200);
-            });
+                });
+                
+                // Handle window resize
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        updateSliderTransform();
+                    }, 200);
+                });
+                
+            })(); // End of IIFE
             </script>
         </section>
 
@@ -436,10 +435,8 @@ all in one place</pre>
                 </div>
             </div>
         </section>
-
-          <script src="js/homepage-data.js" defer></script>
+        
           <script src="js/main.js"></script>
           <script src="about us page/script.js"></script>
-          <script src="about us page/home-data.js"></script>
-          <script src="Contact us page/script.js"></script>
+          <script src="assets/Contact us page/script.js"></script>
     </body>
