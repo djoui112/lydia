@@ -79,7 +79,9 @@ input:focus::placeholder{
 
 .logo{
     margin-top: 1.7rem;
+    width:7rem
 }
+
 .h-signup{
     font-weight: 700;
     font-size: 3rem;
