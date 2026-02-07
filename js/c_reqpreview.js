@@ -461,12 +461,6 @@ function loadExteriorData(request = null) {
 // Global variable to store current request ID
 let currentRequestId = null;
 
-// Load request ID when page loads
-window.addEventListener('DOMContentLoaded', () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  currentRequestId = urlParams.get('id');
-});
-
 function handleAccept() {
   // Show modal to select architect
   const modal = document.getElementById('acceptModal');
@@ -619,6 +613,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // ALWAYS try to load from API first if there's an ID
   const urlParams = new URLSearchParams(window.location.search);
   const requestId = urlParams.get('id');
+  currentRequestId = requestId;
   
   console.log('=== PAGE LOADED ===');
   console.log('URL:', window.location.href);

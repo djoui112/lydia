@@ -16,10 +16,22 @@ const currentlyWorkingCheckbox = document.getElementById('currentlyWorking');
 const descriptionTextarea = document.getElementById('description');
 const charCount = document.getElementById('charCount');
 
+// Get experience ID from URL if editing
+const urlParams = new URLSearchParams(window.location.search);
+const experienceId = urlParams.get('id');
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     initializeYearDropdowns();
     setupEventListeners();
+    
+    // If editing, load the experience data
+    if (experienceId) {
+        loadExperienceData(experienceId);
+        if (modalTitle) {
+            modalTitle.textContent = 'Edit Experience';
+        }
+    }
     // Modal is already visible via active class in HTML
 });
 
@@ -121,6 +133,54 @@ function closeModal() {
     window.history.back();
 }
 
+// Load Experience Data for Editing
+async function loadExperienceData(id) {
+    try {
+        const response = await fetch(`/mimaria/php/api/experience/get.php?id=${id}`, {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to load experience data');
+        }
+        
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            const exp = result.data;
+            
+            // Populate form fields
+            agencyNameInput.value = exp.agency_name || '';
+            roleInput.value = exp.role || '';
+            
+            // Parse and set start date
+            if (exp.start_date) {
+                const startDate = new Date(exp.start_date);
+                startMonthSelect.value = startDate.getMonth() + 1;
+                startYearSelect.value = startDate.getFullYear();
+            }
+            
+            // Parse and set end date
+            if (exp.is_current) {
+                currentlyWorkingCheckbox.checked = true;
+                endMonthSelect.disabled = true;
+                endYearSelect.disabled = true;
+            } else if (exp.end_date) {
+                const endDate = new Date(exp.end_date);
+                endMonthSelect.value = endDate.getMonth() + 1;
+                endYearSelect.value = endDate.getFullYear();
+            }
+            
+            // Description
+            descriptionTextarea.value = exp.description || '';
+            charCount.textContent = (exp.description || '').length;
+        }
+    } catch (error) {
+        console.error('Error loading experience data:', error);
+        alert('Failed to load experience data. Please try again.');
+    }
+}
+
 // Handle Form Submit
 async function handleFormSubmit(e) {
     e.preventDefault();
@@ -147,8 +207,13 @@ async function handleFormSubmit(e) {
     submitBtn.textContent = 'Saving...';
     
     try {
-        const response = await fetch('/mimaria/php/api/experience/add.php', {
-            method: 'POST',
+        const url = experienceId 
+            ? `/mimaria/php/api/experience/update.php?id=${experienceId}`
+            : '/mimaria/php/api/experience/add.php';
+        const method = experienceId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method: method,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -159,17 +224,65 @@ async function handleFormSubmit(e) {
         const result = await response.json();
         
         if (response.ok && result.success) {
-            alert('Experience added successfully!');
+            alert(experienceId ? 'Experience updated successfully!' : 'Experience added successfully!');
             closeModal();
             
             if (window.opener) {
                 window.opener.location.reload();
                 window.close();
             } else {
-                window.location.reload();
+                // Get architect ID from referrer or session to preserve it
+                const referrer = document.referrer;
+                let portfolioUrl = 'architect-portfolio.html';
+                
+                // Try to extract architect_id from referrer URL
+                if (referrer) {
+                    try {
+                        const referrerUrl = new URL(referrer);
+                        const referrerId = referrerUrl.searchParams.get('architect_id') || referrerUrl.searchParams.get('id');
+                        if (referrerId) {
+                            portfolioUrl = `architect-portfolio.html?architect_id=${referrerId}`;
+                        } else {
+                            // Fallback: fetch from session
+                            try {
+                                const sessionRes = await fetch('/mimaria/php/api/get-session-architect.php', {
+                                    credentials: 'include'
+                                });
+                                if (sessionRes.ok) {
+                                    const sessionData = await sessionRes.json();
+                                    if (sessionData && sessionData.architect_id) {
+                                        portfolioUrl = `architect-portfolio.html?architect_id=${sessionData.architect_id}`;
+                                    }
+                                }
+                            } catch (e) {
+                                console.error('Failed to get architect ID from session:', e);
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Failed to parse referrer URL:', e);
+                    }
+                } else {
+                    // No referrer, try to get from session
+                    try {
+                        const sessionRes = await fetch('/mimaria/php/api/get-session-architect.php', {
+                            credentials: 'include'
+                        });
+                        if (sessionRes.ok) {
+                            const sessionData = await sessionRes.json();
+                            if (sessionData && sessionData.architect_id) {
+                                portfolioUrl = `architect-portfolio.html?architect_id=${sessionData.architect_id}`;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Failed to get architect ID from session:', e);
+                    }
+                }
+                
+                // Navigate to portfolio page with architect ID
+                window.location.href = portfolioUrl;
             }
         } else {
-            const errorMsg = result.message || 'Failed to add experience';
+            const errorMsg = result.message || (experienceId ? 'Failed to update experience' : 'Failed to add experience');
             if (result.errors && Array.isArray(result.errors)) {
                 alert(errorMsg + ':\n' + result.errors.join('\n'));
             } else {

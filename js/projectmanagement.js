@@ -904,40 +904,17 @@ async function loadProjectData(projectId) {
         }
       }
       
-      // Update "More Details" link with request_id if available
+      // Update "More Details" link to navigate to project-details.html
       const moreDetailsLink = document.getElementById('moreDetailsLink');
-      if (moreDetailsLink) {
-        if (project.request_id) {
-          // Set the href to navigate to the request preview page
-          const requestPreviewUrl = `c_reqpreview.html?id=${project.request_id}`;
-          moreDetailsLink.href = requestPreviewUrl;
-          moreDetailsLink.style.pointerEvents = 'auto';
-          moreDetailsLink.style.opacity = '1';
-          moreDetailsLink.style.cursor = 'pointer';
-          moreDetailsLink.title = 'View project request details';
-          
-          // Remove any existing click handlers that might prevent navigation
-          moreDetailsLink.onclick = null;
-          
-          // Ensure the link works by adding a simple click handler if needed
-          moreDetailsLink.addEventListener('click', function(e) {
-            // Allow default navigation
-            window.location.href = requestPreviewUrl;
-          }, { once: true });
-          
-          console.log('✅ More Details link updated with request_id:', project.request_id);
-          console.log('✅ Link will navigate to:', requestPreviewUrl);
-        } else {
-          // If no request_id, disable the link or hide it
-          moreDetailsLink.href = '#';
-          moreDetailsLink.style.pointerEvents = 'none';
-          moreDetailsLink.style.opacity = '0.5';
-          moreDetailsLink.style.cursor = 'not-allowed';
-          moreDetailsLink.title = 'Request details not available';
-          console.warn('⚠️ Project has no request_id:', project);
-        }
-      } else {
-        console.error('❌ More Details link element not found!');
+      if (moreDetailsLink && projectId) {
+        const projectDetailsUrl = `project-details.html?id=${projectId}`;
+        moreDetailsLink.href = projectDetailsUrl;
+        moreDetailsLink.removeAttribute('onclick');
+        moreDetailsLink.onclick = function(e) {
+          e.preventDefault();
+          window.location.href = projectDetailsUrl;
+        };
+        console.log('✅ More Details link set to:', projectDetailsUrl);
       }
       
       projectDataLoaded = true;

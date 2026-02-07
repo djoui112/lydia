@@ -40,7 +40,7 @@
     <input type="text" id="address" name="address" placeholder="your current adress" required>
 
     <label>Date of birth</label>
-    <input type="date" id="date_of_birth" name="date_of_birth" placeholder="xx/xx/xxxx" required>
+    <input type="text" id="date_of_birth" name="date_of_birth" placeholder="DD/MM/YYYY" required>
 
     <button type="button" class="next-btn" onclick="handleNextClick(event, 'appliancestyle.html')"> Next </button>
   </form>
@@ -57,6 +57,31 @@
       const agencyId = urlParams.get('agency_id');
       if (agencyId && typeof saveAgencyId === 'function') {
         saveAgencyId(agencyId);
+      }
+      
+      // Add date input mask for DD/MM/YYYY format
+      const dateInput = document.getElementById('date_of_birth');
+      if (dateInput) {
+        dateInput.addEventListener('input', function(e) {
+          let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+          
+          // Format as DD/MM/YYYY
+          if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2);
+          }
+          if (value.length >= 5) {
+            value = value.substring(0, 5) + '/' + value.substring(5, 9);
+          }
+          
+          e.target.value = value;
+        });
+        
+        // Limit input to 10 characters (DD/MM/YYYY)
+        dateInput.addEventListener('keypress', function(e) {
+          if (e.target.value.replace(/\D/g, '').length >= 8 && e.key !== 'Backspace' && e.key !== 'Delete') {
+            e.preventDefault();
+          }
+        });
       }
     });
   </script>

@@ -987,17 +987,26 @@ body {
 }
 
 .members-cards {
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   justify-items: center;
   justify-content: center;
+  gap: 20px;
 }
 
 .profile-card {
   background: white;
   border-radius: var(--border-radius-card);
-  overflow: hidden;
+  overflow: visible;
   box-shadow: var(--shadow-card);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Remove conflicting profile-card styles for member-card */
+.member-card {
+  background: white !important;
+  border-radius: 20px !important;
+  overflow: visible !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
 .profile-card:hover {
@@ -1135,22 +1144,27 @@ body {
   text-decoration: none;
   color: inherit;
   display: block;
+  width: 100%;
+  max-width: 180px;
 }
 
 .member-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 20px;
-  border-radius: 50%;
-  width: 150px;
-  height: 150px;
+  justify-content: flex-start;
+  padding: 30px 20px 25px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 180px;
+  min-height: 240px;
   margin: 0 auto;
   background: white;
   justify-self: center;
   place-self: center;
   cursor: pointer;
   transition: transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .member-card-link:hover .member-card {
@@ -1158,15 +1172,29 @@ body {
 }
 
 .member-avatar {
-  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  margin: 0 0 20px 0;
 }
 
-.member-card h4 {
-  font-size: 14px;
+.member-card h4,
+.member-card .member-name {
+  font-size: 16px;
   font-weight: 600;
   color: var(--primary-color);
-  text-transform: lowercase;
+  text-transform: uppercase;
   text-align: center;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+  word-wrap: break-word;
+  max-width: 100%;
+  flex-shrink: 0;
+  display: block;
 }
 
 /* Project Management */

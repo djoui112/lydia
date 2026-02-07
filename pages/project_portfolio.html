@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Project Request Details</title>
-  <link rel="stylesheet" href="../css/project_portfolio.css" />
+  <title>Project Portfolio</title>
+  <link rel="stylesheet" href="../css/project_portfolio.css?v=1.0" />
 </head>
 <body>
   <div class="page-container">
     <header class="form-header">
       <button class="back-btn" onclick="history.back()"><</button>
-      <h1>Project Request Details</h1>
+      <h1>Project Details</h1>
     </header>
 
     <div class="preview-container">
@@ -19,19 +19,41 @@
         <h2>Project Information</h2>
         <div class="info-row">
           <div class="info-label">Project Name</div>
-          <div class="info-value" id="projectName">Modern House Design</div>
+          <div class="info-value" id="projectName">-</div>
         </div>
         <div class="info-row">
           <div class="info-label">Project Type</div>
           <div class="info-value">
-            <span class="choice-display" id="projectType">Residential</span>
+            <span class="choice-display" id="projectType">-</span>
           </div>
         </div>
         <div class="info-row">
           <div class="info-label">Service(s) Requested</div>
           <div class="info-value">
-            <span class="choice-display" id="serviceRequested">Architecture</span>
+            <span class="choice-display" id="serviceRequested">-</span>
           </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Status</div>
+          <div class="info-value">
+            <span class="choice-display" id="projectStatus">-</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Client</div>
+          <div class="info-value" id="clientName">-</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Agency</div>
+          <div class="info-value" id="agencyName">-</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Assigned Architect</div>
+          <div class="info-value" id="architectName">-</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Project Location</div>
+          <div class="info-value" id="projectLocation">-</div>
         </div>
       </div>
 
@@ -40,7 +62,7 @@
         <h2>Project Description</h2>
         <div class="info-row">
           <div class="info-label">Description</div>
-          <div class="info-value" id="projectDescription">I want to build a house with 5 rooms with modern design and spacious living areas.</div>
+          <div class="info-value" id="projectDescription">-</div>
         </div>
       </div>
 
@@ -50,86 +72,214 @@
         <div class="info-row">
           <div class="info-label">Uploaded Files</div>
           <div class="info-value" id="projectPhotos">
-            <div id="photosList">No photos uploaded</div>
+            <div id="photosList">Loading...</div>
           </div>
         </div>
+      </div>
+
+      <!-- Project Milestones Section -->
+      <div class="info-section">
+        <h2>Project Milestones</h2>
+        <div id="milestonesList">Loading...</div>
       </div>
     </div>
   </div>
 
   <script>
-    // template_preview.js - Load and display project request data
+    // Load and display project data from database
 
     document.addEventListener('DOMContentLoaded', function() {
         loadProjectData();
     });
 
-    function loadProjectData() {
-        // Get form data from localStorage
-        const projectName = localStorage.getItem('template-projectName') || 'Not provided';
-        const projectType = localStorage.getItem('template-projectType') || 'Not selected';
-        const serviceRequested = localStorage.getItem('template-serviceRequested') || 'Not selected';
-        const projectDescription = localStorage.getItem('template-projectDescription') || 'No description provided';
-        const projectPhotos = localStorage.getItem('template-projectPhotos') || '';
+    async function loadProjectData() {
+        // Get project ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('id');
+        
+        if (!projectId) {
+            showError('No project ID provided');
+            return;
+        }
 
-        // Populate the fields
-        document.getElementById('projectName').textContent = projectName;
-        document.getElementById('projectType').textContent = formatOptionText(projectType);
-        document.getElementById('serviceRequested').textContent = formatOptionText(serviceRequested);
-        document.getElementById('projectDescription').textContent = projectDescription;
+        try {
+            // Use relative path to API
+            const apiUrl = `../php/api/projects/preview.php?id=${projectId}`;
+            console.log('Fetching project data from:', apiUrl);
+            console.log('Project ID:', projectId);
+            
+            const response = await fetch(apiUrl, {
+                credentials: 'include'
+            });
 
-        // Handle photos
-        displayPhotos(projectPhotos);
+            console.log('Response status:', response.status, response.statusText);
+
+            if (!response.ok) {
+                // Try to get error message from response
+                let errorMessage = `HTTP error! status: ${response.status}`;
+                try {
+                    const errorText = await response.text();
+                    console.error('Error response body:', errorText);
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        errorMessage = errorData.message || errorData.error || errorMessage;
+                        if (errorData.file && errorData.line) {
+                            errorMessage += ` (${errorData.file}:${errorData.line})`;
+                        }
+                    } catch (e) {
+                        errorMessage = errorText || errorMessage;
+                    }
+                } catch (e) {
+                    console.error('Could not read error response:', e);
+                }
+                throw new Error(errorMessage);
+            }
+
+            const result = await response.json();
+            console.log('Project data received:', result);
+            
+            if (!result.success || !result.data) {
+                throw new Error(result.message || 'Failed to load project data');
+            }
+
+            const { project, photos, milestones } = result.data;
+
+            // Populate the fields
+            document.getElementById('projectName').textContent = project.project_name || 'Not provided';
+            document.getElementById('projectType').textContent = formatProjectType(project.project_type);
+            document.getElementById('serviceRequested').textContent = formatServiceType(project.service_type);
+            
+            // Status
+            const status = project.status || 'N/A';
+            document.getElementById('projectStatus').textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            
+            // Client
+            document.getElementById('clientName').textContent = project.client_name || 'N/A';
+            
+            // Agency
+            document.getElementById('agencyName').textContent = project.agency_name || 'N/A';
+            
+            // Architect
+            document.getElementById('architectName').textContent = project.architect_name || 'Not assigned';
+            
+            // Location
+            document.getElementById('projectLocation').textContent = project.project_location || 'N/A';
+            
+            // Description
+            document.getElementById('projectDescription').textContent = project.description || 'No description provided';
+
+            // Handle photos
+            displayPhotos(photos);
+            
+            // Handle milestones
+            displayMilestones(milestones);
+            
+        } catch (error) {
+            console.error('Error loading project data:', error);
+            const errorMessage = error.message || 'Failed to load project data. Please try again.';
+            showError(errorMessage);
+        }
     }
 
-    function formatOptionText(value) {
-        if (!value || value === 'Not selected') {
-            return value;
-        }
+    function formatProjectType(value) {
+        if (!value) return 'Not specified';
         
-        // Convert option values to readable format
         const formatMap = {
-            'residential': 'Residential',
-            'commercial': 'Commercial',
-            'landscape': 'Landscape',
-            'interior-design': 'Interior Design',
-            'architecture': 'Architecture',
-            'landscape-design': 'Landscape Design',
-            'consultation': 'Consultation'
+            'exterior': 'Exterior',
+            'interior': 'Interior',
+            'both': 'Both Exterior & Interior'
         };
         
         return formatMap[value] || value.charAt(0).toUpperCase() + value.slice(1);
     }
 
-    function displayPhotos(photosString) {
+    function formatServiceType(value) {
+        if (!value) return 'Not specified';
+        
+        const formatMap = {
+            'construction': 'Construction',
+            'renovation': 'Renovation',
+            'design_only': 'Design Only'
+        };
+        
+        return formatMap[value] || value.charAt(0).toUpperCase() + value.slice(1).replace('_', ' ');
+    }
+
+    function displayPhotos(photos) {
         const photosList = document.getElementById('photosList');
         
-        if (!photosString || photosString.trim() === '') {
+        if (!photos || photos.length === 0) {
             photosList.innerHTML = '<span style="color: #999; font-style: italic;">No photos uploaded</span>';
             return;
         }
         
-        // Parse the photos (assuming comma-separated file names)
-        const photoNames = photosString.split(',').map(name => name.trim()).filter(name => name);
-        
-        if (photoNames.length === 0) {
-            photosList.innerHTML = '<span style="color: #999; font-style: italic;">No photos uploaded</span>';
-            return;
-        }
-        
-        // Create a list of photo names
-        let photosHTML = '<div style="display: flex; flex-direction: column; gap: 8px;">';
-        photoNames.forEach(name => {
-            photosHTML += `
-                <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background-color: #f8f8f8; border-radius: 8px;">
-                    <span style="font-size: 1.2rem;">📷</span>
-                    <span style="color: #780000; font-weight: 500;">${name}</span>
-                </div>
-            `;
+        // Display photos as images
+        let photosHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-top: 12px;">';
+        photos.forEach(photo => {
+            const photoUrl = photo.photo_url || photo.photo_path || '';
+            if (photoUrl) {
+                photosHTML += `
+                    <div style="position: relative; padding-top: 75%; background-color: #f0f0f0; border-radius: 8px; overflow: hidden;">
+                        <img src="${photoUrl}" 
+                             alt="Project photo" 
+                             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
+                             onerror="this.style.display='none';">
+                    </div>
+                `;
+            }
         });
         photosHTML += '</div>';
         
         photosList.innerHTML = photosHTML;
+    }
+
+    function displayMilestones(milestones) {
+        const milestonesList = document.getElementById('milestonesList');
+        
+        if (!milestones || milestones.length === 0) {
+            milestonesList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No milestones available.</p>';
+            return;
+        }
+        
+        let milestonesHTML = '';
+        milestones.forEach((milestone) => {
+            const isCompleted = milestone.is_completed == 1 || milestone.is_completed === true;
+            const bgColor = isCompleted ? '#e8f5e9' : '#fff3e0';
+            const statusText = isCompleted ? 'Completed' : 'Pending';
+            const statusIcon = isCompleted ? '✓' : '○';
+            const statusColor = isCompleted ? '#4caf50' : '#ff9800';
+            
+            const dueDate = milestone.due_date_formatted || milestone.due_date || 'N/A';
+            
+            milestonesHTML += `
+                <div style="padding: 15px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; background-color: ${bgColor};">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <div>
+                            <h3 style="margin: 0 0 5px 0; color: #333;">${milestone.title || 'Milestone'}</h3>
+                            <p style="margin: 0; color: #666; font-size: 14px;">${milestone.description || ''}</p>
+                        </div>
+                        <span style="font-size: 20px; color: ${statusColor};">${statusIcon}</span>
+                    </div>
+                    <div style="display: flex; gap: 15px; font-size: 14px; color: #666;">
+                        <span><strong>Due Date:</strong> ${dueDate}</span>
+                        <span><strong>Status:</strong> ${statusText}</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        milestonesList.innerHTML = milestonesHTML;
+    }
+
+    function showError(message) {
+        const container = document.querySelector('.preview-container');
+        if (container) {
+            container.innerHTML = `<div style="padding: 40px; text-align: center; color: #d32f2f;">
+                <h2>Error</h2>
+                <p>${message}</p>
+                <button onclick="history.back()" style="margin-top: 20px; padding: 10px 20px; background-color: #780000; color: white; border: none; border-radius: 4px; cursor: pointer;">Go Back</button>
+            </div>`;
+        }
     }
   </script>
 </body>

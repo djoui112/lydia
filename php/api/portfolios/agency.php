@@ -89,6 +89,18 @@ try {
     $stmt->execute([':id' => $agencyId]);
     $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
+    // Remove duplicates based on architect_id (in case there are multiple entries for same architect)
+    $uniqueMembers = [];
+    $seenArchitectIds = [];
+    foreach ($members as $member) {
+        $architectId = (int)$member['architect_id'];
+        if (!in_array($architectId, $seenArchitectIds)) {
+            $seenArchitectIds[] = $architectId;
+            $uniqueMembers[] = $member;
+        }
+    }
+    $members = $uniqueMembers;
+    
     // Format member profile images
     foreach ($members as &$member) {
         if (!empty($member['profile_image'])) {

@@ -45,7 +45,14 @@ function buildFileUrl(string $path): string {
     
     $baseUrl = 'http://localhost/mimaria';
     $path = ltrim($path, '/');
-    return "$baseUrl/uploads/$path";
+    
+    // If path already starts with 'assets/', use it directly
+    // Otherwise, assume it's in the uploads directory
+    if (strpos($path, 'assets/') === 0) {
+        return "$baseUrl/$path";
+    } else {
+        return "$baseUrl/uploads/$path";
+    }
 }
 
 /**

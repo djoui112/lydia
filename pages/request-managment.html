@@ -262,8 +262,40 @@
                             console.log('Response status:', res.status, res.statusText);
                             
                             if (res.status === 401) {
-                                grid.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">⚠️ Not logged in. <a href="login/login.html" style="color: #4CAF50;">Please log in as an agency first</a>.</p>';
-                                return Promise.reject(new Error('Not logged in'));
+                                return res.json().then(data => {
+                                    console.error('401 Error details:', data);
+                                    console.error('Session data from server:', data.session_data);
+                                    console.error('Cookies received by server:', data.cookies_received);
+                                    
+                                    // Show detailed error with debug info
+                                    let debugInfo = '';
+                                    if (data.session_id) {
+                                        debugInfo += `<p style="font-size: 12px; color: #666;">Session ID: ${data.session_id}</p>`;
+                                    }
+                                    if (data.session_data && Object.keys(data.session_data).length === 0) {
+                                        debugInfo += `<p style="font-size: 12px; color: orange;">⚠️ Session exists but is empty. Try logging in again.</p>`;
+                                    }
+                                    
+                                    grid.innerHTML = `
+                                        <div style="padding: 20px; text-align: center;">
+                                            <p style="color: red;">⚠️ Not logged in.</p>
+                                            ${debugInfo}
+                                            <p style="margin-top: 15px;">
+                                                <a href="login/login.html" style="color: #4CAF50; text-decoration: underline;">Click here to log in</a>
+                                            </p>
+                                            <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                                                If you just logged in, try:<br>
+                                                1. Clear cookies for localhost<br>
+                                                2. Log in again<br>
+                                                3. Refresh this page
+                                            </p>
+                                        </div>
+                                    `;
+                                    return Promise.reject(new Error('Not logged in'));
+                                }).catch(() => {
+                                    grid.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">⚠️ Not logged in. <a href="login/login.html" style="color: #4CAF50;">Please log in as an agency first</a>.</p>';
+                                    return Promise.reject(new Error('Not logged in'));
+                                });
                             }
                             
                             if (res.status === 403) {

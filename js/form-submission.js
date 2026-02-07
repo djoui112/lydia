@@ -1,17 +1,54 @@
 // Form Submission Handler
 // Handles submission of project requests and architect applications
 
-// Determine API base path based on current page location
-// If we're in pages/ subdirectory, go up two levels, otherwise one level
-const getApiBase = () => {
-    const path = window.location.pathname;
-    // Check if we're in a pages subdirectory (pages/formclient/, pages/formarchitect/, etc.)
-    if (path.includes('/pages/')) {
-        return '../../php/api';
+// Get the correct API URL based on current location
+// Handles both root installations and subdirectory installations (e.g., /mimaria/)
+function getApiBase() {
+    // Get the current URL to determine base path
+    const currentUrl = window.location.href;
+    const urlObj = new URL(currentUrl);
+    const pathname = urlObj.pathname;
+    
+    // Extract base path (everything before 'pages')
+    // e.g., /mimaria/pages/formarchitect/appliancepro.html -> /mimaria/
+    const pathParts = pathname.split('/').filter(p => p);
+    const pagesIndex = pathParts.indexOf('pages');
+    
+    let apiBase;
+    
+    if (pagesIndex !== -1) {
+        // Build path: /base/php/api
+        const baseParts = pathParts.slice(0, pagesIndex);
+        const basePath = baseParts.length > 0 ? '/' + baseParts.join('/') : '';
+        apiBase = basePath + '/php/api';
+    } else {
+        // Fallback: try relative path
+        apiBase = '../../php/api';
     }
-    // For root level pages
-    return '../php/api';
-};
+    
+    // If relative, convert to absolute
+    if (apiBase.startsWith('../') || apiBase.startsWith('./')) {
+        const currentDir = pathname.substring(0, pathname.lastIndexOf('/'));
+        const parts = apiBase.split('/');
+        let resolved = currentDir;
+        
+        for (const part of parts) {
+            if (part === '..') {
+                resolved = resolved.substring(0, resolved.lastIndexOf('/'));
+            } else if (part !== '.' && part !== '') {
+                resolved += '/' + part;
+            }
+        }
+        
+        apiBase = urlObj.origin + resolved;
+    } else if (!apiBase.startsWith('http')) {
+        // Make absolute if not already
+        apiBase = urlObj.origin + apiBase;
+    }
+    
+    console.log('Form submission: Resolved API base:', apiBase);
+    return apiBase;
+}
 
 const API_BASE = getApiBase();
 console.log('API_BASE resolved to:', API_BASE, 'from path:', window.location.pathname);
@@ -33,11 +70,9 @@ function saveAgencyId(agencyId) {
 function getAgencyId() {
     const agencyId = getAgencyIdFromURL() || localStorage.getItem('form-agency-id');
     
-    // If no agency_id found, check if we can get it from the agencies page or use default DJO Agency
     if (!agencyId) {
-        console.warn('Agency ID not found in URL or localStorage. Using DJO Agency (ID: 307) as default.');
-        // Default to DJO Agency for testing - in production, you'd want to show an agency selection
-        return '307'; // DJO Agency ID
+        console.warn('Agency ID not found in URL or localStorage.');
+        return null;
     }
     
     return agencyId;
@@ -70,7 +105,12 @@ async function submitApplication() {
     }
 
     try {
-        const response = await fetch(`${API_BASE}/applications/create.php`, {
+        const url = `${API_BASE}/applications/create.php`;
+        console.log('Submitting application to:', url);
+        console.log('Form data:', formData);
+        console.log('Agency ID:', agencyId);
+        
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -79,10 +119,39 @@ async function submitApplication() {
             body: JSON.stringify(formData)
         });
 
+        console.log('Response status:', response.status, response.statusText);
+        console.log('Response URL:', response.url);
+        
+        // Handle 404 specifically (file not found vs API error)
+        if (response.status === 404) {
+            const text = await response.text();
+            console.error('404 Error - Response text:', text.substring(0, 500));
+            
+            // Try to parse as JSON to see if it's an API error or file not found
+            try {
+                const result = JSON.parse(text);
+                if (result.message) {
+                    throw new Error(result.message);
+                }
+            } catch (e) {
+                // Not JSON, so it's likely a file not found error
+                throw new Error(`API endpoint not found. Please check that the file exists at: ${url}`);
+            }
+        }
+        
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error('Non-JSON response:', text.substring(0, 500));
+            throw new Error(`Server returned invalid response format (${response.status}). Please check console for details.`);
+        }
+
         const result = await response.json();
+        console.log('Response data:', result);
 
         if (!response.ok || !result.success) {
-            throw new Error(result.message || 'Failed to submit application');
+            throw new Error(result.message || result.error || 'Failed to submit application');
         }
 
         // Clear agency_id from localStorage after successful submission
@@ -91,7 +160,20 @@ async function submitApplication() {
         return true;
     } catch (error) {
         console.error('Error submitting application:', error);
-        alert('Error submitting application: ' + error.message);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
+        
+        let errorMessage = error.message;
+        if (errorMessage.includes('Agency not found')) {
+            errorMessage = 'The agency you are trying to apply to does not exist. Please go back and select a valid agency.';
+        } else if (errorMessage.includes('not found') && !errorMessage.includes('API endpoint')) {
+            errorMessage = 'Unable to submit application. Please check your connection and try again.';
+        }
+        
+        alert('Error submitting application: ' + errorMessage);
         return false;
     }
 }
@@ -159,6 +241,10 @@ async function submitProjectRequest() {
         max_budget: localStorage.getItem('form-max_budget') ? parseFloat(localStorage.getItem('form-max_budget')) : null,
         preferred_timeline: localStorage.getItem('form-preferred_timeline') || null,
         style_preference: localStorage.getItem('form-style_preference') || null,
+        // Include client info for account creation/lookup if not logged in
+        email: localStorage.getItem('form-email') || '',
+        phone_number: localStorage.getItem('form-phone_number') || '',
+        full_name: localStorage.getItem('form-project_name') || localStorage.getItem('form-full_name') || '',
     };
 
     // Add exterior details if applicable

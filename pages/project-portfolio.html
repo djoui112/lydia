@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Portfolio</title>
+  <link rel="stylesheet" href="../css/projectpreview.css" />
+  <style>
+    .data-card {
+      margin-bottom: 30px;
+    }
+    .info-row {
+      display: flex;
+      padding: 12px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .info-label {
+      font-weight: 600;
+      color: #333;
+      min-width: 180px;
+      flex-shrink: 0;
+    }
+    .info-value {
+      color: #666;
+      flex: 1;
+    }
+    .choice-display {
+      display: inline-block;
+      padding: 4px 12px;
+      background-color: #f5f5f5;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    #photosList {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+    #photosList img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="page-header">
+      <button class="back-btn" onclick="history.back()" style="background: none; border: none; font-size: 24px; cursor: pointer; padding: 10px; margin-right: 10px;">←</button>
+      <h1 class="page-title">Project Portfolio</h1>
+    </header>
+
+    <section class="data-section" id="data-section">
+      <!-- Loading State -->
+      <div id="loadingState" style="text-align: center; padding: 40px;">
+        <p style="color: #666;">Loading project data...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" style="display: none; text-align: center; padding: 40px; color: #d32f2f;">
+        <p id="errorMessage"></p>
+      </div>
+
+      <!-- Project Information Section -->
+      <div class="data-card project-description-card" id="projectInfoSection" style="display: none;">
+        <div class="project-info-content">
+          <h2 style="margin-bottom: 20px; color: var(--text-dark);">Project Information</h2>
+          <div class="info-row">
+            <div class="info-label">Project Name</div>
+            <div class="info-value" id="projectName">-</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Project Type</div>
+            <div class="info-value">
+              <span class="choice-display" id="projectType">-</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Service(s) Requested</div>
+            <div class="info-value">
+              <span class="choice-display" id="serviceRequested">-</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Status</div>
+            <div class="info-value">
+              <span class="choice-display" id="projectStatus">-</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Client</div>
+            <div class="info-value" id="clientName">-</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Agency</div>
+            <div class="info-value" id="agencyName">-</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Assigned Architect</div>
+            <div class="info-value" id="architectName">-</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Project Location</div>
+            <div class="info-value" id="projectLocation">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Description Section -->
+      <div class="data-card project-description-card" id="descriptionSection" style="display: none;">
+        <div class="project-info-content">
+          <h2 style="margin-bottom: 20px; color: var(--text-dark);">Project Description</h2>
+          <div class="info-row">
+            <div class="info-label">Description</div>
+            <div class="info-value" id="projectDescription">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Photos Section -->
+      <div class="data-card project-description-card" id="photosSection" style="display: none;">
+        <div class="project-info-content">
+          <h2 style="margin-bottom: 20px; color: var(--text-dark);">Project Photos</h2>
+          <div class="info-row">
+            <div class="info-label">Uploaded Files</div>
+            <div class="info-value">
+              <div id="photosList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Milestones Section -->
+      <div class="data-card project-description-card" id="milestonesSection" style="display: none;">
+        <div class="project-info-content">
+          <h2 style="margin-bottom: 20px; color: var(--text-dark);">Project Milestones</h2>
+          <div id="milestonesList"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const API_BASE = '../php/api';
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadProjectData();
+    });
+
+    async function loadProjectData() {
+      // Get project ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const projectId = urlParams.get('id');
+      
+      if (!projectId) {
+        showError('No project ID provided');
+        return;
+      }
+
+      try {
+        const apiUrl = `${API_BASE}/projects/preview.php?id=${projectId}`;
+        console.log('Fetching project data from:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
+          credentials: 'include'
+        });
+
+        console.log('Response status:', response.status, response.statusText);
+
+        if (!response.ok) {
+          let errorMessage = `HTTP error! status: ${response.status}`;
+          try {
+            const errorText = await response.text();
+            console.error('Error response body:', errorText);
+            try {
+              const errorData = JSON.parse(errorText);
+              errorMessage = errorData.message || errorData.error || errorMessage;
+            } catch (e) {
+              errorMessage = errorText || errorMessage;
+            }
+          } catch (e) {
+            console.error('Could not read error response:', e);
+          }
+          throw new Error(errorMessage);
+        }
+
+        const result = await response.json();
+        console.log('Project data received:', result);
+        
+        if (!result.success || !result.data || !result.data.project) {
+          throw new Error(result.message || 'Failed to load project data');
+        }
+
+        const { project, photos, milestones } = result.data;
+        
+        // Hide loading state
+        document.getElementById('loadingState').style.display = 'none';
+        
+        // Display project data
+        displayProjectData(project, photos, milestones);
+        
+      } catch (error) {
+        console.error('Error loading project data:', error);
+        showError(error.message || 'An error occurred while fetching project details');
+      }
+    }
+
+    function showError(message) {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('errorState').style.display = 'block';
+      document.getElementById('errorMessage').textContent = message;
+    }
+
+    function displayProjectData(project, photos, milestones) {
+      // Show all sections
+      document.getElementById('projectInfoSection').style.display = 'block';
+      document.getElementById('descriptionSection').style.display = 'block';
+      document.getElementById('photosSection').style.display = 'block';
+      document.getElementById('milestonesSection').style.display = 'block';
+
+      // Project Information
+      document.getElementById('projectName').textContent = project.project_name || 'N/A';
+      
+      // Project Type
+      const projectType = project.project_type || 'N/A';
+      document.getElementById('projectType').textContent = formatProjectType(projectType);
+      
+      // Service Type
+      const serviceType = project.service_type || 'N/A';
+      document.getElementById('serviceRequested').textContent = formatServiceType(serviceType);
+      
+      // Status
+      const status = project.status || 'N/A';
+      document.getElementById('projectStatus').textContent = status.charAt(0).toUpperCase() + status.slice(1);
+      
+      // Client
+      document.getElementById('clientName').textContent = project.client_name || 'N/A';
+      
+      // Agency
+      document.getElementById('agencyName').textContent = project.agency_name || 'N/A';
+      
+      // Architect
+      document.getElementById('architectName').textContent = project.architect_name || 'Not assigned';
+      
+      // Location
+      document.getElementById('projectLocation').textContent = project.project_location || 'N/A';
+      
+      // Description
+      document.getElementById('projectDescription').textContent = project.description || 'No description available.';
+      
+      // Photos
+      displayPhotos(photos);
+      
+      // Milestones
+      displayMilestones(milestones);
+    }
+
+    function formatProjectType(type) {
+      if (!type) return 'N/A';
+      const typeMap = {
+        'exterior': 'Exterior',
+        'interior': 'Interior',
+        'both': 'Both Exterior & Interior'
+      };
+      return typeMap[type.toLowerCase()] || type.charAt(0).toUpperCase() + type.slice(1);
+    }
+
+    function formatServiceType(type) {
+      if (!type) return 'N/A';
+      const typeMap = {
+        'construction': 'Construction',
+        'renovation': 'Renovation',
+        'design_only': 'Design Only'
+      };
+      return typeMap[type.toLowerCase()] || type.charAt(0).toUpperCase() + type.slice(1).replace(/_/g, ' ');
+    }
+
+    function displayPhotos(photos) {
+      const photosList = document.getElementById('photosList');
+      
+      if (!photos || photos.length === 0) {
+        photosList.innerHTML = '<p style="color: #666;">No photos uploaded</p>';
+        return;
+      }
+      
+      photosList.innerHTML = '';
+      photos.forEach((photo, index) => {
+        const photoUrl = photo.photo_url || photo.photo_path;
+        if (photoUrl) {
+          const img = document.createElement('img');
+          img.src = photoUrl;
+          img.alt = `Project photo ${index + 1}`;
+          img.onerror = function() {
+            this.style.display = 'none';
+          };
+          photosList.appendChild(img);
+        }
+      });
+    }
+
+    function displayMilestones(milestones) {
+      const milestonesList = document.getElementById('milestonesList');
+      
+      if (!milestones || milestones.length === 0) {
+        milestonesList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No milestones available.</p>';
+        return;
+      }
+      
+      milestonesList.innerHTML = '';
+      milestones.forEach((milestone) => {
+        const milestoneDiv = document.createElement('div');
+        const isCompleted = milestone.is_completed == 1 || milestone.is_completed === true;
+        const bgColor = isCompleted ? '#e8f5e9' : '#fff3e0';
+        const statusText = isCompleted ? 'Completed' : 'Pending';
+        const statusIcon = isCompleted ? '✓' : '○';
+        const statusColor = isCompleted ? '#4caf50' : '#ff9800';
+        
+        milestoneDiv.style.cssText = 'padding: 15px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; background-color: ' + bgColor + ';';
+        
+        const dueDate = milestone.due_date_formatted || milestone.due_date || 'N/A';
+        
+        milestoneDiv.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+            <div>
+              <h3 style="margin: 0 0 5px 0; color: #333;">${milestone.title || 'Milestone'}</h3>
+              <p style="margin: 0; color: #666; font-size: 14px;">${milestone.description || ''}</p>
+            </div>
+            <span style="font-size: 20px; color: ${statusColor};">${statusIcon}</span>
+          </div>
+          <div style="display: flex; gap: 15px; font-size: 14px; color: #666;">
+            <span><strong>Due Date:</strong> ${dueDate}</span>
+            <span><strong>Status:</strong> ${statusText}</span>
+          </div>
+        `;
+        
+        milestonesList.appendChild(milestoneDiv);
+      });
+    }
+  </script>
+</body>
+</html>

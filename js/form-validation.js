@@ -66,10 +66,11 @@
       if (!value) return 'Date of birth is required';
       
       let day, month, year;
+      const trimmedValue = value.trim();
       
       // Check if it's a date input type (YYYY-MM-DD format)
       const dateInputRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
-      const dateInputMatch = value.trim().match(dateInputRegex);
+      const dateInputMatch = trimmedValue.match(dateInputRegex);
       
       if (dateInputMatch) {
         // Date input type: YYYY-MM-DD
@@ -79,7 +80,7 @@
       } else {
         // Check for DD/MM/YYYY format (text input)
         const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-        const match = value.trim().match(dateRegex);
+        const match = trimmedValue.match(dateRegex);
         if (!match) {
           return 'Please enter date in DD/MM/YYYY format';
         }
@@ -88,20 +89,49 @@
         year = parseInt(match[3], 10);
       }
       
-      if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > new Date().getFullYear()) {
+      // Basic range validation
+      if (isNaN(year) || isNaN(month) || isNaN(day)) {
         return 'Please enter a valid date';
       }
       
-      const date = new Date(year, month - 1, day);
-      if (date.getDate() !== day || date.getMonth() !== month - 1 || date.getFullYear() !== year) {
+      if (month < 1 || month > 12) {
+        return 'Please enter a valid month (1-12)';
+      }
+      
+      if (day < 1 || day > 31) {
+        return 'Please enter a valid day';
+      }
+      
+      const currentYear = new Date().getFullYear();
+      if (year < 1900 || year > currentYear) {
+        return 'Please enter a valid year';
+      }
+      
+      // Create date object and validate it's a real date
+      const birthDate = new Date(year, month - 1, day);
+      if (birthDate.getDate() !== day || birthDate.getMonth() !== month - 1 || birthDate.getFullYear() !== year) {
         return 'Please enter a valid date';
       }
       
       // Check if person is at least 18 years old
       const today = new Date();
-      const age = today.getFullYear() - year;
-      if (age < 18 || (age === 18 && (today.getMonth() < month - 1 || (today.getMonth() === month - 1 && today.getDate() < day)))) {
+      today.setHours(0, 0, 0, 0); // Reset time to midnight for accurate comparison
+      birthDate.setHours(0, 0, 0, 0);
+      
+      // Calculate age more accurately
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      
+      if (age < 18) {
         return 'You must be at least 18 years old';
+      }
+      
+      // Check maximum reasonable age (e.g., 120 years)
+      if (age > 120) {
+        return 'Please enter a valid date of birth';
       }
       
       return null;
@@ -253,7 +283,7 @@
       error = validators.name(value);
     } else if (label.toLowerCase().includes('address') || label.toLowerCase().includes('location')) {
       error = validators.address(value);
-    } else if (label.toLowerCase().includes('date of birth') || placeholder.includes('xx/xx/xxxx')) {
+    } else if (type === 'date' || label.toLowerCase().includes('date of birth') || name.toLowerCase().includes('date_of_birth') || name.toLowerCase().includes('date-of-birth') || placeholder.includes('xx/xx/xxxx')) {
       error = validators.dateOfBirth(value);
     } else if (label.toLowerCase().includes('area') || placeholder.toLowerCase().includes('m²')) {
       error = validators.area(value);
@@ -315,8 +345,8 @@
   function validateForm(form) {
     let isValid = true;
     
-    // Validate all input fields
-    const inputs = form.querySelectorAll('input[required], input[type="email"], input[type="tel"], input[type="url"]');
+    // Validate all input fields (including date inputs)
+    const inputs = form.querySelectorAll('input[required], input[type="email"], input[type="tel"], input[type="url"], input[type="date"]');
     inputs.forEach(input => {
       if (!validateField(input)) {
         isValid = false;
@@ -361,6 +391,10 @@
             validateField(input);
           }
         });
+        // For date inputs, also validate on change event
+        if (input.type === 'date') {
+          input.addEventListener('change', () => validateField(input));
+        }
       });
 
       // Real-time validation for textareas
@@ -419,9 +453,22 @@
       saveFormData();
     }
     
+    // Get agency_id from URL or localStorage to preserve it
+    const urlParams = new URLSearchParams(window.location.search);
+    const agencyId = urlParams.get('agency_id') || localStorage.getItem('form-agency-id');
+    
+    // Build the next page URL with agency_id if available
+    let nextPageUrl = nextPage;
+    if (agencyId) {
+      const separator = nextPage.includes('?') ? '&' : '?';
+      nextPageUrl = `${nextPage}${separator}agency_id=${agencyId}`;
+    }
+    
+    console.log('Navigating to next page:', nextPageUrl, 'with agency_id:', agencyId);
+    
     // Small delay to ensure localStorage write completes, then navigate
     setTimeout(() => {
-      window.location.href = nextPage;
+      window.location.href = nextPageUrl;
     }, 100);
   };
 

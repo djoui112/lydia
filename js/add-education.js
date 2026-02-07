@@ -17,10 +17,22 @@ const currentlyStudyingCheckbox = document.getElementById('currentlyStudying');
 const descriptionTextarea = document.getElementById('description');
 const charCount = document.getElementById('charCount');
 
+// Get education ID from URL if editing
+const urlParams = new URLSearchParams(window.location.search);
+const educationId = urlParams.get('id');
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     initializeYearDropdowns();
     setupEventListeners();
+    
+    // If editing, load the education data
+    if (educationId) {
+        loadEducationData(educationId);
+        if (modalTitle) {
+            modalTitle.textContent = 'Edit Education';
+        }
+    }
     // Modal is already visible via active class in HTML
 });
 
@@ -122,6 +134,55 @@ function closeModal() {
     window.history.back();
 }
 
+// Load Education Data for Editing
+async function loadEducationData(id) {
+    try {
+        const response = await fetch(`/mimaria/php/api/education/get.php?id=${id}`, {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to load education data');
+        }
+        
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            const edu = result.data;
+            
+            // Populate form fields
+            schoolInput.value = edu.university_name || '';
+            degreeInput.value = edu.degree || '';
+            fieldOfStudyInput.value = edu.field_of_study || '';
+            
+            // Parse and set start date
+            if (edu.start_date) {
+                const startDate = new Date(edu.start_date);
+                startMonthSelect.value = startDate.getMonth() + 1;
+                startYearSelect.value = startDate.getFullYear();
+            }
+            
+            // Parse and set end date
+            if (edu.is_current) {
+                currentlyStudyingCheckbox.checked = true;
+                endMonthSelect.disabled = true;
+                endYearSelect.disabled = true;
+            } else if (edu.end_date) {
+                const endDate = new Date(edu.end_date);
+                endMonthSelect.value = endDate.getMonth() + 1;
+                endYearSelect.value = endDate.getFullYear();
+            }
+            
+            // Description is not stored in the database per schema, but we can leave it empty
+            descriptionTextarea.value = '';
+            charCount.textContent = '0';
+        }
+    } catch (error) {
+        console.error('Error loading education data:', error);
+        alert('Failed to load education data. Please try again.');
+    }
+}
+
 // Handle Form Submit
 async function handleFormSubmit(e) {
     e.preventDefault();
@@ -149,8 +210,13 @@ async function handleFormSubmit(e) {
     submitBtn.textContent = 'Saving...';
     
     try {
-        const response = await fetch('/mimaria/php/api/education/add.php', {
-            method: 'POST',
+        const url = educationId 
+            ? `/mimaria/php/api/education/update.php?id=${educationId}`
+            : '/mimaria/php/api/education/add.php';
+        const method = educationId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method: method,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -162,7 +228,7 @@ async function handleFormSubmit(e) {
         
         if (response.ok && result.success) {
             // Success
-            alert('Education added successfully!');
+            alert(educationId ? 'Education updated successfully!' : 'Education added successfully!');
             closeModal();
             
             // Reload page to show updated education or trigger parent page refresh
@@ -171,14 +237,61 @@ async function handleFormSubmit(e) {
                 window.opener.location.reload();
                 window.close();
             } else {
-                // Reload current page or redirect
-                window.location.reload();
+                // Get architect ID from referrer or session to preserve it
+                const referrer = document.referrer;
+                let portfolioUrl = 'architect-portfolio.html';
+                
+                // Try to extract architect_id from referrer URL
+                if (referrer) {
+                    try {
+                        const referrerUrl = new URL(referrer);
+                        const referrerId = referrerUrl.searchParams.get('architect_id') || referrerUrl.searchParams.get('id');
+                        if (referrerId) {
+                            portfolioUrl = `architect-portfolio.html?architect_id=${referrerId}`;
+                        } else {
+                            // Fallback: fetch from session
+                            try {
+                                const sessionRes = await fetch('/mimaria/php/api/get-session-architect.php', {
+                                    credentials: 'include'
+                                });
+                                if (sessionRes.ok) {
+                                    const sessionData = await sessionRes.json();
+                                    if (sessionData && sessionData.architect_id) {
+                                        portfolioUrl = `architect-portfolio.html?architect_id=${sessionData.architect_id}`;
+                                    }
+                                }
+                            } catch (e) {
+                                console.error('Failed to get architect ID from session:', e);
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Failed to parse referrer URL:', e);
+                    }
+                } else {
+                    // No referrer, try to get from session
+                    try {
+                        const sessionRes = await fetch('/mimaria/php/api/get-session-architect.php', {
+                            credentials: 'include'
+                        });
+                        if (sessionRes.ok) {
+                            const sessionData = await sessionRes.json();
+                            if (sessionData && sessionData.architect_id) {
+                                portfolioUrl = `architect-portfolio.html?architect_id=${sessionData.architect_id}`;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Failed to get architect ID from session:', e);
+                    }
+                }
+                
+                // Navigate to portfolio page with architect ID
+                window.location.href = portfolioUrl;
             }
         } else {
             // Error from server
-            const errorMsg = result.message || 'Failed to add education';
+            const errorMsg = result.message || (educationId ? 'Failed to update education' : 'Failed to add education');
             if (result.errors && Array.isArray(result.errors)) {
-                alert(errorMsg + ':\\n' + result.errors.join('\\n'));
+                alert(errorMsg + ':\n' + result.errors.join('\n'));
             } else {
                 alert(errorMsg);
             }

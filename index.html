@@ -131,7 +131,7 @@ all in one place</pre>
                                 <span class="star">★</span>
                             </div>
                         </div>
-                        <p class="review-text">I had a great experience using this website, I built my house with all the features I dreamed of, dealing with the best agency ever — willing to use it for future projects.</p>
+                        <p class="review-text">Great service and great results! The team understood my vision perfectly and delivered beyond my expectations. I’m really happy with the outcome and would 100% recommend them.</p>
                     </div>
 
                     <!-- Review Card 3 -->
@@ -146,7 +146,7 @@ all in one place</pre>
                                 <span class="star">★</span>
                             </div>
                         </div>
-                        <p class="review-text">I had a great experience using this website, I built my house with all the features I dreamed of, dealing with the best agency ever — willing to use it for future projects.</p>
+                        <p class="review-text">Such a wonderful experience! The website is easy to use, the agency is super responsive, and the final result was exactly what I wanted. Highly recommended.</p>
                     </div>
 
                     <!-- Review Card 4 -->
@@ -161,7 +161,7 @@ all in one place</pre>
                                 <span class="star">★</span>
                             </div>
                         </div>
-                        <p class="review-text">I had a great experience using this website, I built my house with all the features I dreamed of, dealing with the best agency ever — willing to use it for future projects.</p>
+                        <p class="review-text">I’m extremely satisfied with this website. Everything was clear, fast, and professional. They really care about their clients and deliver great results.</p>
                     </div>
                 </div>
             </div>
@@ -230,11 +230,11 @@ all in one place</pre>
                     }).join('');
                     
                     // Ensure slider has proper width to contain all cards
-                    const cards = slider.querySelectorAll('.port-card');
-                    if (cards.length > 0) {
-                        const cardWidth = cards[0].offsetWidth;
+                    const cardLinks = slider.querySelectorAll('.port-card-link');
+                    if (cardLinks.length > 0) {
+                        const cardWidth = cardLinks[0].offsetWidth;
                         const gap = parseFloat(window.getComputedStyle(slider).gap) || 32;
-                        const totalWidth = (cards.length * cardWidth) + ((cards.length - 1) * gap);
+                        const totalWidth = (cardLinks.length * cardWidth) + ((cardLinks.length - 1) * gap);
                         slider.style.width = `${totalWidth}px`;
                     }
                     
@@ -256,12 +256,25 @@ all in one place</pre>
               function createArchitectCard(architect) {
                     const fullName = `${architect.first_name} ${architect.last_name}`;
                     
-                    // Get profile image from user data or use default
-                    let profileImage = architect.profile_image || 'assets/main/Profile-blue.png';
+                    // Default image path
+                    const defaultImage = 'assets/main/Profile-blue.png';
                     
-                    // Fix path if needed
-                    if (profileImage && !profileImage.startsWith('http')) {
+                    // Get profile image from user data or use default
+                    let profileImage = architect.profile_image || architect.profile_image_url || defaultImage;
+                    
+                    // Fix path if needed - handle both relative and absolute paths
+                    if (profileImage && !profileImage.startsWith('http') && !profileImage.startsWith('assets/')) {
+                        // If it starts with /, remove it; if it's a relative path, ensure it's correct
                         profileImage = profileImage.replace(/^\/+/, '');
+                        // If still doesn't start with assets/, use default
+                        if (!profileImage.startsWith('assets/') && !profileImage.startsWith('../')) {
+                            profileImage = defaultImage;
+                        }
+                    }
+                    
+                    // If profileImage is empty or null, use default
+                    if (!profileImage || profileImage === '' || profileImage === 'null' || profileImage === 'undefined') {
+                        profileImage = defaultImage;
                     }
                     
                     const experience = architect.years_of_experience || 0;
@@ -269,33 +282,34 @@ all in one place</pre>
                     const architectId = architect.id || architect.architect_id || architect['architect_~id'] || '';
                     
                     return `
-                        <div class="port-card">
-                            <img src="${profileImage}" 
-                                class="user-pic" 
-                                alt="${fullName}"
-                                onerror="this.onerror=null; this.src='assets/main/profile.png';">
-                            <div class="portfolio-cover"></div>
-                            <div class="portfolio-info">
-                                <p class="user-name">${fullName}</p>
-                                <div class="numb">
-                                    <div class="num-years-exp">
-                                        <p>years</p>
-                                        <p>${experience}</p>
+                        <a href="pages/architect-portfolio.html?architect_id=${architectId}" class="port-card-link">
+                            <div class="port-card">
+                                <img src="${profileImage}" 
+                                    class="user-pic" 
+                                    alt="${fullName}"
+                                    onerror="this.onerror=null; this.src='${defaultImage}';">
+                                <div class="portfolio-cover"></div>
+                                <div class="portfolio-info">
+                                    <p class="user-name">${fullName}</p>
+                                    <div class="numb">
+                                        <div class="num-years-exp">
+                                            <p>years</p>
+                                            <p>${experience}</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <a href="pages/architect-portfolio.html?architect_id=${architectId}" class="see-more">See more</a>
                             </div>
-                        </div>
+                        </a>
                     `;
                 }
 
                 let currentScrollPosition = 0;
                 
                 function slideLeft() {
-                    const cards = slider.querySelectorAll('.port-card');
-                    if (cards.length === 0) return;
+                    const cardLinks = slider.querySelectorAll('.port-card-link');
+                    if (cardLinks.length === 0) return;
                     
-                    const cardWidth = cards[0].offsetWidth;
+                    const cardWidth = cardLinks[0].offsetWidth;
                     const sliderStyle = window.getComputedStyle(slider);
                     const gap = parseFloat(sliderStyle.gap) || 32;
                     const scrollAmount = cardWidth + gap;
@@ -306,10 +320,10 @@ all in one place</pre>
                 }
 
                 function slideRight() {
-                    const cards = slider.querySelectorAll('.port-card');
-                    if (cards.length === 0) return;
+                    const cardLinks = slider.querySelectorAll('.port-card-link');
+                    if (cardLinks.length === 0) return;
                     
-                    const cardWidth = cards[0].offsetWidth;
+                    const cardWidth = cardLinks[0].offsetWidth;
                     const sliderStyle = window.getComputedStyle(slider);
                     const gap = parseFloat(sliderStyle.gap) || 32;
                     const scrollAmount = cardWidth + gap;
@@ -325,12 +339,12 @@ all in one place</pre>
                     if (!wrapper) return;
                     
                     const wrapperWidth = wrapper.offsetWidth;
-                    const cards = slider.querySelectorAll('.port-card');
-                    if (cards.length === 0) return;
+                    const cardLinks = slider.querySelectorAll('.port-card-link');
+                    if (cardLinks.length === 0) return;
                     
-                    const cardWidth = cards[0].offsetWidth;
+                    const cardWidth = cardLinks[0].offsetWidth;
                     const gap = parseFloat(window.getComputedStyle(slider).gap) || 32;
-                    const totalWidth = (cards.length * cardWidth) + ((cards.length - 1) * gap);
+                    const totalWidth = (cardLinks.length * cardWidth) + ((cardLinks.length - 1) * gap);
                     const maxScroll = Math.max(0, totalWidth - wrapperWidth);
                     
                     // Clamp the scroll position

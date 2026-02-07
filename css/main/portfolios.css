@@ -67,6 +67,14 @@
     -webkit-text-fill-color: transparent;
 }
 
+.port-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
 .port-card{
     background-color: white;
     width: 15rem;
@@ -76,9 +84,14 @@
     box-shadow: 0 3px 6px rgb(141, 141, 141);
     position: relative;
     border: 3px solid #1B2B41;
-     flex-shrink: 0;
+    flex-shrink: 0;
     transition: all 0.4s ease;
+    cursor: pointer;
+}
 
+.port-card-link:hover .port-card {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(27, 43, 65, 0.4);
 }
 .port-card.current{
     background-color: #5B7E98;
@@ -88,9 +101,10 @@
 .user-pic{
     position: absolute;
     height:35%;
-    top: 15%; /* controls how high it sits (adjust as needed) */
+    top: 12%; /* controls how high it sits (adjust as needed) */
   left: 50%;
   transform: translateX(-50%);
+  margin-bottom: 1rem;
 }
 
 
@@ -107,10 +121,11 @@
     align-items: start;
     justify-items: center;
     color: #1B2B41;
-    padding: 0.4rem 0.5rem 0.3rem 0.5rem;
+    padding: 1.5rem 0.5rem 1rem 0.5rem;
     box-sizing: border-box;
     position: relative;
-    gap: 0.3rem;
+    gap: 1.5rem;
+    row-gap: 1.5rem;
 }
 
 .user-name{
@@ -126,13 +141,17 @@
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    line-height: 1.15;
+    line-height: 1.6;
     word-wrap: break-word;
     hyphens: auto;
-    height: 2.8rem;
-    max-height: 2.8rem;
+    height: auto;
+    min-height: 3rem;
+    max-height: 4rem;
     grid-row: 1;
     align-self: start;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0;
 }
 
 .user-name.current{
@@ -141,15 +160,17 @@
 }
 .numb{
     display: flex !important;
-    margin: 0;
+    margin: 1rem 0 1rem 0;
     opacity: 1 !important;
     visibility: visible !important;
     transition: all 0.4s ease;
-    height: 2.5rem;
-    min-height: 2.5rem;
+    height: auto;
+    min-height: 3rem;
+    padding: 0.5rem 0;
     grid-row: 2;
     color: #1B2B41;
     align-self: start;
+    gap: 1rem;
 }
 
 .numb.current{
@@ -188,21 +209,31 @@
     background-color:#1B2B41 ;
     color: white;
     border: none;
-    padding: 0.35rem 0.9rem;
+    padding: 0.6rem 1.5rem;
     border-radius: 1.5rem;
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     text-decoration: none;
     display: inline-block;
-    margin: 0;
+    margin: 1.5rem 0 0 0;
     white-space: nowrap;
     grid-row: 4;
     align-self: end;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 10;
+    position: relative;
 }
 .see-more.current{
     background-color: white;
     color: #1B2B41;
 }
+.see-more:hover{
+    background-color: #2d5a8f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(27, 43, 65, 0.3);
+}
+
 .see-more.current:hover{
     box-shadow: 0 0 3px white;
     cursor: pointer;

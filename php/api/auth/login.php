@@ -83,14 +83,16 @@ $oldSessionId = session_id();
 session_regenerate_id(true);
 $newSessionId = session_id();
 
+// Ensure session is written before sending response
+session_write_close();
+session_start(); // Reopen to ensure it's saved
+
 // Log session info for debugging
 error_log("Login successful - User ID: " . (int)$user['id'] . ", Type: " . $user['user_type']);
 error_log("Session ID changed from $oldSessionId to $newSessionId");
 error_log("Session data after login: " . print_r($_SESSION, true));
+error_log("Session cookie params: " . print_r(session_get_cookie_params(), true));
 error_log("Session cookie will be set with ID: " . session_id());
-
-// Don't call session_write_close() - let PHP handle it automatically
-// This ensures the session cookie is properly set
 
 ob_end_clean(); // Clear buffer before outputting JSON
 json_success([

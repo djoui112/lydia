@@ -203,30 +203,42 @@
         const grid = document.getElementById("architectsGrid");
         const searchInput = document.querySelector(".search-container input");
 
-        function renderArchitects(architects) {
+        function renderApplications(applications) {
           grid.innerHTML = "";
 
-          if (architects.length === 0) {
-            grid.innerHTML = "<p>No architects found</p>";
+          if (applications.length === 0) {
+            grid.innerHTML = "<p style='text-align: center; padding: 40px; color: #666;'>No applications found</p>";
             return;
           }
 
-          architects.forEach(architect => {
-            const fullName = `${architect.last_name} ${architect.first_name}`;
+          applications.forEach(application => {
+            const fullName = application.full_name || `${application.last_name} ${application.first_name}`;
+            const profileImage = application.profile_image_url || 
+                                 application.profile_image || 
+                                 "../assets/job-appliance/user-pic.jpg";
+            const expertise = application.primary_expertise || "Not specified";
+            const status = application.status || "pending";
+            const statusClass = status === 'accepted' ? 'status-accepted' : 
+                              status === 'rejected' ? 'status-rejected' : 'status-pending';
+            
             grid.innerHTML += `
               <article class="agency-card">
                 <div class="agency-card__arch" aria-hidden="true"></div>
                 <div class="agency-card__avatar-wrap">
                   <img
-                    src="../assets/job-appliance/user-pic.jpg"
+                    src="${profileImage}"
                     alt="${fullName} portrait"
                     class="agency-card__avatar"
+                    onerror="this.src='../assets/job-appliance/user-pic.jpg'"
                   />
                 </div>
                 <div class="agency-card__body">
                   <h3>${fullName}</h3>
-                  <p>${architect.primary_expertise}</p>
-                  <a href="appliancepreview.html?id=${architect.id}" class="btn">
+                  <p>${expertise}</p>
+                  <div style="margin: 8px 0;">
+                    <span class="status-badge ${statusClass}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                  </div>
+                  <a href="appliancepreview.html?application_id=${application.application_id}" class="btn">
                     See more
                   </a>
                 </div>
@@ -235,22 +247,73 @@
           });
         }
 
-        function loadArchitects(query = "") {
-          fetch("/mimaria/php/api/search/job-appliance.php?query=" + query)
-            .then(res => res.json())
-            .then(data => renderArchitects(data))
-            .catch(err => console.error(err));
+        async function loadApplications(query = "") {
+          try {
+            const url = query 
+              ? `../php/api/applications/list-applications.php?search=${encodeURIComponent(query)}`
+              : `../php/api/applications/list-applications.php`;
+            
+            const response = await fetch(url, {
+              method: 'GET',
+              credentials: 'include'
+            });
+
+            if (!response.ok) {
+              if (response.status === 401) {
+                grid.innerHTML = "<p style='text-align: center; padding: 40px; color: #666;'>Please log in as an agency to view applications</p>";
+                return;
+              }
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+              renderApplications(result.data);
+            } else {
+              grid.innerHTML = "<p style='text-align: center; padding: 40px; color: #666;'>No applications found</p>";
+            }
+          } catch (err) {
+            console.error('Error loading applications:', err);
+            grid.innerHTML = "<p style='text-align: center; padding: 40px; color: #d32f2f;'>Error loading applications. Please try again.</p>";
+          }
         }
 
-        // load all architects on page load
-        loadArchitects();
+        // Load all applications on page load
+        loadApplications();
 
-        // live search
+        // Live search with debounce
+        let searchTimeout;
         searchInput.addEventListener("input", () => {
-          loadArchitects(searchInput.value);
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            loadApplications(searchInput.value);
+          }, 300);
         });
       });
     </script>
+    <style>
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: capitalize;
+      }
+      .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+      .status-accepted {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .status-rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+    </style>
   </body>
 </html>
 

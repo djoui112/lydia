@@ -597,27 +597,51 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Portfolio button - Link to agency portfolio with ID
+  // Portfolio button - Simple and direct
   const viewPortfolioBtn = document.getElementById('viewPortfolioBtn');
   if (viewPortfolioBtn) {
-    // Fetch agency ID from session and update link
-    fetch('../php/api/get-session-agency.php', { 
-      credentials: 'include' 
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data && data.agency_id) {
-        const portfolioUrl = `agency-portfolio.html?id=${data.agency_id}`;
-        viewPortfolioBtn.href = portfolioUrl;
-        console.log('Portfolio link set to:', portfolioUrl);
-      } else {
-        console.error('No agency ID in session');
-        viewPortfolioBtn.href = 'agency-portfolio.html';
+    // Get agency ID and set href immediately - do this synchronously if possible
+    (async function() {
+      try {
+        const res = await fetch('../php/api/get-session-agency.php', { credentials: 'include' });
+        if (!res.ok) {
+          throw new Error('Failed to get agency ID');
+        }
+        const data = await res.json();
+        if (data && data.agency_id) {
+          const portfolioUrl = `agency-portfolio.html?id=${data.agency_id}`;
+          viewPortfolioBtn.href = portfolioUrl;
+          viewPortfolioBtn.setAttribute('href', portfolioUrl);
+          console.log('✅ Portfolio link set to:', portfolioUrl);
+        } else {
+          console.warn('⚠️ No agency_id in session');
+        }
+      } catch (error) {
+        console.error('❌ Error setting portfolio link:', error);
       }
-    })
-    .catch(err => {
-      console.error('Failed to get agency ID:', err);
-      viewPortfolioBtn.href = 'agency-portfolio.html';
+    })();
+    
+    // Add click handler to ensure navigation works even if href wasn't set yet
+    viewPortfolioBtn.addEventListener('click', function(e) {
+      const currentHref = this.getAttribute('href') || this.href;
+      
+      // If href doesn't have an ID parameter, fetch it and navigate
+      if (!currentHref.includes('?id=')) {
+        e.preventDefault();
+        fetch('../php/api/get-session-agency.php', { credentials: 'include' })
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.agency_id) {
+              window.location.href = `agency-portfolio.html?id=${data.agency_id}`;
+            } else {
+              console.error('No agency ID available');
+            }
+          })
+          .catch(err => {
+            console.error('Error getting agency ID:', err);
+          });
+      }
+      // Otherwise let the default link behavior work
     });
   }
 
@@ -629,6 +653,11 @@ document.addEventListener("DOMContentLoaded", function () {
   
   // Load team members
   loadTeamMembers();
+  
+  // Check for accepted application and update UI (after loading both sections)
+  setTimeout(() => {
+    checkForAcceptedApplication();
+  }, 500);
   
   // Clear any placeholder cards IMMEDIATELY before loading projects
   const projectContainer = document.getElementById('projectSliderTrack');
@@ -921,6 +950,84 @@ function showNoMembersMessage() {
   }
 }
 
+// Function to check for accepted application and update UI
+async function checkForAcceptedApplication() {
+  try {
+    const acceptedData = sessionStorage.getItem('acceptedApplication');
+    if (!acceptedData) return;
+    
+    const accepted = JSON.parse(acceptedData);
+    console.log('Found accepted application:', accepted);
+    
+    // Remove from applications - find card by application ID
+    const applicationsContainer = document.getElementById('applicationsContainer');
+    if (applicationsContainer) {
+      const applicationCards = Array.from(applicationsContainer.querySelectorAll('.appliance-card'));
+      let found = false;
+      
+      applicationCards.forEach(card => {
+        const seeMoreLink = card.querySelector('.btn-see-more');
+        if (seeMoreLink) {
+          const href = seeMoreLink.getAttribute('href') || seeMoreLink.href;
+          // Check if this card matches the accepted application ID
+          if (href.includes(`id=${accepted.applicationId}`) || href.includes(`id=${accepted.applicationId}&`)) {
+            card.remove();
+            found = true;
+            console.log('✅ Removed application card:', accepted.applicationId);
+          }
+        }
+      });
+      
+      // If no more applications, show message
+      const remainingCards = applicationsContainer.querySelectorAll('.appliance-card');
+      if (remainingCards.length === 0) {
+        const noApplicationsMsg = document.getElementById('noApplicationsMessage');
+        if (noApplicationsMsg) {
+          noApplicationsMsg.style.display = 'block';
+        }
+      }
+      
+      if (!found) {
+        console.warn('⚠️ Application card not found for ID:', accepted.applicationId);
+        // Reload applications to refresh the list
+        setTimeout(() => loadRecentApplications(), 100);
+      }
+    }
+    
+    // Add to members
+    const membersContainer = document.getElementById('membersContainer');
+    if (membersContainer && accepted.architectId) {
+      // Create member data object
+      const memberData = {
+        architect_id: accepted.architectId,
+        first_name: accepted.firstName,
+        last_name: accepted.lastName,
+        profile_image: accepted.profileImage,
+        profile_image_url: accepted.profileImage ? `../${accepted.profileImage}` : '',
+        project_count: 0,
+        years_of_experience: 0
+      };
+      
+      // Create and add member card
+      const memberCard = createMemberCard(memberData);
+      membersContainer.appendChild(memberCard);
+      
+      // Hide "no members" message if it exists
+      const noMembersMsg = document.getElementById('noMembersMessage');
+      if (noMembersMsg) {
+        noMembersMsg.style.display = 'none';
+      }
+      
+      console.log('Added member card for:', accepted.firstName, accepted.lastName);
+    }
+    
+    // Clear sessionStorage
+    sessionStorage.removeItem('acceptedApplication');
+  } catch (error) {
+    console.error('Error handling accepted application:', error);
+  }
+}
+
 // Function to create a member card
 function createMemberCard(member) {
   const cardLink = document.createElement('a');
@@ -931,17 +1038,17 @@ function createMemberCard(member) {
   const profileImage = member.profile_image_url || member.profile_image || '';
   
   cardLink.innerHTML = `
-    <div class="profile-card member-card">
+    <div class="member-card">
       <div class="member-avatar">
         ${profileImage 
-          ? `<img src="${profileImage}" alt="${fullName}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;" />`
-          : `<svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          ? `<img src="${profileImage}" alt="${fullName}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; display: block;" />`
+          : `<svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
               <circle cx="12" cy="8" r="4" fill="#E0E0E0" />
               <path d="M6 21C6 17.6863 8.68629 15 12 15C15.3137 15 18 17.6863 18 21" fill="#E0E0E0" />
             </svg>`
         }
       </div>
-      <h4>${fullName}</h4>
+      <h4 class="member-name">${fullName}</h4>
     </div>
   `;
   

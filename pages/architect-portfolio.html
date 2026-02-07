@@ -13,6 +13,16 @@
 
   <!-- Header -->
   <div class="header-section">
+    <!-- Back Button -->
+    <button class="back-btn" onclick="history.back()" aria-label="Go back">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+    
+    <!-- Edit Profile Button -->
+    <a href="editprofile-architect.html" class="edit-profile-btn" id="editProfileBtn" style="display: none;">
+      <i class="fas fa-external-link-alt"></i>
+    </a>
+    
     <div class="cover">
       <img class="profile-pic" src="" alt="Profile">
     </div>
@@ -34,13 +44,23 @@
 
   <!-- Education -->
   <section class="education-section">
-    <h1 class="titles">Education</h1>
+    <div class="section-header">
+      <h1 class="titles">Education</h1>
+      <button class="add-btn" id="addEducationBtn" style="display: none;" aria-label="Add education">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
     <div class="education-container"></div>
   </section>
 
   <!-- Experience -->
   <section class="experience-section">
-    <h1 class="titles">Experience</h1>
+    <div class="section-header">
+      <h1 class="titles">Experience</h1>
+      <button class="add-btn" id="addExperienceBtn" style="display: none;" aria-label="Add experience">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
     <div class="experience-container"></div>
   </section>
 
@@ -226,28 +246,3 @@
      <script src="../js/architectportfolio.js"></script>   
     </body>
 </html>
-<script>
-let architectId = new URLSearchParams(window.location.search).get('architect_id') || 
-                 new URLSearchParams(window.location.search).get('id');
-
-// If missing, try fetching from backend session
-if (!architectId) {
-    fetch('../php/api/get-session-architect.php', { credentials: 'include' })
-        .then(res => res.json())
-        .then(data => {
-            if (data.architect_id) {
-                architectId = data.architect_id;
-                loadArchitectPortfolio(architectId);
-            } else {
-                console.error('No architect ID available');
-                document.querySelector('.generalcontainer').innerHTML = '<p>Error: No architect selected.</p>';
-            }
-        })
-        .catch(err => {
-            console.error('Failed to fetch architect ID:', err);
-            document.querySelector('.generalcontainer').innerHTML = '<p>Error: Could not load portfolio.</p>';
-        });
-} else {
-    loadArchitectPortfolio(architectId);
-}
-</script>

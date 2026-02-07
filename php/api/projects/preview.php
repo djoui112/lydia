@@ -1,15 +1,26 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../config/session.php';
-require_once __DIR__ . '/../../middleware/cors.php';
-require_once __DIR__ . '/../../utils/helpers.php';
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 
-header('Content-Type: application/json');
+// Start output buffering
+ob_start();
 
 try {
-    $db = getDB();
+    require_once __DIR__ . '/../../config/database.php';
+    require_once __DIR__ . '/../../config/session.php';
+    require_once __DIR__ . '/../../middleware/cors.php';
+    require_once __DIR__ . '/../utils/helpers.php';
+    
+    // Clear any output from includes
+    if (ob_get_level() > 0) {
+        ob_clean();
+    }
+    
+    header('Content-Type: application/json');
     
     // Get project ID from query parameter
     $projectId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -23,7 +34,17 @@ try {
         exit;
     }
     
-    // Fetch project details
+    // Get database connection
+    try {
+        $db = getDB();
+        if (!$db) {
+            throw new Exception('Database connection failed');
+        }
+    } catch (Exception $dbError) {
+        throw new Exception('Failed to connect to database: ' . $dbError->getMessage());
+    }
+    
+    // Fetch project details - use LEFT JOIN for client to handle cases where client might be deleted
     $projectQuery = "SELECT 
                         p.id,
                         p.request_id,
@@ -38,14 +59,14 @@ try {
                         p.client_id,
                         p.agency_id,
                         p.assigned_architect_id,
-                        CONCAT(c.first_name, ' ', c.last_name) as client_name,
-                        ag.name as agency_name,
-                        CONCAT(ar.first_name, ' ', ar.last_name) as architect_name,
-                        pr.project_type,
-                        pr.project_location,
-                        pr.service_type
+                        COALESCE(CONCAT(c.first_name, ' ', c.last_name), 'Unknown Client') as client_name,
+                        COALESCE(ag.name, NULL) as agency_name,
+                        COALESCE(CONCAT(ar.first_name, ' ', ar.last_name), NULL) as architect_name,
+                        COALESCE(pr.project_type, NULL) as project_type,
+                        COALESCE(pr.project_location, NULL) as project_location,
+                        COALESCE(pr.service_type, NULL) as service_type
                      FROM projects p
-                     INNER JOIN clients c ON p.client_id = c.id
+                     LEFT JOIN clients c ON p.client_id = c.id
                      LEFT JOIN agencies ag ON p.agency_id = ag.id
                      LEFT JOIN architects ar ON p.assigned_architect_id = ar.id
                      LEFT JOIN project_requests pr ON p.request_id = pr.id
@@ -53,7 +74,16 @@ try {
                      LIMIT 1";
     
     $stmt = $db->prepare($projectQuery);
+    if (!$stmt) {
+        throw new Exception('Failed to prepare project query: ' . implode(', ', $db->errorInfo()));
+    }
+    
     $stmt->execute([':id' => $projectId]);
+    if ($stmt->errorCode() !== '00000') {
+        $errorInfo = $stmt->errorInfo();
+        throw new Exception('Database query error: ' . $errorInfo[2]);
+    }
+    
     $project = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$project) {
@@ -76,7 +106,16 @@ try {
                     ORDER BY is_primary DESC, display_order ASC";
     
     $stmt = $db->prepare($photosQuery);
+    if (!$stmt) {
+        throw new Exception('Failed to prepare photos query: ' . implode(', ', $db->errorInfo()));
+    }
+    
     $stmt->execute([':id' => $projectId]);
+    if ($stmt->errorCode() !== '00000') {
+        $errorInfo = $stmt->errorInfo();
+        throw new Exception('Photos query error: ' . $errorInfo[2]);
+    }
+    
     $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Format photo URLs
@@ -100,8 +139,19 @@ try {
                         ORDER BY due_date ASC, due_time ASC";
     
     $stmt = $db->prepare($milestonesQuery);
-    $stmt->execute([':id' => $projectId]);
-    $milestones = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!$stmt) {
+        // Milestones table might not exist, continue without error
+        $milestones = [];
+    } else {
+        $stmt->execute([':id' => $projectId]);
+        if ($stmt->errorCode() !== '00000') {
+            // Log error but continue without milestones
+            error_log('Milestones query error: ' . implode(', ', $stmt->errorInfo()));
+            $milestones = [];
+        } else {
+            $milestones = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
     
     // Format milestone dates
     foreach ($milestones as &$milestone) {
@@ -111,34 +161,50 @@ try {
     }
     
     // Fetch client review for this project (if exists)
-    $reviewQuery = "SELECT 
-                       r.id,
-                       r.rating,
-                       r.review_text,
-                       r.created_at,
-                       r.client_id,
-                       CONCAT(c.first_name, ' ', c.last_name) as client_name,
-                       u.profile_image
-                    FROM reviews r
-                    INNER JOIN clients c ON r.client_id = c.id
-                    INNER JOIN users u ON c.id = u.id
-                    WHERE r.project_id = :id
-                    AND r.architect_id IS NOT NULL
-                    AND r.is_visible = 1
-                    ORDER BY r.created_at DESC
-                    LIMIT 1";
-    
-    $stmt = $db->prepare($reviewQuery);
-    $stmt->execute([':id' => $projectId]);
-    $review = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if ($review) {
-        if (!empty($review['profile_image'])) {
-            $review['profile_image_url'] = buildFileUrl($review['profile_image']);
+    // Wrap in try-catch in case reviews table doesn't exist
+    $review = null;
+    try {
+        // Check if reviews table exists first
+        $tableCheckQuery = "SHOW TABLES LIKE 'reviews'";
+        $tableCheck = $db->query($tableCheckQuery);
+        if ($tableCheck && $tableCheck->rowCount() > 0) {
+            $reviewQuery = "SELECT 
+                               r.id,
+                               r.rating,
+                               r.review_text,
+                               r.created_at,
+                               r.client_id,
+                               COALESCE(CONCAT(c.first_name, ' ', c.last_name), 'Client') as client_name,
+                               u.profile_image
+                            FROM reviews r
+                            LEFT JOIN clients c ON r.client_id = c.id
+                            LEFT JOIN users u ON c.id = u.id
+                            WHERE r.project_id = :id
+                            AND r.is_visible = 1
+                            ORDER BY r.created_at DESC
+                            LIMIT 1";
+            
+            $stmt = $db->prepare($reviewQuery);
+            if ($stmt) {
+                $stmt->execute([':id' => $projectId]);
+                if ($stmt->errorCode() === '00000') {
+                    $review = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($review) {
+                        if (!empty($review['profile_image'])) {
+                            $review['profile_image_url'] = buildFileUrl($review['profile_image']);
+                        }
+                        if ($review['created_at']) {
+                            $review['created_at_formatted'] = formatDate($review['created_at'], 'F j, Y');
+                        }
+                    }
+                }
+            }
         }
-        if ($review['created_at']) {
-            $review['created_at_formatted'] = formatDate($review['created_at'], 'F j, Y');
-        }
+    } catch (Exception $reviewError) {
+        // Reviews table doesn't exist or has issues - continue without review
+        error_log('Review query skipped: ' . $reviewError->getMessage());
+        $review = null;
     }
     
     // Check authorization: who can see "Add to Portfolio" button
@@ -176,11 +242,39 @@ try {
         ]
     ]);
     
-} catch (Exception $e) {
-    error_log("Error in project preview: " . $e->getMessage());
+} catch (Throwable $e) {
+    // Clean any output
+    while (ob_get_level() > 0) {
+        ob_end_clean();
+    }
+    
+    $errorMessage = $e->getMessage();
+    $errorTrace = $e->getTraceAsString();
+    $errorFile = $e->getFile();
+    $errorLine = $e->getLine();
+    
+    // Log detailed error
+    error_log("Error in project preview: " . $errorMessage);
+    error_log("Stack trace: " . $errorTrace);
+    error_log("File: " . $errorFile . " Line: " . $errorLine);
+    error_log("Project ID: " . (isset($projectId) ? $projectId : 'not set'));
+    error_log("Request URI: " . ($_SERVER['REQUEST_URI'] ?? 'unknown'));
+    
     http_response_code(500);
+    header('Content-Type: application/json');
+    
+    // Return detailed error in development
+    $isDevelopment = ($_SERVER['HTTP_HOST'] ?? '') === 'localhost' || 
+                     strpos($_SERVER['HTTP_HOST'] ?? '', 'localhost') !== false ||
+                     strpos($_SERVER['HTTP_HOST'] ?? '', '127.0.0.1') !== false;
+    
     echo json_encode([
         'success' => false,
-        'message' => 'An error occurred while fetching project details'
+        'message' => 'An error occurred while fetching project details',
+        'error' => $isDevelopment ? $errorMessage : 'Internal server error',
+        'file' => $isDevelopment ? basename($errorFile) : null,
+        'line' => $isDevelopment ? $errorLine : null,
+        'project_id' => $isDevelopment ? (isset($projectId) ? $projectId : null) : null
     ]);
+    exit;
 }

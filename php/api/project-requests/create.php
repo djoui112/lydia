@@ -41,44 +41,102 @@ error_log("Project Request API - Session status: " . session_status());
 error_log("Project Request API - Session data: " . print_r($_SESSION, true));
 error_log("Project Request API - Cookies: " . print_r($_COOKIE, true));
 
-if (!isset($_SESSION['user_id'])) {
-    error_log("Unauthorized - user_id not set in session");
-    error_log("Session ID: " . session_id());
-    error_log("Session status: " . session_status());
-    error_log("Session data: " . print_r($_SESSION, true));
-    error_log("Cookies received: " . print_r($_COOKIE, true));
-    ob_end_clean();
-    
-    // Return more helpful error message
-    header('Content-Type: application/json');
-    http_response_code(401);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Unauthorized - Please log in first. Session not found.',
-        'session_id' => session_id(),
-        'has_session_cookie' => isset($_COOKIE[session_name()])
-    ]);
-    exit;
-}
-
-$userId = (int)$_SESSION['user_id'];
-$userType = $_SESSION['user_type'] ?? null;
-
-// Only clients can create project requests
-if ($userType !== 'client') {
-    json_error('Only clients can submit project requests', 403);
-}
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    json_error('Method not allowed', 405);
-}
-
-// Handle both JSON and FormData
+// Handle both JSON and FormData first to get email/phone for client lookup
 $input = [];
 if ($_SERVER['CONTENT_TYPE'] && strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false) {
     $input = $_POST;
 } else {
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+}
+
+$userId = null;
+$userType = null;
+
+// Check if user is logged in
+if (isset($_SESSION['user_id'])) {
+    $userId = (int)$_SESSION['user_id'];
+    $userType = $_SESSION['user_type'] ?? null;
+    
+    // Only clients can create project requests
+    if ($userType !== 'client') {
+        json_error('Only clients can submit project requests', 403);
+    }
+} else {
+    // User not logged in - try to find or create client from form data
+    $email = trim($input['email'] ?? '');
+    $phoneNumber = trim($input['phone_number'] ?? '');
+    $fullName = trim($input['full_name'] ?? $input['project_name'] ?? '');
+    
+    if (empty($email)) {
+        json_error('Email is required for project request submission', 422);
+    }
+    
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        json_error('Invalid email address', 422);
+    }
+    
+    $userModel = new User($pdo);
+    
+    // Try to find existing client by email
+    $existingUser = $userModel->findByEmail($email);
+    
+    if ($existingUser && $existingUser['user_type'] === 'client') {
+        // Use existing client
+        $userId = (int)$existingUser['id'];
+        error_log("Found existing client with email: $email, ID: $userId");
+    } else if ($existingUser && $existingUser['user_type'] !== 'client') {
+        // Email exists but is not a client account
+        json_error('This email is registered as a ' . $existingUser['user_type'] . ' account. Please log in with that account or use a different email.', 409);
+    } else {
+        // Create new client account automatically
+        try {
+            // Parse full name into first and last name
+            $nameParts = explode(' ', $fullName, 2);
+            $firstName = $nameParts[0] ?? 'Client';
+            $lastName = $nameParts[1] ?? '';
+            
+            // Generate a temporary password (user can reset it later)
+            $tempPassword = bin2hex(random_bytes(8));
+            $passwordHash = password_hash($tempPassword, PASSWORD_DEFAULT);
+            
+            $pdo->beginTransaction();
+            
+            // Create user account
+            $userId = $userModel->create([
+                'email' => $email,
+                'password_hash' => $passwordHash,
+                'user_type' => 'client',
+                'phone_number' => $phoneNumber ?: null,
+                'profile_image' => null,
+            ]);
+            
+            // Create client record
+            $stmt = $pdo->prepare(
+                'INSERT INTO clients (id, first_name, last_name) 
+                 VALUES (:id, :first_name, :last_name)'
+            );
+            $stmt->execute([
+                'id' => $userId,
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+            ]);
+            
+            $pdo->commit();
+            error_log("Created new client account with email: $email, ID: $userId");
+        } catch (Exception $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            error_log("Error creating client account: " . $e->getMessage());
+            json_error('Failed to create client account: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    $userType = 'client';
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    json_error('Method not allowed', 405);
 }
 
 // Validate required fields

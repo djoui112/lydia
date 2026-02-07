@@ -3,17 +3,36 @@ const API_BASE = '../php/api';
 document.addEventListener("DOMContentLoaded", async () => {
     // Get agency ID from URL
     const urlParams = new URLSearchParams(window.location.search);
-    const agencyId = urlParams.get('id');
+    let agencyId = urlParams.get('id') || urlParams.get('agency_id');
     
+    // Set window.agencyId early so other scripts can access it
+    if (agencyId) {
+        window.agencyId = agencyId;
+        console.log('Agency ID set to:', agencyId);
+    }
+    
+    // If no ID in URL, try to get from session and redirect
     if (!agencyId) {
-        console.error('No agency ID provided');
-        return;
+        try {
+            const response = await fetch('../php/api/get-session-agency.php', { 
+                credentials: 'include' 
+            });
+            const data = await response.json();
+            if (data && data.agency_id) {
+                window.location.href = `agency-portfolio.html?id=${data.agency_id}`;
+                return;
+            }
+        } catch (error) {
+            // If can't get ID, redirect back
+            window.location.href = 'agency-interface.html';
+            return;
+        }
     }
     
     // Load portfolio data
     await loadAgencyPortfolio(agencyId);
     
-    // Initialize UI components after data is loaded
+    // Initialize UI components
     initMenu();
     initReviewForm(agencyId);
     initProjectReveal();
@@ -28,18 +47,45 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ====== Load Agency Portfolio Data ======
 async function loadAgencyPortfolio(agencyId) {
     try {
-        const response = await fetch(`${API_BASE}/portfolios/agency.php?id=${agencyId}`, {
+        const apiUrl = `${API_BASE}/portfolios/agency.php?id=${agencyId}`;
+        console.log('Fetching agency portfolio from:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
             credentials: 'include'
         });
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        console.log('Response status:', response.status, response.statusText);
+        
+        // Get response text first (can only read once)
+        const responseText = await response.text();
+        console.log('Response body:', responseText.substring(0, 500)); // Log first 500 chars
+        
+        // Try to parse as JSON
+        let result;
+        try {
+            result = JSON.parse(responseText);
+        } catch (e) {
+            console.error('Failed to parse JSON response:', e);
+            console.error('Full response text:', responseText);
+            throw new Error('Invalid JSON response from server');
         }
         
-        const result = await response.json();
+        // Check if response indicates an error
+        if (!response.ok) {
+            const errorMessage = result.message || result.error || `HTTP error! status: ${response.status}`;
+            console.error('API Error:', result);
+            throw new Error(errorMessage);
+        }
         
-        if (!result.success || !result.data) {
-            throw new Error('Invalid response format');
+        // Check if result indicates failure
+        if (!result.success) {
+            const errorMessage = result.message || 'Failed to load portfolio data';
+            console.error('API returned success=false:', result);
+            throw new Error(errorMessage);
+        }
+        
+        if (!result.data) {
+            throw new Error(result.message || 'No data returned from server');
         }
         
         const { profile, members, projects, reviews, is_owner, user_type } = result.data;
@@ -48,7 +94,7 @@ async function loadAgencyPortfolio(agencyId) {
         window.agencyPortfolioData = { agencyId, is_owner, user_type };
         
         // Render profile
-        renderAgencyProfile(profile, is_owner);
+        renderAgencyProfile(profile, is_owner, user_type);
         
         // Render team members
         renderTeamMembers(members);
@@ -59,6 +105,11 @@ async function loadAgencyPortfolio(agencyId) {
         // Render reviews
         renderReviews(reviews, user_type);
         
+        // Hide action buttons if user is agency owner
+        if (is_owner && user_type === 'agency') {
+            hidePortfolioActions();
+        }
+        
     } catch (error) {
         console.error('Error loading agency portfolio:', error);
         console.error('Error details:', {
@@ -67,26 +118,112 @@ async function loadAgencyPortfolio(agencyId) {
             agencyId: agencyId,
             url: `${API_BASE}/portfolios/agency.php?id=${agencyId}`
         });
+        
         // Show error message to user
         const container = document.querySelector('.generalcontainer');
         if (container) {
+            let errorMessage = 'Error loading portfolio. Please try again later.';
+            if (error.message.includes('404') || error.message.includes('Agency not found')) {
+                errorMessage = 'Agency not found. The agency ID may be invalid or the agency may have been removed.';
+            } else if (error.message.includes('400') || error.message.includes('Invalid')) {
+                errorMessage = 'Invalid agency ID. Please check the URL and try again.';
+            }
+            
             container.innerHTML = `<div style="padding: 40px; text-align: center;">
-                <p>Error loading portfolio. Please try again later.</p>
-                <p style="font-size: 12px; color: #666; margin-top: 10px;">Error: ${error.message}</p>
+                <h2 style="color: #d32f2f; margin-bottom: 15px;">Error Loading Portfolio</h2>
+                <p style="color: #666; margin-bottom: 20px;">${errorMessage}</p>
+                <p style="font-size: 12px; color: #999; margin-top: 10px;">Error: ${error.message}</p>
+                <button onclick="history.back()" style="margin-top: 20px; padding: 10px 20px; background-color: #595F34; color: white; border: none; border-radius: 4px; cursor: pointer;">Go Back</button>
             </div>`;
+        }
+        
+        // Also update the loading text
+        const titles = document.querySelector('.titles');
+        if (titles) {
+            titles.textContent = 'Error';
+        }
+        const location = document.querySelector('.location');
+        if (location) {
+            location.textContent = errorMessage;
+        }
+        const bio = document.querySelector('.bio');
+        if (bio) {
+            bio.textContent = 'Please check the console for more details.';
         }
     }
 }
 
 // ====== Render Agency Profile ======
-function renderAgencyProfile(profile, isOwner) {
+function renderAgencyProfile(profile, isOwner, userType) {
     if (!profile) return;
     
     // Profile picture
     const profilePic = document.querySelector('.profile-pic');
     if (profilePic) {
-        profilePic.src = profile.profile_image_url || profile.profile_image || '../assets/portfolios/user-pic.jpg';
+        const defaultProfileImage = '../assets/main/Profile-blue.png';
+        let profileImage = profile.profile_image_url || profile.profile_image || defaultProfileImage;
+        
+        // Validate and fix image path
+        if (!profileImage || profileImage === '' || profileImage === 'null' || profileImage === 'undefined') {
+            profileImage = defaultProfileImage;
+        } else {
+            // Handle different path formats
+            if (profileImage.startsWith('http://localhost/mimaria/')) {
+                // Full URL from buildFileUrl - use as is
+            } else if (profileImage.startsWith('http://') || profileImage.startsWith('https://')) {
+                // External URL - use as is
+            } else if (profileImage.startsWith('assets/') && !profileImage.startsWith('../assets/')) {
+                // Relative path starting with assets/ - make it relative to pages/
+                profileImage = '../' + profileImage;
+            } else if (profileImage.startsWith('/')) {
+                // Absolute path - make it relative
+                profileImage = '..' + profileImage;
+            } else if (!profileImage.startsWith('../') && !profileImage.startsWith('./')) {
+                // Path without ../ prefix - might need fixing
+                if (!profileImage.includes('://')) {
+                    // Not a URL, assume it's relative to assets
+                    if (!profileImage.startsWith('assets/')) {
+                        profileImage = '../assets/uploads/profile_images/' + profileImage.split('/').pop();
+                    } else {
+                        profileImage = '../' + profileImage;
+                    }
+                }
+            }
+            
+            // Add cache-busting parameter to force reload of updated images
+            // This ensures the browser fetches the latest version after profile update
+            if (profileImage !== defaultProfileImage) {
+                const separator = profileImage.includes('?') ? '&' : '?';
+                profileImage += separator + 't=' + new Date().getTime();
+            }
+        }
+        
+        console.log('Setting profile image to:', profileImage);
+        
+        // Always force reload to ensure we get the latest image
+        // Clear the src first to force browser to reload
+        const currentSrc = profilePic.src;
+        profilePic.src = '';
+        
+        // Use a small delay to ensure the old image is cleared from cache
+        setTimeout(() => {
+            profilePic.src = profileImage;
+            console.log('Profile image src set to:', profilePic.src);
+            
+            // If image fails to load, try reloading with a new timestamp
+            profilePic.onerror = function() {
+                console.warn('Image failed to load, trying with fresh timestamp');
+                this.onerror = null; // Prevent infinite loop
+                const separator = profileImage.includes('?') ? '&' : '?';
+                this.src = profileImage.split('?')[0] + separator + 't=' + new Date().getTime();
+            };
+        }, 10);
+        
         profilePic.alt = profile.agency_name || 'Agency';
+        profilePic.onerror = function() {
+            this.onerror = null;
+            this.src = defaultProfileImage;
+        };
     }
     
     // Agency name
@@ -112,6 +249,77 @@ function renderAgencyProfile(profile, isOwner) {
     if (contactInfo && profile.email) {
         contactInfo.href = `mailto:${profile.email}`;
     }
+    
+    // Add edit button if user is the agency owner
+    if (isOwner && userType === 'agency') {
+        addEditButton();
+    }
+}
+
+// ====== Add Edit Button ======
+function addEditButton() {
+    const cover = document.querySelector('.cover');
+    if (!cover) return;
+    
+    // Check if edit button already exists
+    if (document.getElementById('editPortfolioBtn')) return;
+    
+    const editButton = document.createElement('button');
+    editButton.id = 'editPortfolioBtn';
+    editButton.className = 'edit-portfolio-btn';
+    editButton.innerHTML = '<i class="fas fa-edit"></i>';
+    editButton.setAttribute('aria-label', 'Edit Portfolio');
+    editButton.onclick = function() {
+        window.location.href = 'editprofile-agency.html';
+    };
+    
+    // Style it similar to the back button but on the right side
+    editButton.style.cssText = `
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 45px;
+        height: 45px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        padding: 0;
+        z-index: 100;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(5px);
+    `;
+    
+    editButton.addEventListener('mouseenter', function() {
+        this.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        this.style.transform = 'scale(1.1)';
+    });
+    
+    editButton.addEventListener('mouseleave', function() {
+        this.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+        this.style.transform = 'scale(1)';
+    });
+    
+    editButton.addEventListener('active', function() {
+        this.style.transform = 'scale(0.95)';
+    });
+    
+    // Add to cover section
+    cover.appendChild(editButton);
+}
+
+// ====== Hide Portfolio Actions ======
+function hidePortfolioActions() {
+    const portfolioActions = document.getElementById('portfolioActions');
+    if (portfolioActions) {
+        portfolioActions.style.display = 'none';
+    }
 }
 
 // ====== Render Team Members ======
@@ -127,39 +335,108 @@ function renderTeamMembers(members) {
         return;
     }
     
+    console.log('📋 Raw members data:', members);
+    
+    // Remove duplicates based on architect_id and validate
+    // Use a Map to track unique members by architect_id
+    const uniqueMembers = new Map();
     members.forEach(member => {
-        const card = document.createElement('div');
-        card.className = 'port-card';
-        card.setAttribute('data-member-id', member.architect_id);
-        
-        const fullName = `${member.first_name || ''} ${member.last_name || ''}`.trim();
-        const profileImage = member.profile_image_url || member.profile_image || '../assets/main/Mask group.png';
-        const projectCount = member.project_count || 0;
-        const yearsOfExp = member.years_of_experience || 0;
-        
-        card.innerHTML = `
-            <img src="${profileImage}" class="user-pic" alt="${fullName}">
-            <div class="portfolio-cover"></div>
-            <div class="portfolio-info">
-                <p class="user-name">${fullName.toUpperCase()}</p>
-                <div class="numb">
-                    <div class="num-projects">
-                        <p>projects</p>
-                        <p>${projectCount}</p>
-                    </div>
-                    <div class="num-years">
-                        <p>years</p>
-                        <p>${yearsOfExp}</p>
-                    </div>
-                </div>
-                <a href="architect-portfolio.html?architect_id=${member.architect_id}" class="see-more">See more</a>
-            </div>
-        `;
-        
-        slider.appendChild(card);
+        const architectId = member.architect_id;
+        // Validate architect_id before adding
+        const validId = parseInt(architectId);
+        if (architectId && !isNaN(validId) && validId > 0 && !uniqueMembers.has(validId)) {
+            // Store with validated ID
+            member.architect_id = validId;
+            uniqueMembers.set(validId, member);
+        } else {
+            console.warn('⚠️ Skipping member with invalid architect_id:', member);
+        }
     });
     
-    // Re-initialize slider after rendering
+    // Convert Map values back to array
+    const uniqueMembersArray = Array.from(uniqueMembers.values());
+    
+    console.log('✅ Valid members after filtering:', uniqueMembersArray.length, uniqueMembersArray);
+    
+    // Default profile image path
+    const defaultProfileImage = '../assets/main/Profile-blue.png';
+    
+    // Render unique members
+    uniqueMembersArray.forEach(member => {
+        const fullName = `${member.first_name || ''} ${member.last_name || ''}`.trim();
+        
+        // Get profile image with proper fallback
+        let profileImage = member.profile_image_url || member.profile_image || defaultProfileImage;
+        
+        // Validate and fix image path
+        if (!profileImage || profileImage === '' || profileImage === 'null' || profileImage === 'undefined') {
+            profileImage = defaultProfileImage;
+        }
+        
+        // Fix path if needed - ensure it's relative to the page
+        if (profileImage && !profileImage.startsWith('http') && !profileImage.startsWith('../assets/') && !profileImage.startsWith('assets/')) {
+            // If it's an absolute path starting with /, make it relative
+            if (profileImage.startsWith('/')) {
+                profileImage = profileImage.substring(1);
+            }
+            // If it doesn't start with assets, use default
+            if (!profileImage.startsWith('assets/')) {
+                profileImage = defaultProfileImage;
+            }
+        }
+        
+        const projectCount = member.project_count || 0;
+        const yearsOfExp = member.years_of_experience || 0;
+        const architectId = member.architect_id;
+        
+        // Validate architect_id before creating the link
+        const validArchitectId = parseInt(architectId);
+        if (!architectId || architectId === 'null' || architectId === 'undefined' || architectId === null || architectId === 0 || architectId === '0' || isNaN(validArchitectId) || validArchitectId <= 0) {
+            console.warn('⚠️ Member has invalid architect_id:', architectId, member);
+            console.warn('⚠️ Skipping member card for:', fullName);
+            // Skip this member - don't create a card
+            return;
+        }
+        
+        console.log('✅ Creating member card for:', fullName, 'architect_id:', validArchitectId);
+        
+        const cardHTML = `
+            <a href="architect-portfolio.html?architect_id=${validArchitectId}" class="port-card-link" style="text-decoration: none; color: inherit; display: block;">
+                <div class="port-card">
+                    <img src="${profileImage}" 
+                         class="user-pic" 
+                         alt="${fullName}" 
+                         onerror="this.onerror=null; this.src='${defaultProfileImage}';">
+                    <div class="portfolio-cover"></div>
+                    <div class="portfolio-info">
+                        <p class="user-name">${fullName.toUpperCase()}</p>
+                        <div class="numb">
+                            <div class="num-projects">
+                                <p>projects</p>
+                                <p>${projectCount}</p>
+                            </div>
+                            <div class="num-years">
+                                <p>years</p>
+                                <p>${yearsOfExp}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        `;
+        slider.innerHTML += cardHTML;
+    });
+    
+    // Ensure slider has proper width to contain all cards
+    const cards = slider.querySelectorAll('.port-card');
+    if (cards.length > 0) {
+        const cardWidth = cards[0].offsetWidth;
+        const gap = parseFloat(window.getComputedStyle(slider).gap) || 32;
+        const totalWidth = (cards.length * cardWidth) + ((cards.length - 1) * gap);
+        slider.style.width = `${totalWidth}px`;
+    }
+    
+    // Re-initialize slider after rendering (using main page style)
     setTimeout(() => {
         initPortfolioSlider();
     }, 100);
@@ -187,8 +464,14 @@ function renderAgencyProjects(projects, isOwner) {
         // Build project tags
         const tags = project.project_type ? [project.project_type] : [];
         
-        // Build project photo URL
-        const projectPhoto = project.project_photo_url || project.project_photo || 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&h=600&fit=crop';
+        // Build project photo URL with default fallback
+        const defaultProjectImage = 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&h=600&fit=crop';
+        let projectPhoto = project.project_photo_url || project.project_photo || defaultProjectImage;
+        
+        // Ensure we have a valid image URL
+        if (!projectPhoto || projectPhoto === '' || projectPhoto === 'null' || projectPhoto === 'undefined') {
+            projectPhoto = defaultProjectImage;
+        }
         
         card.innerHTML = `
             <div class="project-content">
@@ -208,10 +491,12 @@ function renderAgencyProjects(projects, isOwner) {
                             </div>
                         ` : ''}
                     </div>
-                    ${project.project_id ? `<a href="projectpreview.html?id=${project.project_id}" class="btn-view-project">view project</a>` : '<span class="btn-view-project" style="opacity: 0.5; cursor: not-allowed;">view project</span>'}
+                    ${project.project_id ? `<a href="project-portfolio.html?id=${project.project_id}" class="btn-view-project">view project</a>` : '<span class="btn-view-project" style="opacity: 0.5; cursor: not-allowed;">view project</span>'}
                 </div>
                 <div class="project-image">
-                    <img src="${projectPhoto}" alt="${project.project_name || 'Project'}" />
+                    <img src="${projectPhoto}" 
+                         alt="${project.project_name || 'Project'}" 
+                         onerror="this.onerror=null; this.src='${defaultProjectImage}';" />
                 </div>
             </div>
         `;
@@ -237,13 +522,14 @@ function renderReviews(reviews, userType) {
     const reviewsSection = document.querySelector('.reviews-section');
     const addReviewSection = document.querySelector('.add-review-section');
     
+    // Hide review form for agencies (they can only view reviews, not add them)
     if (userType === 'client') {
         // Show review form for clients
         if (addReviewSection) {
             addReviewSection.style.display = 'block';
         }
     } else {
-        // Hide review form for non-clients
+        // Hide review form for non-clients (including agencies)
         if (addReviewSection) {
             addReviewSection.style.display = 'none';
         }
@@ -262,6 +548,8 @@ function renderReviews(reviews, userType) {
         return;
     }
     
+    const defaultReviewImage = '../assets/main/Profile-blue.png';
+    
     reviews.forEach(review => {
         const card = document.createElement('div');
         card.className = 'review-card';
@@ -269,12 +557,17 @@ function renderReviews(reviews, userType) {
             card.dataset.reviewId = review.id;
         }
         
-        const profileImage = review.profile_image_url || review.profile_image || '../assets/portfolios/user-pic.jpg';
-        const stars = '?'.repeat(review.rating) + '?'.repeat(5 - review.rating);
+        let profileImage = review.profile_image_url || review.profile_image || defaultReviewImage;
+        
+        // Validate and fix image path
+        if (!profileImage || profileImage === '' || profileImage === 'null' || profileImage === 'undefined') {
+            profileImage = defaultReviewImage;
+        }
+        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
         
         card.innerHTML = `
             <div>
-                <img class="avatar" src="${profileImage}" alt="${review.client_name}">
+                <img class="avatar" src="${profileImage}" alt="${review.client_name}" onerror="this.onerror=null; this.src='${defaultReviewImage}';">
             </div>
             <div class="review-info">
                 <div class="review-name">${review.client_name || 'Client'}</div>
@@ -630,8 +923,14 @@ function initReviewForm(agencyId) {
         const avatarWrapper = document.createElement("div");
         const avatar = document.createElement("img");
         avatar.className = "avatar";
-        avatar.src = reviewData?.profile_image_url || reviewData?.profile_image || "../assets/portfolios/user-pic.jpg";
+        const defaultAvatarImage = "../assets/main/Profile-blue.png";
+        const avatarImage = reviewData?.profile_image_url || reviewData?.profile_image || defaultAvatarImage;
+        avatar.src = avatarImage;
         avatar.alt = `${name} avatar`;
+        avatar.onerror = function() {
+            this.onerror = null;
+            this.src = defaultAvatarImage;
+        };
         avatarWrapper.appendChild(avatar);
 
         const info = document.createElement("div");
@@ -716,149 +1015,85 @@ function initPortfolioSlider() {
     const slider = document.getElementById("slider");
     if (!slider) return;
 
-    const cards = Array.from(slider.querySelectorAll(".port-card"));
-    const totalCards = cards.length;
-    if (!totalCards) return;
-
-    const originalCards = cards.map((card) => card.cloneNode(true));
-    let currentIndex = 0;
-    let isAnimating = false;
-
-    function setupInfiniteLoop() {
-        for (let i = totalCards - 1; i >= 0; i--) {
-            const clone = originalCards[i].cloneNode(true);
-            slider.insertBefore(clone, slider.firstChild);
-        }
-
-        for (let i = 0; i < totalCards; i++) {
-            const clone = originalCards[i].cloneNode(true);
-            slider.appendChild(clone);
-        }
-
-        currentIndex = totalCards;
-    }
-
-    function updateCurrentCard() {
-        const allCards = slider.querySelectorAll(".port-card");
-        const allUserNames = slider.querySelectorAll(".user-name");
-        const allNumbs = slider.querySelectorAll(".numb");
-        const allSeeMoreBtns = slider.querySelectorAll(".see-more");
-
-        allCards.forEach((card, index) => {
-            const isCurrent = index === currentIndex;
-            card.classList.toggle("current", isCurrent);
-            allUserNames[index]?.classList.toggle("current", isCurrent);
-            allNumbs[index]?.classList.toggle("current", isCurrent);
-            allSeeMoreBtns[index]?.classList.toggle("current", isCurrent);
-        });
-    }
-
-    function updateSliderPosition(instant = false) {
-        const allCards = slider.querySelectorAll(".port-card");
-        const wrapper = document.querySelector(".portfolio-slider-wrapper");
-
-        if (!allCards.length || !wrapper) return;
-
-        const cardWidth = allCards[0].offsetWidth;
-        if (!cardWidth) return;
-
+    let currentScrollPosition = 0;
+    
+    function slideLeft() {
+        const cards = slider.querySelectorAll('.port-card');
+        if (cards.length === 0) return;
+        
+        const cardWidth = cards[0].offsetWidth;
         const sliderStyle = window.getComputedStyle(slider);
         const gap = parseFloat(sliderStyle.gap) || 32;
-        const viewportCenter = wrapper.offsetWidth / 2;
-        const totalOffsetToCurrent = currentIndex * (cardWidth + gap);
-        const offset = viewportCenter - totalOffsetToCurrent - cardWidth / 2;
-
-        if (instant) slider.style.transition = "none";
-        slider.style.transform = `translateX(${offset}px)`;
-
-        if (instant) {
-            setTimeout(() => {
-                slider.style.transition = "transform 0.6s ease";
-            }, 50);
-        }
+        const scrollAmount = cardWidth + gap;
+        
+        // Move slider to the right (positive) to show previous cards
+        currentScrollPosition += scrollAmount;
+        updateSliderTransform();
     }
 
-    function checkLoopPosition() {
-        if (currentIndex >= totalCards * 2) {
-            currentIndex = totalCards;
-            updateSliderPosition(true);
-        } else if (currentIndex < totalCards) {
-            currentIndex = totalCards * 2 - 1;
-            updateSliderPosition(true);
-        }
+    function slideRight() {
+        const cards = slider.querySelectorAll('.port-card');
+        if (cards.length === 0) return;
+        
+        const cardWidth = cards[0].offsetWidth;
+        const sliderStyle = window.getComputedStyle(slider);
+        const gap = parseFloat(sliderStyle.gap) || 32;
+        const scrollAmount = cardWidth + gap;
+        
+        // Move slider to the left (negative) to show next cards
+        currentScrollPosition -= scrollAmount;
+        updateSliderTransform();
+    }
+    
+    function updateSliderTransform() {
+        // Get wrapper width to calculate bounds
+        const wrapper = document.querySelector('.portfolio-slider-wrapper');
+        if (!wrapper) return;
+        
+        const cards = slider.querySelectorAll('.port-card');
+        if (cards.length === 0) return;
+        
+        const wrapperWidth = wrapper.offsetWidth;
+        const cardWidth = cards[0].offsetWidth;
+        const gap = parseFloat(window.getComputedStyle(slider).gap) || 32;
+        const totalWidth = (cards.length * cardWidth) + ((cards.length - 1) * gap);
+        const maxScroll = Math.max(0, totalWidth - wrapperWidth);
+        
+        // Clamp the scroll position
+        currentScrollPosition = Math.max(-maxScroll, Math.min(0, currentScrollPosition));
+        
+        // Apply transform
+        slider.style.transform = `translateX(${currentScrollPosition}px)`;
     }
 
-    function nextCard() {
-        if (isAnimating) return;
-        isAnimating = true;
-        currentIndex++;
-        updateCurrentCard();
-        updateSliderPosition();
-
-        setTimeout(() => {
-            checkLoopPosition();
-            isAnimating = false;
-        }, 600);
+    // Connect navigation buttons
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    // Remove old event listeners by cloning and replacing
+    if (prevBtn) {
+        const newPrevBtn = prevBtn.cloneNode(true);
+        prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+        newPrevBtn.addEventListener('click', slideLeft);
     }
-
-    function prevCard() {
-        if (isAnimating) return;
-        isAnimating = true;
-        currentIndex--;
-        updateCurrentCard();
-        updateSliderPosition();
-
-        setTimeout(() => {
-            checkLoopPosition();
-            isAnimating = false;
-        }, 600);
+    if (nextBtn) {
+        const newNextBtn = nextBtn.cloneNode(true);
+        nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+        newNextBtn.addEventListener('click', slideRight);
     }
-
-    const nextBtn = document.getElementById("nextBtn");
-    const prevBtn = document.getElementById("prevBtn");
-    nextBtn?.addEventListener("click", nextCard);
-    prevBtn?.addEventListener("click", prevCard);
-
+    
+    // Reset scroll position
+    currentScrollPosition = 0;
+    updateSliderTransform();
+    
+    // Handle window resize
     let resizeTimeout;
-    window.addEventListener("resize", () => {
+    window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => updateSliderPosition(true), 200);
+        resizeTimeout = setTimeout(() => {
+            updateSliderTransform();
+        }, 200);
     });
-
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    slider.addEventListener(
-        "touchstart",
-        (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        },
-        { passive: true }
-    );
-
-    slider.addEventListener(
-        "touchend",
-        (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        },
-        { passive: true }
-    );
-
-    function handleSwipe() {
-        const swipeThreshold = 50;
-        if (touchStartX - touchEndX > swipeThreshold) nextCard();
-        else if (touchEndX - touchStartX > swipeThreshold) prevCard();
-    }
-
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowRight") nextCard();
-        if (e.key === "ArrowLeft") prevCard();
-    });
-
-    setupInfiniteLoop();
-    updateCurrentCard();
-    updateSliderPosition(true);
 }
 
 function initProgressTracker() {
@@ -998,7 +1233,7 @@ function initNavigation() {
         });
     });
 
-    // Navigation for project view buttons to project details
+    // Navigation for project view buttons to project portfolio
     const projectViewButtons = document.querySelectorAll(".btn-view-project");
     projectViewButtons.forEach((button) => {
         button.addEventListener("click", (e) => {
@@ -1007,8 +1242,8 @@ function initNavigation() {
             if (button.tagName !== 'A') {
                 const projectCard = button.closest(".project-slider-card");
                 const projectId = projectCard?.getAttribute("data-project-id") || '1';
-                // Navigate to project details page
-                window.location.href = `projectdetails.html?id=${projectId}`;
+                // Navigate to project portfolio page
+                window.location.href = `project-portfolio.html?id=${projectId}`;
             }
         });
     });

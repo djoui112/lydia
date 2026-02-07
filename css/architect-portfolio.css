@@ -89,6 +89,138 @@ img {
     font-size: 20px;
 }
 
+/* ====== Edit Profile Button ====== */
+.edit-profile-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    z-index: 100;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.edit-profile-btn:hover {
+    background-color: var(--dark-brown);
+    transform: scale(1.05);
+}
+
+.edit-profile-btn i {
+    font-size: 18px;
+}
+
+/* ====== Section Header ====== */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 80px;
+    margin-bottom: 20px;
+}
+
+.section-header .titles {
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+/* ====== Add Button (Plus Icon) ====== */
+.add-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 20px;
+}
+
+.add-btn:hover {
+    background-color: var(--dark-brown);
+    transform: scale(1.1);
+}
+
+.add-btn i {
+    font-size: 18px;
+}
+
+/* ====== Edit Education Button ====== */
+.edit-education-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.edit-education-btn:hover {
+    background-color: var(--dark-brown);
+    transform: scale(1.1);
+}
+
+.edit-education-btn i {
+    font-size: 14px;
+}
+
+.education-card {
+    position: relative;
+}
+
+/* ====== Edit Experience Button ====== */
+.edit-experience-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.edit-experience-btn:hover {
+    background-color: var(--dark-brown);
+    transform: scale(1.1);
+}
+
+.edit-experience-btn i {
+    font-size: 14px;
+}
+
+.experience-content {
+    position: relative;
+}
+
 .generalcontainer {
     background-color: #D9D9D9;
     width: 100%;

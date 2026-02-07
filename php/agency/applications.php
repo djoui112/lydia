@@ -19,6 +19,7 @@ switch ($method) {
         // Get applications for this agency
         $status = $_GET['status'] ?? null;
         $applicationId = $_GET['id'] ?? null;
+        $architectId = $_GET['architect_id'] ?? null;
         
         $sql = "
             SELECT 
@@ -58,6 +59,24 @@ switch ($method) {
             } else {
                 http_response_code(404);
                 echo json_encode(['success' => false, 'message' => 'Application not found']);
+            }
+            break;
+        }
+        
+        // If architect_id is provided, find the application for this architect and agency
+        if ($architectId) {
+            $sql .= " AND aa.architect_id = ?";
+            $params[] = $architectId;
+            $sql .= " ORDER BY aa.created_at DESC LIMIT 1";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            $application = $stmt->fetch();
+            
+            if ($application) {
+                echo json_encode(['success' => true, 'data' => $application]);
+            } else {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'Application not found for this architect']);
             }
             break;
         }

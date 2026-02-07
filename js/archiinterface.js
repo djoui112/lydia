@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Project Management - Vertical Project Card Stack - Click to bring to top with smooth animation
-    // Link "view project" buttons to project management page
+    // Link "view project" buttons to project review page
     const viewProjectButtons = document.querySelectorAll(".btn-view-project");
     viewProjectButtons.forEach((button) => {
         button.addEventListener("click", function (e) {
@@ -56,7 +56,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // Only prevent default and redirect if it's not already a link
             if (this.tagName !== 'A') {
                 e.preventDefault();
-                window.location.href = "projectpreview.html";
+                // Try to get project ID from data attribute or parent
+                const projectId = this.dataset.projectId || this.closest('[data-project-id]')?.dataset.projectId;
+                if (projectId) {
+                    window.location.href = `projectpreview.html?id=${projectId}`;
+                } else {
+                    window.location.href = "projectpreview.html";
+                }
             }
         });
     });
@@ -393,7 +399,7 @@ function createArchitectProjectCard(project, index) {
             <span>${displayDate}</span>
           </div>
         </div>
-        <a href="projectmanagement.html?id=${project.id}" class="btn-view-project">view project</a>
+        <a href="projectpreview.html?id=${project.id}" class="btn-view-project">view project</a>
       </div>
       <div class="project-image">
         <img
@@ -415,49 +421,115 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  // Function to get architect ID and navigate
+  async function navigateToPortfolio(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    // Try to get architect ID first
+    try {
+      const response = await fetch('../php/api/get-session-architect.php', {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.architect_id) {
+          window.location.href = `architect-portfolio.html?architect_id=${data.architect_id}`;
+          return;
+        }
+      }
+    } catch (err) {
+      console.error('Error getting architect ID:', err);
+    }
+    
+    // Fallback: try to get from user profile
+    try {
+      const profileRes = await fetch('../php/api/users/profile.php', {
+        credentials: 'include'
+      });
+      
+      if (profileRes.ok) {
+        const profileData = await profileRes.json();
+        if (profileData && profileData.success && profileData.data && profileData.data.user) {
+          window.location.href = `architect-portfolio.html?architect_id=${profileData.data.user.id}`;
+          return;
+        }
+      }
+    } catch (profileErr) {
+      console.error('Error getting profile:', profileErr);
+    }
+    
+    // If all else fails, show error
+    alert('Error: Could not load architect ID. Please try logging in again.');
+  }
+
+  // Set up click handler on the link
+  link.addEventListener('click', navigateToPortfolio);
+  
+  // Also handle button clicks inside the link
+  const button = link.querySelector('button');
+  if (button) {
+    button.addEventListener('click', navigateToPortfolio);
+  }
+
+  // Also set the href attribute for display purposes (for right-click, etc.)
   try {
     const res = await fetch('../php/api/get-session-architect.php', { 
       credentials: 'include' 
     });
     
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-    
-    const data = await res.json();
-    console.log('Session architect data:', data);
+    if (res.ok) {
+      const data = await res.json();
+      console.log('Session architect data:', data);
 
-    if (data.architect_id) {
-      const portfolioUrl = `architect-portfolio.html?architect_id=${data.architect_id}`;
-      link.href = portfolioUrl;
-      
-      // Handle button click if it exists inside the link
-      const button = link.querySelector('button');
-      if (button) {
-        // Prevent button from blocking link navigation
-        button.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          window.location.href = portfolioUrl;
-        });
-      }
-      
-      // Also handle link click directly to ensure navigation works
-      link.addEventListener('click', (e) => {
-        if (link.href && link.href !== '#' && !link.href.endsWith('#')) {
-          // Allow navigation
-          return true;
+      if (data && data.architect_id) {
+        const portfolioUrl = `architect-portfolio.html?architect_id=${data.architect_id}`;
+        link.href = portfolioUrl;
+        console.log('✅ Portfolio link set to:', portfolioUrl);
+      } else {
+        console.error('No architect ID in session response:', data);
+        // Try to get from user profile as fallback
+        try {
+          const profileRes = await fetch('../php/api/users/profile.php', {
+            credentials: 'include'
+          });
+          
+          if (profileRes.ok) {
+            const profileData = await profileRes.json();
+            if (profileData && profileData.success && profileData.data && profileData.data.user) {
+              const userId = profileData.data.user.id;
+              const portfolioUrl = `architect-portfolio.html?architect_id=${userId}`;
+              link.href = portfolioUrl;
+              console.log('✅ Portfolio link set from profile:', portfolioUrl);
+            }
+          }
+        } catch (profileErr) {
+          console.error('Failed to get architect ID from profile:', profileErr);
         }
-        e.preventDefault();
-      });
-      
-      console.log('Portfolio link set to:', portfolioUrl);
-    } else {
-      console.error('No architect ID in session');
-      link.href = '#';
+      }
     }
   } catch (err) {
     console.error('Failed to get architect ID:', err);
-    link.href = '#';
+    // Try to get from user profile as fallback
+    try {
+      const profileRes = await fetch('../php/api/users/profile.php', {
+        credentials: 'include'
+      });
+      
+      if (profileRes.ok) {
+        const profileData = await profileRes.json();
+        if (profileData && profileData.success && profileData.data && profileData.data.user) {
+          const userId = profileData.data.user.id;
+          const portfolioUrl = `architect-portfolio.html?architect_id=${userId}`;
+          link.href = portfolioUrl;
+          console.log('✅ Portfolio link set from profile (fallback):', portfolioUrl);
+        }
+      }
+    } catch (profileErr) {
+      console.error('Failed to get architect ID from profile:', profileErr);
+    }
   }
 });

@@ -10,7 +10,7 @@
 
   <div class="page-container" >
   <header class="form-header">
-    <button class="back-btn" onclick="window.location.href='appliancestyle.html'"><</button>
+    <button class="back-btn" onclick="goBackWithAgencyId('appliancestyle.html')"><</button>
     <h1>Apply for this agency</h1>
   </header>
 
@@ -58,16 +58,24 @@
         return false;
       }
       
+      // Get agency_id from URL and save it
+      const urlParams = new URLSearchParams(window.location.search);
+      const agencyId = urlParams.get('agency_id') || localStorage.getItem('form-agency-id');
+      
+      if (!agencyId) {
+        alert('Error: Agency ID not found. Please go back to the agency portfolio and click "Apply" again.');
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+      }
+      
+      if (typeof saveAgencyId === 'function') {
+        saveAgencyId(agencyId);
+      }
+      
       // Save form data before submitting
       if (typeof saveFormData === 'function') {
         saveFormData();
-      }
-      
-      // Get agency_id from URL and save it
-      const urlParams = new URLSearchParams(window.location.search);
-      const agencyId = urlParams.get('agency_id');
-      if (agencyId && typeof saveAgencyId === 'function') {
-        saveAgencyId(agencyId);
       }
       
       // Save motivation letter from textarea
@@ -76,15 +84,41 @@
         localStorage.setItem('form-motivationLetter', motivationLetter.value);
       }
       
+      // Save portfolio and LinkedIn URLs
+      const portfolioUrl = form.querySelector('#portfolio_url');
+      if (portfolioUrl) {
+        localStorage.setItem('form-portfolio_url', portfolioUrl.value);
+      }
+      
+      const linkedinUrl = form.querySelector('#linkedin_url');
+      if (linkedinUrl) {
+        localStorage.setItem('form-linkedin_url', linkedinUrl.value);
+      }
+      
+      const email = form.querySelector('#email');
+      if (email) {
+        localStorage.setItem('form-email', email.value);
+      }
+      
       // Submit application
       const success = await submitApplication();
       
       if (success) {
         // Navigate to success page
-        window.location.href = 'appliance-success.html';
+        window.location.href = 'appliance-success.html?agency_id=' + agencyId;
       } else {
-        // Show error message
-        alert('Failed to submit application. Please try again.');
+        // Error message is already shown by submitApplication
+      }
+    }
+    
+    // Helper function to navigate back with agency_id preserved
+    function goBackWithAgencyId(page) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const agencyId = urlParams.get('agency_id') || localStorage.getItem('form-agency-id');
+      if (agencyId) {
+        window.location.href = `${page}?agency_id=${agencyId}`;
+      } else {
+        window.location.href = page;
       }
     }
   </script>

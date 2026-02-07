@@ -48,11 +48,29 @@ try {
     $profile = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$profile) {
-        http_response_code(404);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Architect not found'
-        ]);
+        // Log for debugging
+        error_log("Architect not found - ID: " . $architectId);
+        
+        // Check if architect exists but doesn't have user record
+        $checkArchitectQuery = "SELECT id FROM architects WHERE id = :id LIMIT 1";
+        $checkStmt = $db->prepare($checkArchitectQuery);
+        $checkStmt->execute([':id' => $architectId]);
+        $architectExists = $checkStmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($architectExists) {
+            error_log("Architect exists but missing user record - ID: " . $architectId);
+            http_response_code(404);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Architect profile is incomplete. Please contact support.'
+            ]);
+        } else {
+            http_response_code(404);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Architect not found'
+            ]);
+        }
         exit;
     }
     
