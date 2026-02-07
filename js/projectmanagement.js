@@ -684,12 +684,23 @@ document.addEventListener("DOMContentLoaded", function () {
     initDescriptionEditor();
     
     // Load project data IMMEDIATELY after getting project ID
-    if (currentProjectId) {
-      console.log('🚀 Loading project data immediately with ID:', currentProjectId);
-      loadProjectData(currentProjectId);
-    } else {
-      console.error('❌ No project ID available to load data');
-    }
+    // Use setTimeout to ensure DOM is fully ready
+    setTimeout(() => {
+      if (currentProjectId) {
+        console.log('🚀 Loading project data immediately with ID:', currentProjectId);
+        loadProjectData(currentProjectId);
+      } else {
+        console.error('❌ No project ID available to load data');
+        // Try to get from URL one more time
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectIdFromUrl = urlParams.get('id') || urlParams.get('project_id');
+        if (projectIdFromUrl) {
+          currentProjectId = parseInt(projectIdFromUrl);
+          console.log('✅ Got project ID from URL on retry:', currentProjectId);
+          loadProjectData(currentProjectId);
+        }
+      }
+    }, 200);
   }
 });
 
@@ -830,47 +841,45 @@ async function loadProjectData(projectId) {
       console.log('📝 Project request_id:', project.request_id);
       console.log('📝 All project keys:', Object.keys(project));
       
-      // Wait for elements to exist, retry a few times
-      let retries = 0;
-      const maxRetries = 10;
-      
-      while (retries < maxRetries) {
-        const pageTitle = document.querySelector('.page-title');
-        const projectTitle = document.getElementById('projectTitle');
-        const projectDescription = document.getElementById('projectDescription');
-        
-        if (pageTitle && projectTitle && projectDescription) {
-          // Update page header title
-          if (project.project_name) {
-            pageTitle.textContent = project.project_name;
-            console.log('✅ Updated page title to:', project.project_name);
-          } else {
-            pageTitle.textContent = 'Project';
-          }
-          
-          // Update project title
-          if (project.project_name) {
-            projectTitle.textContent = project.project_name;
-            console.log('✅ Updated project title to:', project.project_name);
-          } else {
-            projectTitle.textContent = 'Untitled Project';
-          }
-          
-          // Update project description
-          if (project.description && project.description.trim()) {
-            projectDescription.textContent = project.description;
-            console.log('✅ Updated project description');
-          } else {
-            projectDescription.textContent = 'No description available.';
-            console.log('⚠️ No description in project data');
-          }
-          
-          break; // Success, exit retry loop
+      // Update ALL project data fields immediately
+      // Update page header title
+      const pageTitle = document.querySelector('.page-title');
+      if (pageTitle) {
+        if (project.project_name) {
+          pageTitle.textContent = project.project_name;
+          console.log('✅ Updated page title to:', project.project_name);
         } else {
-          retries++;
-          console.log(`⏳ Waiting for DOM elements... (retry ${retries}/${maxRetries})`);
-          await new Promise(resolve => setTimeout(resolve, 100));
+          pageTitle.textContent = 'Project';
         }
+      } else {
+        console.warn('⚠️ Page title element not found');
+      }
+      
+      // Update project title
+      const projectTitle = document.getElementById('projectTitle');
+      if (projectTitle) {
+        if (project.project_name) {
+          projectTitle.textContent = project.project_name;
+          console.log('✅ Updated project title to:', project.project_name);
+        } else {
+          projectTitle.textContent = 'Untitled Project';
+        }
+      } else {
+        console.warn('⚠️ Project title element not found');
+      }
+      
+      // Update project description
+      const projectDescription = document.getElementById('projectDescription');
+      if (projectDescription) {
+        if (project.description && project.description.trim()) {
+          projectDescription.textContent = project.description;
+          console.log('✅ Updated project description');
+        } else {
+          projectDescription.textContent = 'No description available.';
+          console.log('⚠️ No description in project data');
+        }
+      } else {
+        console.warn('⚠️ Project description element not found');
       }
       
       // Update description edit textarea
@@ -899,15 +908,36 @@ async function loadProjectData(projectId) {
       const moreDetailsLink = document.getElementById('moreDetailsLink');
       if (moreDetailsLink) {
         if (project.request_id) {
-          moreDetailsLink.href = `c_reqpreview.html?id=${project.request_id}`;
+          // Set the href to navigate to the request preview page
+          const requestPreviewUrl = `c_reqpreview.html?id=${project.request_id}`;
+          moreDetailsLink.href = requestPreviewUrl;
+          moreDetailsLink.style.pointerEvents = 'auto';
+          moreDetailsLink.style.opacity = '1';
+          moreDetailsLink.style.cursor = 'pointer';
+          moreDetailsLink.title = 'View project request details';
+          
+          // Remove any existing click handlers that might prevent navigation
+          moreDetailsLink.onclick = null;
+          
+          // Ensure the link works by adding a simple click handler if needed
+          moreDetailsLink.addEventListener('click', function(e) {
+            // Allow default navigation
+            window.location.href = requestPreviewUrl;
+          }, { once: true });
+          
           console.log('✅ More Details link updated with request_id:', project.request_id);
+          console.log('✅ Link will navigate to:', requestPreviewUrl);
         } else {
           // If no request_id, disable the link or hide it
+          moreDetailsLink.href = '#';
           moreDetailsLink.style.pointerEvents = 'none';
           moreDetailsLink.style.opacity = '0.5';
+          moreDetailsLink.style.cursor = 'not-allowed';
           moreDetailsLink.title = 'Request details not available';
           console.warn('⚠️ Project has no request_id:', project);
         }
+      } else {
+        console.error('❌ More Details link element not found!');
       }
       
       projectDataLoaded = true;

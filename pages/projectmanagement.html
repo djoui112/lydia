@@ -15,7 +15,7 @@
     <div class="container">
       <!-- Page Header -->
       <header class="page-header">
-        <h1 class="page-title">Loading...</h1>
+        <h1 class="page-title"></h1>
       </header>
 
       <!-- Project Info and Deadlines Section -->
@@ -23,11 +23,9 @@
         <!-- Project Description Card -->
         <div class="data-card project-description-card">
           <div class="project-info-content">
-            <h1 class="project-title" id="projectTitle">Loading...</h1>
+            <h1 class="project-title" id="projectTitle"></h1>
             <div class="description-container">
-              <p class="project-description" id="projectDescription">
-                Loading project details...
-              </p>
+              <p class="project-description" id="projectDescription"></p>
               <textarea 
                 class="project-description-edit" 
                 id="projectDescriptionEdit" 
@@ -40,7 +38,7 @@
               </div>
               <div class="description-buttons">
                 <button class="btn-edit-description" id="btnEditDescription">Edit Description</button>
-                <a href="#" class="btn-more-details" id="moreDetailsLink">More Details</a>
+                <a href="#" class="btn-more-details" id="moreDetailsLink" onclick="return true;">More Details</a>
               </div>
             </div>
           </div>
@@ -197,7 +195,7 @@
       <!-- Timeline Section -->
       <section class="timeline-section" id="timeline-section">
         <div class="timeline-header">
-          <h2>Timeline for <span id="timelineProjectName">Loading...</span></h2>
+          <h2>Timeline for <span id="timelineProjectName"></span></h2>
           <div class="progress-indicator">
             <div class="progress-circle" id="progressCircle">
               <span class="progress-percentage" id="progressPercentage">0%</span>

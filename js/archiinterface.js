@@ -64,6 +64,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const projectSliderTrack = document.getElementById("projectSliderTrack");
 
     if (projectSliderTrack) {
+        // Clear any placeholder cards immediately
+        projectSliderTrack.innerHTML = '';
+        console.log('🧹 Cleared placeholder project cards');
+        
+        // Load real projects from API
+        loadArchitectProjects();
+        
         const cards = projectSliderTrack.querySelectorAll(".project-slider-card");
 
         // Initialize: Set first card as active
@@ -243,6 +250,163 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+// Function to load and display projects for architect
+async function loadArchitectProjects() {
+  try {
+    console.log('🚀 Loading architect projects...');
+    
+    const container = document.getElementById('projectSliderTrack');
+    if (!container) {
+      console.error('❌ Project slider track not found!');
+      return;
+    }
+    
+    const response = await fetch('../php/api/projects/architect.php', {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error('❌ Response is not JSON. Content-Type:', contentType);
+      return;
+    }
+
+    const result = await response.json();
+    console.log('📦 Architect projects API result:', result);
+    
+    if (result.success && result.data && result.data.length > 0) {
+      // Create project cards from real data
+      result.data.forEach((project, index) => {
+        const card = createArchitectProjectCard(project, index);
+        container.appendChild(card);
+      });
+      
+      console.log(`✅ Loaded ${result.data.length} real projects`);
+      
+      // Re-initialize the slider animation after cards are loaded
+      setTimeout(() => {
+        // The existing slider code will handle the cards
+        const cards = container.querySelectorAll(".project-slider-card");
+        if (cards.length > 0) {
+          cards[0].classList.add("active");
+        }
+      }, 100);
+    } else {
+      console.log('⚠️ No projects found - showing empty state');
+    }
+  } catch (error) {
+    console.error('❌ Error loading architect projects:', error);
+    const container = document.getElementById('projectSliderTrack');
+    if (container) {
+      container.innerHTML = '';
+    }
+  }
+}
+
+// Function to create a project card for architect
+function createArchitectProjectCard(project, index) {
+  const card = document.createElement('div');
+  card.className = 'project-slider-card';
+  card.setAttribute('data-index', index);
+  card.setAttribute('data-project-id', project.id);
+  
+  const projectName = project.project_name || 'Unnamed Project';
+  const clientName = `${project.first_name || ''} ${project.last_name || ''}`.trim() || 'Unknown Client';
+  const agencyName = project.agency_name || 'No agency';
+  
+  // Format date
+  let displayDate = 'N/A';
+  if (project.start_date) {
+    const date = new Date(project.start_date);
+    displayDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  } else if (project.created_at) {
+    const date = new Date(project.created_at);
+    displayDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+  
+  // Get project photo or use placeholder
+  const projectPhoto = project.photos && project.photos.length > 0
+    ? project.photos[0].photo_path || project.photos[0].photo_url
+    : 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&h=600&fit=crop';
+  
+  // Get project tags/type from description
+  const projectType = project.description || 'general';
+  const tags = projectType.split(',').slice(0, 3).join(', ').substring(0, 50) || 'general';
+  
+  card.innerHTML = `
+    <div class="project-content">
+      <div class="project-info">
+        <h3 class="project-name">${projectName}</h3>
+        <div class="project-details">
+          <p class="project-agency">Agency: ${agencyName}</p>
+          <p class="project-architect">Client: ${clientName}</p>
+          <p class="project-tags">${tags}</p>
+          <div class="project-date">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                x="3"
+                y="4"
+                width="18"
+                height="18"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <line
+                x1="16"
+                y1="2"
+                x2="16"
+                y2="6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <line
+                x1="8"
+                y1="2"
+                x2="8"
+                y2="6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <line
+                x1="3"
+                y1="10"
+                x2="21"
+                y2="10"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+            </svg>
+            <span>${displayDate}</span>
+          </div>
+        </div>
+        <a href="projectmanagement.html?id=${project.id}" class="btn-view-project">view project</a>
+      </div>
+      <div class="project-image">
+        <img
+          src="${projectPhoto}"
+          alt="${projectName}"
+        />
+      </div>
+    </div>
+  `;
+  
+  return card;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const link = document.querySelector('#portfolioLink');
   

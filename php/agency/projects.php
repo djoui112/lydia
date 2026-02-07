@@ -12,8 +12,8 @@ ob_clean();
 
 header('Content-Type: application/json');
 
-// Check if user is logged in as agency
-if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'agency') {
+// Check if user is logged in
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type'])) {
     ob_end_clean();
     http_response_code(401);
     echo json_encode(['success' => false, 'error' => 'Unauthorized']);
@@ -24,7 +24,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'agency') {
 $pdo = getDB();
 
 $method = $_SERVER['REQUEST_METHOD'];
-$agencyId = (int)$_SESSION['user_id'];
+$userId = (int)$_SESSION['user_id'];
+$userType = $_SESSION['user_type'];
 
 switch ($method) {
     case 'GET':
@@ -32,23 +33,67 @@ switch ($method) {
         $projectId = $_GET['project_id'] ?? null;
         
         if ($projectId) {
-            // Get single project with details
-            $stmt = $pdo->prepare("
-                SELECT 
-                    p.*,
-                    p.request_id,
-                    c.first_name,
-                    c.last_name,
-                    u.email as client_email,
-                    a.first_name as architect_first_name,
-                    a.last_name as architect_last_name
-                FROM projects p
-                JOIN clients c ON p.client_id = c.id
-                JOIN users u ON c.id = u.id
-                LEFT JOIN architects a ON p.assigned_architect_id = a.id
-                WHERE p.id = ? AND p.agency_id = ?
-            ");
-            $stmt->execute([$projectId, $agencyId]);
+            // Build query based on user type
+            if ($userType === 'agency') {
+                // Agency can see projects they own
+                $stmt = $pdo->prepare("
+                    SELECT 
+                        p.*,
+                        p.request_id,
+                        c.first_name,
+                        c.last_name,
+                        u.email as client_email,
+                        a.first_name as architect_first_name,
+                        a.last_name as architect_last_name
+                    FROM projects p
+                    JOIN clients c ON p.client_id = c.id
+                    JOIN users u ON c.id = u.id
+                    LEFT JOIN architects a ON p.assigned_architect_id = a.id
+                    WHERE p.id = ? AND p.agency_id = ?
+                ");
+                $stmt->execute([$projectId, $userId]);
+            } elseif ($userType === 'architect') {
+                // Architect can see projects assigned to them
+                $stmt = $pdo->prepare("
+                    SELECT 
+                        p.*,
+                        p.request_id,
+                        c.first_name,
+                        c.last_name,
+                        u.email as client_email,
+                        a.first_name as architect_first_name,
+                        a.last_name as architect_last_name
+                    FROM projects p
+                    JOIN clients c ON p.client_id = c.id
+                    JOIN users u ON c.id = u.id
+                    LEFT JOIN architects a ON p.assigned_architect_id = a.id
+                    WHERE p.id = ? AND p.assigned_architect_id = ?
+                ");
+                $stmt->execute([$projectId, $userId]);
+            } elseif ($userType === 'client') {
+                // Client can see their own projects
+                $stmt = $pdo->prepare("
+                    SELECT 
+                        p.*,
+                        p.request_id,
+                        c.first_name,
+                        c.last_name,
+                        u.email as client_email,
+                        a.first_name as architect_first_name,
+                        a.last_name as architect_last_name
+                    FROM projects p
+                    JOIN clients c ON p.client_id = c.id
+                    JOIN users u ON c.id = u.id
+                    LEFT JOIN architects a ON p.assigned_architect_id = a.id
+                    WHERE p.id = ? AND p.client_id = ?
+                ");
+                $stmt->execute([$projectId, $userId]);
+            } else {
+                ob_end_clean();
+                http_response_code(403);
+                echo json_encode(['success' => false, 'error' => 'Invalid user type']);
+                exit;
+            }
             $project = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if (!$project) {
@@ -72,23 +117,57 @@ switch ($method) {
             echo json_encode(['success' => true, 'data' => $project]);
             exit;
         } else {
-            // Get all projects
+            // Get all projects based on user type
             $status = $_GET['status'] ?? null;
             
-            $sql = "
-                SELECT 
-                    p.*,
-                    c.first_name,
-                    c.last_name,
-                    a.first_name as architect_first_name,
-                    a.last_name as architect_last_name
-                FROM projects p
-                JOIN clients c ON p.client_id = c.id
-                LEFT JOIN architects a ON p.assigned_architect_id = a.id
-                WHERE p.agency_id = ?
-            ";
-            
-            $params = [$agencyId];
+            if ($userType === 'agency') {
+                $sql = "
+                    SELECT 
+                        p.*,
+                        c.first_name,
+                        c.last_name,
+                        a.first_name as architect_first_name,
+                        a.last_name as architect_last_name
+                    FROM projects p
+                    JOIN clients c ON p.client_id = c.id
+                    LEFT JOIN architects a ON p.assigned_architect_id = a.id
+                    WHERE p.agency_id = ?
+                ";
+                $params = [$userId];
+            } elseif ($userType === 'architect') {
+                $sql = "
+                    SELECT 
+                        p.*,
+                        c.first_name,
+                        c.last_name,
+                        a.first_name as architect_first_name,
+                        a.last_name as architect_last_name
+                    FROM projects p
+                    JOIN clients c ON p.client_id = c.id
+                    LEFT JOIN architects a ON p.assigned_architect_id = a.id
+                    WHERE p.assigned_architect_id = ?
+                ";
+                $params = [$userId];
+            } elseif ($userType === 'client') {
+                $sql = "
+                    SELECT 
+                        p.*,
+                        c.first_name,
+                        c.last_name,
+                        a.first_name as architect_first_name,
+                        a.last_name as architect_last_name
+                    FROM projects p
+                    JOIN clients c ON p.client_id = c.id
+                    LEFT JOIN architects a ON p.assigned_architect_id = a.id
+                    WHERE p.client_id = ?
+                ";
+                $params = [$userId];
+            } else {
+                ob_end_clean();
+                http_response_code(403);
+                echo json_encode(['success' => false, 'error' => 'Invalid user type']);
+                exit;
+            }
             if ($status) {
                 $sql .= " AND p.status = ?";
                 $params[] = $status;
@@ -129,9 +208,22 @@ switch ($method) {
             exit;
         }
         
-        // Verify project belongs to this agency
-        $stmt = $pdo->prepare("SELECT * FROM projects WHERE id = ? AND agency_id = ?");
-        $stmt->execute([$projectId, $agencyId]);
+        // Verify project belongs to user based on their type
+        if ($userType === 'agency') {
+            $stmt = $pdo->prepare("SELECT * FROM projects WHERE id = ? AND agency_id = ?");
+            $stmt->execute([$projectId, $userId]);
+        } elseif ($userType === 'architect') {
+            $stmt = $pdo->prepare("SELECT * FROM projects WHERE id = ? AND assigned_architect_id = ?");
+            $stmt->execute([$projectId, $userId]);
+        } elseif ($userType === 'client') {
+            $stmt = $pdo->prepare("SELECT * FROM projects WHERE id = ? AND client_id = ?");
+            $stmt->execute([$projectId, $userId]);
+        } else {
+            ob_end_clean();
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Invalid user type']);
+            exit;
+        }
         $project = $stmt->fetch();
         
         if (!$project) {

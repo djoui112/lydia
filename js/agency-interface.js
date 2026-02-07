@@ -1,3 +1,12 @@
+// Clear placeholder cards IMMEDIATELY when script loads (before DOMContentLoaded)
+(function() {
+  const container = document.getElementById('projectSliderTrack');
+  if (container) {
+    container.innerHTML = '';
+    console.log('🧹 IMMEDIATE: Cleared placeholder cards on script load');
+  }
+})();
+
 // Smooth scrolling and interactive enhancements
 document.addEventListener("DOMContentLoaded", function () {
   // Mobile Menu Toggle
@@ -621,6 +630,13 @@ document.addEventListener("DOMContentLoaded", function () {
   // Load team members
   loadTeamMembers();
   
+  // Clear any placeholder cards IMMEDIATELY before loading projects
+  const projectContainer = document.getElementById('projectSliderTrack');
+  if (projectContainer) {
+    projectContainer.innerHTML = '';
+    console.log('🧹 Cleared any placeholder cards immediately');
+  }
+  
   // Load projects for carousel
   loadProjects();
 });
@@ -935,7 +951,19 @@ function createMemberCard(member) {
 // Function to load and display projects in carousel
 async function loadProjects() {
   try {
-    console.log('Loading projects for carousel...');
+    console.log('🚀 Loading projects for carousel...');
+    
+    // Get container FIRST and clear it immediately to remove any placeholders
+    const container = document.getElementById('projectSliderTrack');
+    
+    if (!container) {
+      console.error('❌ Project slider track not found!');
+      return;
+    }
+    
+    // IMMEDIATELY clear any placeholder cards
+    container.innerHTML = '';
+    console.log('✅ Cleared container - removed any placeholder cards');
     
     const response = await fetch('../php/agency/projects.php', {
       method: 'GET',
@@ -948,46 +976,35 @@ async function loadProjects() {
 
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
-      console.error('Response is not JSON. Content-Type:', contentType);
+      console.error('❌ Response is not JSON. Content-Type:', contentType);
       return;
     }
 
     const result = await response.json();
-    console.log('Projects API result:', result);
+    console.log('📦 Projects API result:', result);
     
-    const container = document.getElementById('projectSliderTrack');
-    
-    if (!container) {
-      console.error('Project slider track not found!');
-      return;
-    }
-
     if (result.success && result.data && result.data.length > 0) {
-      // Clear container
-      container.innerHTML = '';
-      
-      // Create project cards
+      // Create project cards from real data
       result.data.forEach((project, index) => {
         const card = createProjectCard(project, index);
         container.appendChild(card);
       });
       
-      console.log(`Loaded ${result.data.length} projects`);
+      console.log(`✅ Loaded ${result.data.length} real projects - no placeholders!`);
       
       // Re-initialize the slider animation after cards are loaded
       setTimeout(() => {
         initializeProjectSlider();
       }, 100);
     } else {
-      // No projects - container stays empty
-      container.innerHTML = '';
-      console.log('No projects found');
+      // No projects - container stays empty (no placeholders)
+      console.log('⚠️ No projects found - showing empty state (no placeholders)');
     }
   } catch (error) {
-    console.error('Error loading projects:', error);
+    console.error('❌ Error loading projects:', error);
     const container = document.getElementById('projectSliderTrack');
     if (container) {
-      container.innerHTML = '';
+      container.innerHTML = ''; // Clear on error too
     }
   }
 }

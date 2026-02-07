@@ -359,6 +359,15 @@
               <!-- Projects will be loaded dynamically from database -->
             </div>
           </div>
+          <script>
+            // Clear any placeholder cards IMMEDIATELY
+            (function() {
+              const container = document.getElementById('projectSliderTrack');
+              if (container) {
+                container.innerHTML = '';
+              }
+            })();
+          </script>
           
           <!-- Project Requests Section -->
           <div class="project-requests-card">
