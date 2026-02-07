@@ -44,10 +44,10 @@ if (!isset($_SESSION['user_id'])) {
 $userId = (int)$_SESSION['user_id'];
 $userType = $_SESSION['user_type'] ?? null;
 
-// Only agencies can view project request details
-if ($userType !== 'agency') {
+// Only agencies and clients (viewing their own requests) can view project request details
+if ($userType !== 'agency' && $userType !== 'client') {
     ob_end_clean();
-    json_error('Only agencies can view project request details', 403);
+    json_error('Only agencies and clients can view project request details', 403);
     exit;
 }
 
@@ -68,34 +68,61 @@ if ($requestId <= 0) {
 
 try {
     // Get project request with client information
-    $stmt = $pdo->prepare("
-        SELECT 
-            pr.*,
-            c.first_name,
-            c.last_name,
-            u.email as client_email,
-            u.phone_number as client_phone
-        FROM project_requests pr
-        JOIN clients c ON pr.client_id = c.id
-        JOIN users u ON c.id = u.id
-        WHERE pr.id = :request_id AND pr.agency_id = :agency_id
-    ");
-    
-    $stmt->execute([
-        'request_id' => $requestId,
-        'agency_id' => $userId
-    ]);
+    // Build query based on user type
+    if ($userType === 'agency') {
+        // Agencies can view requests sent to them
+        $stmt = $pdo->prepare("
+            SELECT 
+                pr.*,
+                c.first_name,
+                c.last_name,
+                u.email as client_email,
+                u.phone_number as client_phone
+            FROM project_requests pr
+            JOIN clients c ON pr.client_id = c.id
+            JOIN users u ON c.id = u.id
+            WHERE pr.id = :request_id AND pr.agency_id = :user_id
+        ");
+        
+        $stmt->execute([
+            'request_id' => $requestId,
+            'user_id' => $userId
+        ]);
+    } else {
+        // Clients can view their own requests
+        $stmt = $pdo->prepare("
+            SELECT 
+                pr.*,
+                c.first_name,
+                c.last_name,
+                u.email as client_email,
+                u.phone_number as client_phone
+            FROM project_requests pr
+            JOIN clients c ON pr.client_id = c.id
+            JOIN users u ON c.id = u.id
+            WHERE pr.id = :request_id AND pr.client_id = :user_id
+        ");
+        
+        $stmt->execute([
+            'request_id' => $requestId,
+            'user_id' => $userId
+        ]);
+    }
     
     $request = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$request) {
-        error_log("Request not found - Request ID: $requestId, Agency ID: $userId");
-        // Check if request exists but belongs to different agency
-        $checkStmt = $pdo->prepare("SELECT id, agency_id FROM project_requests WHERE id = :request_id");
+        error_log("Request not found - Request ID: $requestId, User ID: $userId, User Type: $userType");
+        // Check if request exists
+        $checkStmt = $pdo->prepare("SELECT id, agency_id, client_id FROM project_requests WHERE id = :request_id");
         $checkStmt->execute(['request_id' => $requestId]);
         $checkRequest = $checkStmt->fetch(PDO::FETCH_ASSOC);
         if ($checkRequest) {
-            error_log("Request exists but belongs to agency: {$checkRequest['agency_id']}, not $userId");
+            if ($userType === 'agency') {
+                error_log("Request exists but belongs to agency: {$checkRequest['agency_id']}, not $userId");
+            } else {
+                error_log("Request exists but belongs to client: {$checkRequest['client_id']}, not $userId");
+            }
         } else {
             error_log("Request ID $requestId does not exist at all");
         }

@@ -226,11 +226,17 @@
                             cleanDescription = cleanDescription.substring(0, 150) + '...';
                         }
                         
+                        // Ensure project.id exists before creating link
+                        if (!project.id) {
+                            console.error('Project missing ID:', project);
+                            return; // Skip this project if no ID
+                        }
+                        
                         grid.innerHTML += `
                             <article class="agency-card">
                                 <div class="agency-card__arch">
-                                    <h3>${project.project_name}</h3>
-                                    <p>${project.client_name}</p>
+                                    <h3>${project.project_name || 'Unnamed Project'}</h3>
+                                    <p>${project.client_name || 'Unknown Client'}</p>
                                 </div>
                                 <div class="agency-card__body">
                                     <p>${cleanDescription}</p>

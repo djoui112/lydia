@@ -57,6 +57,13 @@ try {
     echo json_encode($agencies);
     exit;
     
+} catch (PDOException $e) {
+    error_log("Database error in search agencies: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    ob_end_clean();
+    http_response_code(500);
+    echo json_encode([]);
+    exit;
 } catch (Exception $e) {
     error_log("Error in search agencies: " . $e->getMessage());
     error_log("Stack trace: " . $e->getTraceAsString());

@@ -1,10 +1,16 @@
 <?php
 declare(strict_types=1);
 
+// Start output buffering to prevent any accidental output
+ob_start();
+
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../../middleware/cors.php';
 require_once __DIR__ . '/../utils/helpers.php';
+
+// Clear any output that might have been generated
+ob_clean();
 
 header('Content-Type: application/json');
 
@@ -138,11 +144,10 @@ try {
                         r.client_id,
                         CONCAT(c.first_name, ' ', c.last_name) as client_name,
                         u.profile_image
-                     FROM reviews r
+                     FROM review_agency r
                      INNER JOIN clients c ON r.client_id = c.id
                      INNER JOIN users u ON c.id = u.id
                      WHERE r.agency_id = :id
-                     AND r.architect_id IS NULL
                      AND r.is_visible = 1
                      ORDER BY r.created_at DESC
                      LIMIT 10";
@@ -175,6 +180,7 @@ try {
         $userType = $_SESSION['user_type'];
     }
     
+    ob_end_clean(); // Clear buffer before outputting JSON
     echo json_encode([
         'success' => true,
         'data' => [
@@ -186,12 +192,17 @@ try {
             'user_type' => $userType
         ]
     ]);
+    exit;
     
 } catch (Exception $e) {
     error_log("Error in agency portfolio: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    ob_end_clean(); // Clear any output before error response
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'An error occurred while fetching agency portfolio'
+        'message' => 'An error occurred while fetching agency portfolio',
+        'error' => $e->getMessage()
     ]);
+    exit;
 }

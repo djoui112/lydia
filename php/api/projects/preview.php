@@ -26,6 +26,7 @@ try {
     // Fetch project details
     $projectQuery = "SELECT 
                         p.id,
+                        p.request_id,
                         p.project_name,
                         p.description,
                         p.status,

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../../middleware/cors.php';
 require_once __DIR__ . '/../utils/helpers.php';
 
@@ -11,8 +12,15 @@ header('Content-Type: application/json');
 try {
     $db = getDB();
     
-    // Get agency ID from query parameter
+    // Get agency ID from query parameter or session
     $agencyId = isset($_GET['agency_id']) ? (int)$_GET['agency_id'] : (isset($_GET['id']) ? (int)$_GET['id'] : 0);
+    
+    // If no agency_id in query, try to get from session
+    if ($agencyId <= 0) {
+        if (isset($_SESSION['user_id']) && isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'agency') {
+            $agencyId = (int)$_SESSION['user_id'];
+        }
+    }
     
     if ($agencyId <= 0) {
         http_response_code(400);

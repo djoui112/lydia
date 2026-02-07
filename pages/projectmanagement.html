@@ -15,7 +15,7 @@
     <div class="container">
       <!-- Page Header -->
       <header class="page-header">
-        <h1 class="page-title">Project Name</h1>
+        <h1 class="page-title">Loading...</h1>
       </header>
 
       <!-- Project Info and Deadlines Section -->
@@ -23,11 +23,10 @@
         <!-- Project Description Card -->
         <div class="data-card project-description-card">
           <div class="project-info-content">
-            <h1 class="project-title" id="projectTitle">Project Accord</h1>
+            <h1 class="project-title" id="projectTitle">Loading...</h1>
             <div class="description-container">
               <p class="project-description" id="projectDescription">
-                A comprehensive architectural project focusing on modern design
-                principles and sustainable building practices.
+                Loading project details...
               </p>
               <textarea 
                 class="project-description-edit" 
@@ -41,12 +40,12 @@
               </div>
               <div class="description-buttons">
                 <button class="btn-edit-description" id="btnEditDescription">Edit Description</button>
-                <a href="c_reqpreview.html" class="btn-more-details">More Details</a>
+                <a href="#" class="btn-more-details" id="moreDetailsLink">More Details</a>
               </div>
             </div>
           </div>
           <div class="project-actions">
-            <a href="team-members.html" class="btn-assign-archi" id="assignArchiBtn">Assign Architect</a>
+            <button class="btn-assign-archi" id="assignArchiBtn">Assign Architect</button>
           </div>
         </div>
 
@@ -198,7 +197,7 @@
       <!-- Timeline Section -->
       <section class="timeline-section" id="timeline-section">
         <div class="timeline-header">
-          <h2>Timeline for <span id="timelineProjectName">accord</span></h2>
+          <h2>Timeline for <span id="timelineProjectName">Loading...</span></h2>
           <div class="progress-indicator">
             <div class="progress-circle" id="progressCircle">
               <span class="progress-percentage" id="progressPercentage">0%</span>
@@ -223,7 +222,7 @@
       <section class="client-review-section" id="client-review-section">
         <h2>Client Review</h2>
         <div class="review-content">
-          <p>Client review content will be displayed here.</p>
+          <!-- Reviews will be dynamically loaded here -->
         </div>
       </section>
 
@@ -404,6 +403,117 @@
         </div>
       </footer>
     </div>
+
+    <!-- Assign Architect Modal -->
+    <div id="assignArchitectModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Assign Architect</h2>
+          <button class="modal-close" onclick="closeAssignArchitectModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Select an architect to assign to this project:</p>
+          <select id="assignArchitectSelect" class="architect-select">
+            <option value="">Loading architects...</option>
+          </select>
+          <p class="modal-note" id="noArchitectsNoteAssign" style="display: none; color: #666; font-size: 14px; margin-top: 10px;">
+            No team members available. You can assign an architect later, or add team members from the Team Management section first.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeAssignArchitectModal()">Cancel</button>
+          <button class="btn-confirm" onclick="confirmAssignArchitect()">Assign Architect</button>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: white;
+        border-radius: 8px;
+        padding: 0;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .modal-header h2 {
+        margin: 0;
+        font-size: 24px;
+      }
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        color: #666;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+      }
+      .modal-close:hover {
+        color: #000;
+      }
+      .modal-body {
+        padding: 20px;
+      }
+      .architect-select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      .modal-footer {
+        padding: 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+      .btn-cancel, .btn-confirm {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .btn-cancel {
+        background: #f0f0f0;
+        color: #333;
+      }
+      .btn-confirm {
+        background: #4CAF50;
+        color: white;
+      }
+      .btn-cancel:hover {
+        background: #e0e0e0;
+      }
+      .btn-confirm:hover {
+        background: #45a049;
+      }
+    </style>
 
     <script src="../js/projectmanagement.js"></script>
   </body>

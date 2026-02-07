@@ -35,9 +35,9 @@ function getAgencyId() {
     
     // If no agency_id found, check if we can get it from the agencies page or use default DJO Agency
     if (!agencyId) {
-        console.warn('Agency ID not found in URL or localStorage. Using DJO Agency (ID: 41) as default.');
+        console.warn('Agency ID not found in URL or localStorage. Using DJO Agency (ID: 307) as default.');
         // Default to DJO Agency for testing - in production, you'd want to show an agency selection
-        return '41'; // DJO Agency ID
+        return '307'; // DJO Agency ID
     }
     
     return agencyId;

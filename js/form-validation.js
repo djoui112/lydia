@@ -64,15 +64,29 @@
     // Date of birth validation
     dateOfBirth: function(value) {
       if (!value) return 'Date of birth is required';
-      // Check for DD/MM/YYYY format
-      const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-      const match = value.trim().match(dateRegex);
-      if (!match) {
-        return 'Please enter date in DD/MM/YYYY format';
+      
+      let day, month, year;
+      
+      // Check if it's a date input type (YYYY-MM-DD format)
+      const dateInputRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
+      const dateInputMatch = value.trim().match(dateInputRegex);
+      
+      if (dateInputMatch) {
+        // Date input type: YYYY-MM-DD
+        year = parseInt(dateInputMatch[1], 10);
+        month = parseInt(dateInputMatch[2], 10);
+        day = parseInt(dateInputMatch[3], 10);
+      } else {
+        // Check for DD/MM/YYYY format (text input)
+        const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+        const match = value.trim().match(dateRegex);
+        if (!match) {
+          return 'Please enter date in DD/MM/YYYY format';
+        }
+        day = parseInt(match[1], 10);
+        month = parseInt(match[2], 10);
+        year = parseInt(match[3], 10);
       }
-      const day = parseInt(match[1], 10);
-      const month = parseInt(match[2], 10);
-      const year = parseInt(match[3], 10);
       
       if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > new Date().getFullYear()) {
         return 'Please enter a valid date';

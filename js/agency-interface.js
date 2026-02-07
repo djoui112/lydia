@@ -233,161 +233,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Vertical Project Card Stack - Click to bring to top with smooth animation
   // Link "view project" buttons to project management page
-  const viewProjectButtons = document.querySelectorAll(".btn-view-project");
-  viewProjectButtons.forEach((button) => {
-    button.addEventListener("click", function (e) {
-      e.stopPropagation(); // Prevent card click event
-      window.location.href = "projectmanagement.html";
-    });
-  });
-
-  const projectSliderTrack = document.getElementById("projectSliderTrack");
-
-  if (projectSliderTrack) {
-    const cards = projectSliderTrack.querySelectorAll(".project-slider-card");
-
-    // Initialize: Set first card as active
-    let currentActiveCard = cards.length > 0 ? cards[0] : null;
-    if (currentActiveCard) {
-      currentActiveCard.classList.add("active");
-    }
-
-    // Function to bring a card to the top with smooth animation
-    function bringCardToTop(card) {
-      // Remove active from all cards with smooth transition
-      cards.forEach((c) => {
-        if (c !== card && c.classList.contains("active")) {
-          c.style.transition = "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
-          c.classList.remove("active");
-        }
-      });
-
-      // Reorder cards: move card to the front of the DOM
-      projectSliderTrack.insertBefore(card, projectSliderTrack.firstChild);
-
-      // Activate the card with smooth sliding animation
-      setTimeout(() => {
-        card.style.transition = "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
-        card.classList.add("active");
-        currentActiveCard = card;
-
-        // Reset transition after animation
-        setTimeout(() => {
-          card.style.transition = "";
-          // Reset transitions for other cards too
-          cards.forEach((c) => {
-            if (c !== card) {
-              c.style.transition = "";
-            }
-          });
-        }, 800);
-      }, 50);
-    }
-
-    // Function to get next card in sequence
-    function getNextCard() {
-      const allCards = Array.from(
-        projectSliderTrack.querySelectorAll(".project-slider-card")
-      );
-      const currentIndex = allCards.indexOf(currentActiveCard);
-
-      // Get the next card (wrap around to first if at end)
-      if (currentIndex < allCards.length - 1) {
-        return allCards[currentIndex + 1];
-      } else {
-        return allCards[0];
-      }
-    }
-
-    // Click handler for cards
-    projectSliderTrack.addEventListener("click", function (e) {
-      const card = e.target.closest(".project-slider-card");
-
-      // Don't trigger if clicking on the button
-      if (!card || e.target.closest(".btn-view-project")) {
-        return;
-      }
-
-      // If clicking on active card, advance to next card
-      if (card.classList.contains("active")) {
-        const nextCard = getNextCard();
-        if (nextCard && nextCard !== currentActiveCard) {
-          bringCardToTop(nextCard);
-        }
-      } else {
-        // If clicking on inactive card, bring it to top
-        bringCardToTop(card);
-      }
-    });
-
-    // Touch swipe support for mobile project cards (horizontal on mobile, vertical on desktop)
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchEndX = 0;
-    let touchEndY = 0;
-
-    projectSliderTrack.addEventListener(
-      "touchstart",
-      (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-      },
-      { passive: true }
-    );
-
-    projectSliderTrack.addEventListener(
-      "touchend",
-      (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        touchEndY = e.changedTouches[0].screenY;
-        const swipeThreshold = 50;
-        const diffX = touchStartX - touchEndX;
-        const diffY = touchStartY - touchEndY;
-
-        // Vertical swipe for both mobile and desktop
-        if (
-          Math.abs(diffY) > swipeThreshold &&
-          Math.abs(diffY) > Math.abs(diffX)
-        ) {
-          if (diffY > 0) {
-            // Swipe up - next card
-            const nextCard = getNextCard();
-            if (nextCard && nextCard !== currentActiveCard) {
-              bringCardToTop(nextCard);
-              // Scroll to card on mobile
-              if (window.innerWidth <= 768) {
-                nextCard.scrollIntoView({
-                  behavior: "smooth",
-                  block: "center",
-                });
-              }
-            }
-          } else {
-            // Swipe down - previous card
-            const allCards = Array.from(
-              projectSliderTrack.querySelectorAll(".project-slider-card")
-            );
-            const currentIndex = allCards.indexOf(currentActiveCard);
-            const prevCard =
-              currentIndex > 0
-                ? allCards[currentIndex - 1]
-                : allCards[allCards.length - 1];
-            if (prevCard && prevCard !== currentActiveCard) {
-              bringCardToTop(prevCard);
-              // Scroll to card on mobile
-              if (window.innerWidth <= 768) {
-                prevCard.scrollIntoView({
-                  behavior: "smooth",
-                  block: "center",
-                });
-              }
-            }
-          }
-        }
-      },
-      { passive: true }
-    );
-  }
+  // Note: This will be set up after projects are loaded
+  // The initializeProjectSlider function will handle button clicks
 
   // Footer Navigation - Smooth scroll to sections
   const footerLinks = document.querySelectorAll(".footer-nav a");
@@ -773,6 +620,9 @@ document.addEventListener("DOMContentLoaded", function () {
   
   // Load team members
   loadTeamMembers();
+  
+  // Load projects for carousel
+  loadProjects();
 });
 
 // Function to load and display dashboard statistics
@@ -1080,6 +930,342 @@ function createMemberCard(member) {
   `;
   
   return cardLink;
+}
+
+// Function to load and display projects in carousel
+async function loadProjects() {
+  try {
+    console.log('Loading projects for carousel...');
+    
+    const response = await fetch('../php/agency/projects.php', {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error('Response is not JSON. Content-Type:', contentType);
+      return;
+    }
+
+    const result = await response.json();
+    console.log('Projects API result:', result);
+    
+    const container = document.getElementById('projectSliderTrack');
+    
+    if (!container) {
+      console.error('Project slider track not found!');
+      return;
+    }
+
+    if (result.success && result.data && result.data.length > 0) {
+      // Clear container
+      container.innerHTML = '';
+      
+      // Create project cards
+      result.data.forEach((project, index) => {
+        const card = createProjectCard(project, index);
+        container.appendChild(card);
+      });
+      
+      console.log(`Loaded ${result.data.length} projects`);
+      
+      // Re-initialize the slider animation after cards are loaded
+      setTimeout(() => {
+        initializeProjectSlider();
+      }, 100);
+    } else {
+      // No projects - container stays empty
+      container.innerHTML = '';
+      console.log('No projects found');
+    }
+  } catch (error) {
+    console.error('Error loading projects:', error);
+    const container = document.getElementById('projectSliderTrack');
+    if (container) {
+      container.innerHTML = '';
+    }
+  }
+}
+
+// Function to create a project card
+function createProjectCard(project, index) {
+  const card = document.createElement('div');
+  card.className = 'project-slider-card';
+  card.setAttribute('data-index', index);
+  card.setAttribute('data-project-id', project.id);
+  
+  const projectName = project.project_name || 'Unnamed Project';
+  const clientName = `${project.first_name || ''} ${project.last_name || ''}`.trim() || 'Unknown Client';
+  const architectName = project.architect_first_name && project.architect_last_name
+    ? `${project.architect_first_name} ${project.architect_last_name}`
+    : 'Not assigned';
+  
+  // Format date
+  let displayDate = 'N/A';
+  if (project.start_date) {
+    const date = new Date(project.start_date);
+    displayDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  } else if (project.created_at) {
+    const date = new Date(project.created_at);
+    displayDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+  
+  // Get project photo or use placeholder
+  const projectPhoto = project.photos && project.photos.length > 0
+    ? project.photos[0].photo_path || project.photos[0].photo_url
+    : 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&h=600&fit=crop';
+  
+  // Get project tags/type
+  const projectType = project.project_type || project.description || 'general';
+  const tags = projectType.split(',').slice(0, 3).join(', ') || 'general';
+  
+  card.innerHTML = `
+    <div class="project-content">
+      <div class="project-info">
+        <h3 class="project-name">${projectName}</h3>
+        <div class="project-details">
+          <p class="project-agency">Client: ${clientName}</p>
+          <p class="project-architect">Architect: ${architectName}</p>
+          <p class="project-tags">${tags}</p>
+          <div class="project-date">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                x="3"
+                y="4"
+                width="18"
+                height="18"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <line
+                x1="16"
+                y1="2"
+                x2="16"
+                y2="6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <line
+                x1="8"
+                y1="2"
+                x2="8"
+                y2="6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <line
+                x1="3"
+                y1="10"
+                x2="21"
+                y2="10"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+            </svg>
+            <span>${displayDate}</span>
+          </div>
+        </div>
+        <button class="btn-view-project">view project</button>
+      </div>
+      <div class="project-image">
+        <img
+          src="${projectPhoto}"
+          alt="${projectName}"
+        />
+      </div>
+    </div>
+  `;
+  
+  return card;
+}
+
+// Initialize project slider after dynamic loading
+function initializeProjectSlider() {
+  const projectSliderTrack = document.getElementById("projectSliderTrack");
+  
+  if (!projectSliderTrack) return;
+  
+  const cards = projectSliderTrack.querySelectorAll(".project-slider-card");
+  
+  if (cards.length === 0) return;
+  
+  // Remove any existing event listeners by cloning the element
+  const newTrack = projectSliderTrack.cloneNode(true);
+  projectSliderTrack.parentNode.replaceChild(newTrack, projectSliderTrack);
+  const track = document.getElementById("projectSliderTrack");
+  
+  // Initialize: Set first card as active
+  const allCards = track.querySelectorAll(".project-slider-card");
+  let currentActiveCard = allCards[0];
+  currentActiveCard.classList.add("active");
+  
+  // Link "view project" buttons to project management page
+  const viewProjectButtons = track.querySelectorAll(".btn-view-project");
+  viewProjectButtons.forEach((button, index) => {
+    button.addEventListener("click", function (e) {
+      e.stopPropagation(); // Prevent card click event
+      // Get project ID from the card's data attribute or from the projects array
+      const card = button.closest('.project-slider-card');
+      const projectId = card ? card.getAttribute('data-project-id') : null;
+      if (projectId) {
+        window.location.href = `projectmanagement.html?id=${projectId}`;
+      } else {
+        // Fallback: try to get from projects array if available
+        console.warn('Project ID not found in card, using fallback');
+        window.location.href = "projectmanagement.html";
+      }
+    });
+  });
+  
+  // Function to bring a card to the top with smooth animation
+  function bringCardToTop(card) {
+    const cards = track.querySelectorAll(".project-slider-card");
+    // Remove active from all cards with smooth transition
+    cards.forEach((c) => {
+      if (c !== card && c.classList.contains("active")) {
+        c.style.transition = "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+        c.classList.remove("active");
+      }
+    });
+    
+    // Reorder cards: move card to the front of the DOM
+    track.insertBefore(card, track.firstChild);
+    
+    // Activate the card with smooth sliding animation
+    setTimeout(() => {
+      card.style.transition = "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+      card.classList.add("active");
+      currentActiveCard = card;
+      
+      // Reset transition after animation
+      setTimeout(() => {
+        card.style.transition = "";
+        cards.forEach((c) => {
+          if (c !== card) {
+            c.style.transition = "";
+          }
+        });
+      }, 800);
+    }, 50);
+  }
+  
+  // Function to get next card in sequence
+  function getNextCard() {
+    const allCards = Array.from(
+      track.querySelectorAll(".project-slider-card")
+    );
+    const currentIndex = allCards.indexOf(currentActiveCard);
+    
+    // Get the next card (wrap around to first if at end)
+    if (currentIndex < allCards.length - 1) {
+      return allCards[currentIndex + 1];
+    } else {
+      return allCards[0];
+    }
+  }
+  
+  // Click handler for cards
+  track.addEventListener("click", function (e) {
+    const card = e.target.closest(".project-slider-card");
+    
+    // Don't trigger if clicking on the button
+    if (!card || e.target.closest(".btn-view-project")) {
+      return;
+    }
+    
+    // If clicking on active card, advance to next card
+    if (card.classList.contains("active")) {
+      const nextCard = getNextCard();
+      if (nextCard && nextCard !== currentActiveCard) {
+        bringCardToTop(nextCard);
+      }
+    } else {
+      // If clicking on inactive card, bring it to top
+      bringCardToTop(card);
+    }
+  });
+  
+  // Touch swipe support for mobile project cards
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchEndX = 0;
+  let touchEndY = 0;
+  
+  track.addEventListener(
+    "touchstart",
+    (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    },
+    { passive: true }
+  );
+  
+  track.addEventListener(
+    "touchend",
+    (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+      const swipeThreshold = 50;
+      const diffX = touchStartX - touchEndX;
+      const diffY = touchStartY - touchEndY;
+      
+      // Vertical swipe for both mobile and desktop
+      if (
+        Math.abs(diffY) > swipeThreshold &&
+        Math.abs(diffY) > Math.abs(diffX)
+      ) {
+        if (diffY > 0) {
+          // Swipe up - next card
+          const nextCard = getNextCard();
+          if (nextCard && nextCard !== currentActiveCard) {
+            bringCardToTop(nextCard);
+            // Scroll to card on mobile
+            if (window.innerWidth <= 768) {
+              nextCard.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            }
+          }
+        } else {
+          // Swipe down - previous card
+          const allCards = Array.from(
+            track.querySelectorAll(".project-slider-card")
+          );
+          const currentIndex = allCards.indexOf(currentActiveCard);
+          const prevCard =
+            currentIndex > 0
+              ? allCards[currentIndex - 1]
+              : allCards[allCards.length - 1];
+          if (prevCard && prevCard !== currentActiveCard) {
+            bringCardToTop(prevCard);
+            // Scroll to card on mobile
+            if (window.innerWidth <= 768) {
+              prevCard.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            }
+          }
+        }
+      }
+    },
+    { passive: true }
+  );
 }
 
 // Bubbles are fixed in position - no dragging functionality

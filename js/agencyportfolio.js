@@ -61,10 +61,19 @@ async function loadAgencyPortfolio(agencyId) {
         
     } catch (error) {
         console.error('Error loading agency portfolio:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            agencyId: agencyId,
+            url: `${API_BASE}/portfolios/agency.php?id=${agencyId}`
+        });
         // Show error message to user
         const container = document.querySelector('.generalcontainer');
         if (container) {
-            container.innerHTML = '<div style="padding: 40px; text-align: center;"><p>Error loading portfolio. Please try again later.</p></div>';
+            container.innerHTML = `<div style="padding: 40px; text-align: center;">
+                <p>Error loading portfolio. Please try again later.</p>
+                <p style="font-size: 12px; color: #666; margin-top: 10px;">Error: ${error.message}</p>
+            </div>`;
         }
     }
 }

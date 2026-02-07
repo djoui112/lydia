@@ -32,8 +32,15 @@ async function loadFormData() {
     if (!response.ok) {
       if (response.status === 401) {
         console.error('❌ Unauthorized - not logged in');
-        alert('Please log in as an agency to view request details.');
+        alert('Please log in to view request details.');
         window.location.href = 'login/login.html';
+        return;
+      }
+      if (response.status === 403) {
+        console.error('❌ Forbidden - insufficient permissions');
+        const errorData = await response.json().catch(() => ({}));
+        alert(errorData.message || 'You do not have permission to view this request.');
+        window.history.back();
         return;
       }
       const errorText = await response.text();
@@ -451,11 +458,151 @@ function loadExteriorData(request = null) {
   console.log('Exterior notes set to:', exteriorNotes);
 }
 
+// Global variable to store current request ID
+let currentRequestId = null;
+
+// Load request ID when page loads
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  currentRequestId = urlParams.get('id');
+});
+
 function handleAccept() {
-  // Handle accept action
-  alert('Request accepted!');
-  // You can add navigation or API call here
-  // window.location.href = 'success-page.html';
+  // Show modal to select architect
+  const modal = document.getElementById('acceptModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    loadArchitectsForAssignment();
+  }
+}
+
+function closeAcceptModal() {
+  const modal = document.getElementById('acceptModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+async function loadArchitectsForAssignment() {
+  const select = document.getElementById('architectSelect');
+  const noArchitectsNote = document.getElementById('noArchitectsNote');
+  
+  if (!select) return;
+  
+  select.innerHTML = '<option value="">Loading architects...</option>';
+  
+  try {
+    // Get agency ID from session
+    const sessionResponse = await fetch('../../php/api/get-session-agency.php', {
+      credentials: 'include'
+    });
+    
+    if (!sessionResponse.ok) {
+      throw new Error('Failed to get agency ID');
+    }
+    
+    const sessionData = await sessionResponse.json();
+    
+    if (!sessionData || !sessionData.agency_id) {
+      select.innerHTML = '<option value="">Not logged in as agency</option>';
+      return;
+    }
+    
+    const agencyId = sessionData.agency_id;
+    
+    // Fetch team members (architects) for this agency
+    const response = await fetch(`../../php/api/search/team-members.php?agency_id=${agencyId}`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    
+    if (result.success && result.data && result.data.length > 0) {
+      select.innerHTML = '<option value="">-- Select an architect (optional) --</option>';
+      
+      result.data.forEach(architect => {
+        const fullName = `${architect.first_name || ''} ${architect.last_name || ''}`.trim();
+        const role = architect.role ? ` - ${architect.role}` : '';
+        const option = document.createElement('option');
+        option.value = architect.architect_id;
+        option.textContent = `${fullName}${role}`;
+        select.appendChild(option);
+      });
+      
+      noArchitectsNote.style.display = 'none';
+    } else {
+      select.innerHTML = '<option value="">No team members - Accept without assigning</option>';
+      noArchitectsNote.style.display = 'block';
+      noArchitectsNote.textContent = 'You don\'t have any team members yet. You can accept the request without assigning an architect, or add team members from the Team Management section first.';
+    }
+  } catch (error) {
+    console.error('Error loading architects:', error);
+    select.innerHTML = '<option value="">Error loading architects</option>';
+    noArchitectsNote.style.display = 'block';
+  }
+}
+
+async function confirmAccept() {
+  if (!currentRequestId) {
+    alert('Error: Request ID not found');
+    return;
+  }
+  
+  const select = document.getElementById('architectSelect');
+  const assignedArchitectId = select.value || null;
+  
+  if (!confirm('Are you sure you want to accept this request?')) {
+    return;
+  }
+  
+  try {
+    // Determine API base path
+    const path = window.location.pathname;
+    const apiBase = path.includes('/pages/') ? '../../php/agency' : '../php/agency';
+    const url = `${apiBase}/project-requests.php`;
+    
+    console.log('Accepting request:', {
+      requestId: currentRequestId,
+      assignedArchitectId: assignedArchitectId,
+      url: url
+    });
+    
+    const response = await fetch(url, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        request_id: parseInt(currentRequestId),
+        action: 'accept',
+        assigned_architect_id: assignedArchitectId ? parseInt(assignedArchitectId) : null
+      })
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      alert('Request accepted successfully! A project has been created.');
+      closeAcceptModal();
+      window.location.href = 'request-managment.html';
+    } else {
+      alert(result.message || 'Failed to accept request');
+    }
+  } catch (error) {
+    console.error('Error accepting request:', error);
+    alert('Error accepting request: ' + error.message);
+  }
 }
 
 function handleReject() {
@@ -503,7 +650,11 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('email').textContent = 'Click "See more" button';
       document.getElementById('projectLocation').textContent = 'This page requires ?id=X parameter';
     }
-    alert('Error: No request ID in URL.\n\nThis page should be accessed by clicking "See more" on a request in the Request Management page.');
+    // Redirect back to request management page instead of showing alert
+    setTimeout(() => {
+      window.location.href = 'request-managment.html';
+    }, 2000);
+    alert('Error: No request ID in URL.\n\nRedirecting to Request Management page...');
   }
 });
 

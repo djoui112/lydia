@@ -1,5 +1,28 @@
+// Global variable to store current project ID
+let currentProjectId = null;
+let projectDataLoaded = false;
+
 // Calendar functionality - Reused from agency-interface.js
 document.addEventListener("DOMContentLoaded", function () {
+  // Get project ID from URL FIRST
+  const urlParams = new URLSearchParams(window.location.search);
+  const projectIdFromUrl = urlParams.get('id') || urlParams.get('project_id');
+  if (projectIdFromUrl) {
+    currentProjectId = parseInt(projectIdFromUrl);
+    console.log('✅ Project ID loaded from URL:', currentProjectId);
+  } else {
+    console.warn('⚠️ No project ID in URL parameters');
+    // Show error immediately
+    const projectTitle = document.getElementById('projectTitle');
+    if (projectTitle) {
+      projectTitle.textContent = 'Error: No project ID in URL';
+    }
+    const projectDescription = document.getElementById('projectDescription');
+    if (projectDescription) {
+      projectDescription.textContent = 'Please navigate to this page from your projects list with a project ID.';
+    }
+  }
+  
   const calendarContainer = document.querySelector(".calendar-container");
   const deadlineModal = document.getElementById("deadlineModal");
   const timelineMilestones = document.getElementById("timelineMilestones");
@@ -659,6 +682,14 @@ document.addEventListener("DOMContentLoaded", function () {
     updateTimeline();
     loadClientReviews();
     initDescriptionEditor();
+    
+    // Load project data IMMEDIATELY after getting project ID
+    if (currentProjectId) {
+      console.log('🚀 Loading project data immediately with ID:', currentProjectId);
+      loadProjectData(currentProjectId);
+    } else {
+      console.error('❌ No project ID available to load data');
+    }
   }
 });
 
@@ -672,9 +703,15 @@ function initDescriptionEditor() {
   const descriptionActions = document.getElementById('descriptionActions');
   const descriptionButtons = document.querySelector('.description-buttons');
 
+  // Check if all required elements exist
+  if (!descriptionElement || !descriptionEdit || !editButton || !doneButton || !cancelButton || !descriptionActions || !descriptionButtons) {
+    console.warn('Some description editor elements not found, skipping initialization');
+    return;
+  }
+
   // Load saved description from localStorage
   const savedDescription = localStorage.getItem('projectDescription');
-  if (savedDescription) {
+  if (savedDescription && descriptionElement) {
     descriptionElement.textContent = savedDescription;
   }
 
@@ -740,4 +777,357 @@ function initDescriptionEditor() {
       doneButton.click();
     }
   });
+}
+
+// Assign Architect functionality - separate handler to ensure it's always set up
+document.addEventListener("DOMContentLoaded", function() {
+  // Assign Architect functionality
+  const assignArchiBtn = document.getElementById('assignArchiBtn');
+  if (assignArchiBtn) {
+    assignArchiBtn.addEventListener('click', function() {
+      openAssignArchitectModal();
+    });
+  }
+});
+
+// Load project data to get request_id for "More Details" link
+async function loadProjectData(projectId) {
+  try {
+    console.log('🚀 Loading project data for ID:', projectId);
+    
+    // Wait a tiny bit to ensure DOM is ready
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    const response = await fetch(`../php/agency/projects.php?project_id=${projectId}`, {
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      console.error('❌ Failed to load project data, status:', response.status);
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      
+      // Show error on page
+      const projectTitle = document.getElementById('projectTitle');
+      if (projectTitle) {
+        projectTitle.textContent = 'Error loading project';
+      }
+      const projectDescription = document.getElementById('projectDescription');
+      if (projectDescription) {
+        projectDescription.textContent = `Failed to load project (HTTP ${response.status}). Please refresh the page.`;
+      }
+      return;
+    }
+
+    const result = await response.json();
+    console.log('📦 Full API response:', JSON.stringify(result, null, 2));
+    
+    if (result.success && result.data) {
+      const project = result.data;
+      console.log('✅ Project data received:', project);
+      console.log('📝 Project name:', project.project_name);
+      console.log('📝 Project description:', project.description);
+      console.log('📝 Project request_id:', project.request_id);
+      console.log('📝 All project keys:', Object.keys(project));
+      
+      // Wait for elements to exist, retry a few times
+      let retries = 0;
+      const maxRetries = 10;
+      
+      while (retries < maxRetries) {
+        const pageTitle = document.querySelector('.page-title');
+        const projectTitle = document.getElementById('projectTitle');
+        const projectDescription = document.getElementById('projectDescription');
+        
+        if (pageTitle && projectTitle && projectDescription) {
+          // Update page header title
+          if (project.project_name) {
+            pageTitle.textContent = project.project_name;
+            console.log('✅ Updated page title to:', project.project_name);
+          } else {
+            pageTitle.textContent = 'Project';
+          }
+          
+          // Update project title
+          if (project.project_name) {
+            projectTitle.textContent = project.project_name;
+            console.log('✅ Updated project title to:', project.project_name);
+          } else {
+            projectTitle.textContent = 'Untitled Project';
+          }
+          
+          // Update project description
+          if (project.description && project.description.trim()) {
+            projectDescription.textContent = project.description;
+            console.log('✅ Updated project description');
+          } else {
+            projectDescription.textContent = 'No description available.';
+            console.log('⚠️ No description in project data');
+          }
+          
+          break; // Success, exit retry loop
+        } else {
+          retries++;
+          console.log(`⏳ Waiting for DOM elements... (retry ${retries}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+      
+      // Update description edit textarea
+      const descriptionEdit = document.getElementById('projectDescriptionEdit');
+      if (descriptionEdit) {
+        if (project.description) {
+          descriptionEdit.value = project.description;
+          console.log('✅ Updated description edit textarea');
+        } else {
+          descriptionEdit.value = '';
+        }
+      }
+      
+      // Update timeline project name
+      const timelineProjectName = document.getElementById('timelineProjectName');
+      if (timelineProjectName) {
+        if (project.project_name) {
+          timelineProjectName.textContent = project.project_name;
+          console.log('✅ Updated timeline project name');
+        } else {
+          timelineProjectName.textContent = 'project';
+        }
+      }
+      
+      // Update "More Details" link with request_id if available
+      const moreDetailsLink = document.getElementById('moreDetailsLink');
+      if (moreDetailsLink) {
+        if (project.request_id) {
+          moreDetailsLink.href = `c_reqpreview.html?id=${project.request_id}`;
+          console.log('✅ More Details link updated with request_id:', project.request_id);
+        } else {
+          // If no request_id, disable the link or hide it
+          moreDetailsLink.style.pointerEvents = 'none';
+          moreDetailsLink.style.opacity = '0.5';
+          moreDetailsLink.title = 'Request details not available';
+          console.warn('⚠️ Project has no request_id:', project);
+        }
+      }
+      
+      projectDataLoaded = true;
+      console.log('✅ Project data loaded and displayed successfully!');
+    } else {
+      console.error('❌ Invalid project data response:', result);
+      // Show error on page
+      const projectTitle = document.getElementById('projectTitle');
+      if (projectTitle) {
+        projectTitle.textContent = 'Error loading project';
+      }
+      const projectDescription = document.getElementById('projectDescription');
+      if (projectDescription) {
+        projectDescription.textContent = 'Failed to load project data. Please refresh the page.';
+      }
+      projectDataLoaded = true; // Mark as loaded even on error
+    }
+  } catch (error) {
+    console.error('❌ Error loading project data:', error);
+    console.error('Error stack:', error.stack);
+    // Show error on page
+    const projectTitle = document.getElementById('projectTitle');
+    if (projectTitle) {
+      projectTitle.textContent = 'Error loading project';
+    }
+    const projectDescription = document.getElementById('projectDescription');
+    if (projectDescription) {
+      projectDescription.textContent = 'Error: ' + error.message;
+    }
+    projectDataLoaded = true; // Mark as loaded even on error
+  }
+}
+
+// Get project ID from URL or from project data
+function getProjectId() {
+  if (currentProjectId) return currentProjectId;
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const idFromUrl = urlParams.get('id') || urlParams.get('project_id');
+  
+  if (idFromUrl) {
+    currentProjectId = parseInt(idFromUrl);
+    return currentProjectId;
+  }
+  
+  // Try to get from project data if loaded
+  // This would be set when project is loaded from API
+  return null;
+}
+
+function openAssignArchitectModal() {
+  const modal = document.getElementById('assignArchitectModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    loadArchitectsForProjectAssignment();
+  }
+}
+
+function closeAssignArchitectModal() {
+  const modal = document.getElementById('assignArchitectModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+async function loadArchitectsForProjectAssignment() {
+  const select = document.getElementById('assignArchitectSelect');
+  const noArchitectsNote = document.getElementById('noArchitectsNoteAssign');
+  
+  if (!select) {
+    console.error('assignArchitectSelect element not found');
+    return;
+  }
+  
+  select.innerHTML = '<option value="">Loading architects...</option>';
+  
+  try {
+    // Get agency ID from session - try the session endpoint first
+    let agencyId = null;
+    
+    try {
+      const sessionResponse = await fetch('../php/api/get-session-agency.php', {
+        credentials: 'include'
+      });
+      
+      if (sessionResponse.ok) {
+        const sessionData = await sessionResponse.json();
+        if (sessionData && sessionData.agency_id) {
+          agencyId = sessionData.agency_id;
+          console.log('✅ Got agency ID from session:', agencyId);
+        }
+      }
+    } catch (sessionError) {
+      console.warn('Session endpoint failed, trying alternative method:', sessionError);
+    }
+    
+    // If we don't have agency ID, try to get it from the current project
+    if (!agencyId && currentProjectId) {
+      try {
+        const projectResponse = await fetch(`../php/agency/projects.php?project_id=${currentProjectId}`, {
+          credentials: 'include'
+        });
+        if (projectResponse.ok) {
+          const projectData = await projectResponse.json();
+          if (projectData.success && projectData.data && projectData.data.agency_id) {
+            agencyId = projectData.data.agency_id;
+            console.log('✅ Got agency ID from project:', agencyId);
+          }
+        }
+      } catch (projectError) {
+        console.warn('Failed to get agency ID from project:', projectError);
+      }
+    }
+    
+    if (!agencyId) {
+      select.innerHTML = '<option value="">Error: Could not determine agency</option>';
+      if (noArchitectsNote) {
+        noArchitectsNote.style.display = 'block';
+        noArchitectsNote.textContent = 'Unable to load team members. Please make sure you are logged in as an agency.';
+      }
+      return;
+    }
+    
+    // Fetch team members (architects) for this agency
+    console.log('Fetching team members for agency ID:', agencyId);
+    const response = await fetch(`../php/api/search/team-members.php?agency_id=${agencyId}`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Failed to fetch team members:', response.status, errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log('Team members API response:', result);
+    
+    if (result.success && result.data && result.data.length > 0) {
+      select.innerHTML = '<option value="">-- Select an architect --</option>';
+      
+      result.data.forEach(architect => {
+        const fullName = `${architect.first_name || ''} ${architect.last_name || ''}`.trim();
+        const role = architect.role ? ` - ${architect.role}` : '';
+        const option = document.createElement('option');
+        option.value = architect.architect_id;
+        option.textContent = `${fullName}${role}`;
+        select.appendChild(option);
+      });
+      
+      console.log(`✅ Loaded ${result.data.length} architects`);
+      if (noArchitectsNote) {
+        noArchitectsNote.style.display = 'none';
+      }
+    } else {
+      select.innerHTML = '<option value="">No team members available</option>';
+      if (noArchitectsNote) {
+        noArchitectsNote.style.display = 'block';
+        noArchitectsNote.textContent = 'You don\'t have any team members yet. You can assign an architect later, or add team members from the Team Management section first.';
+      }
+      console.warn('No team members found for agency:', agencyId);
+    }
+  } catch (error) {
+    console.error('❌ Error loading architects:', error);
+    console.error('Error details:', error.message, error.stack);
+    select.innerHTML = '<option value="">Error loading architects</option>';
+    if (noArchitectsNote) {
+      noArchitectsNote.style.display = 'block';
+      noArchitectsNote.textContent = 'Error loading team members. Please check the console (F12) for details.';
+    }
+  }
+}
+
+async function confirmAssignArchitect() {
+  const projectId = getProjectId();
+  
+  if (!projectId) {
+    alert('Error: Project ID not found. Please refresh the page and try again.');
+    return;
+  }
+  
+  const select = document.getElementById('assignArchitectSelect');
+  const assignedArchitectId = select.value || null;
+  
+  if (!assignedArchitectId) {
+    alert('Please select an architect to assign.');
+    return;
+  }
+  
+  try {
+    const response = await fetch('../php/agency/projects.php', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        project_id: projectId,
+        assigned_architect_id: parseInt(assignedArchitectId)
+      })
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      alert('Architect assigned successfully!');
+      closeAssignArchitectModal();
+      // Reload the page to show updated architect
+      window.location.reload();
+    } else {
+      alert(result.message || 'Failed to assign architect');
+    }
+  } catch (error) {
+    console.error('Error assigning architect:', error);
+    alert('Error assigning architect: ' + error.message);
+  }
 }

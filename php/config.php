@@ -1,7 +1,7 @@
 <?php
 // Database configuration (XAMPP defaults)
 $host = 'localhost';
-$dbname = 'mimaria_db';
+$dbname = 'mimaria';
 $username = 'root';
 $password = '';
 

@@ -1,9 +1,26 @@
 <?php
-require_once '../config.php';
-require_once '../auth.php';
+// Start output buffering to prevent any accidental output
+ob_start();
+
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/session.php';
+require_once __DIR__ . '/../middleware/cors.php';
+
+// Clear any output that might have been generated
+ob_clean();
+
+header('Content-Type: application/json');
+
+// Check if user is logged in as agency
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'agency') {
+    ob_end_clean();
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+    exit;
+}
 
 $method = $_SERVER['REQUEST_METHOD'];
-$agencyId = getCurrentAgencyId($pdo);
+$agencyId = (int)$_SESSION['user_id'];
 
 switch ($method) {
     case 'GET':
@@ -49,7 +66,9 @@ switch ($method) {
             $stmt->execute([$requestId]);
             $request['photos'] = $stmt->fetchAll();
             
+            ob_end_clean();
             echo json_encode(['success' => true, 'data' => $request]);
+            exit;
         } else {
             // Get all requests
             $sql = "
@@ -74,9 +93,11 @@ switch ($method) {
             
             $stmt = $pdo->prepare($sql);
             $stmt->execute($params);
-            $requests = $stmt->fetchAll();
+            $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
+            ob_end_clean();
             echo json_encode(['success' => true, 'data' => $requests]);
+            exit;
         }
         break;
         
@@ -135,18 +156,23 @@ switch ($method) {
             
             $projectId = $pdo->lastInsertId();
             
+            ob_end_clean();
             echo json_encode([
                 'success' => true,
                 'message' => 'Request accepted and project created',
                 'project_id' => $projectId
             ]);
+            exit;
         } else {
+            ob_end_clean();
             echo json_encode(['success' => true, 'message' => 'Request rejected']);
+            exit;
         }
         break;
         
     default:
+        ob_end_clean();
         http_response_code(405);
-        echo json_encode(['error' => 'Method not allowed']);
+        echo json_encode(['success' => false, 'error' => 'Method not allowed']);
+        exit;
 }
-?>
