@@ -300,6 +300,7 @@ async function submitProjectRequest() {
         }
 
         // Clear agency_id from localStorage after successful submission
+        // (Success page doesn't need it anymore since submission already happened)
         localStorage.removeItem('form-agency-id');
         
         // DON'T reset flag here - let the page navigation handle it
@@ -340,17 +341,31 @@ async function submitProjectRequest() {
     }
 
     // Handle project request form submission (on success pages)
+    // Only submit if it hasn't been submitted already (check for submission flag)
     if (window.location.pathname.includes('_success.html') && 
         window.location.pathname.includes('formclient')) {
-        // Submit project request when success page loads
-        submitProjectRequest().then(success => {
-            if (!success) {
-                // If submission fails, redirect back to form
-                const currentPath = window.location.pathname;
-                const prevPage = currentPath.replace('_success.html', '_3.html');
-                window.location.href = prevPage;
-            }
-        });
+        // Check if already submitted (submission happens on form page, not success page)
+        // The form page submits and navigates here, so we don't need to submit again
+        // This is different from appliance form which submits on success page
+        const alreadySubmitted = sessionStorage.getItem('project-request-submitted');
+        
+        if (!alreadySubmitted) {
+            // Submit project request when success page loads (fallback for direct navigation)
+            submitProjectRequest().then(success => {
+                if (success) {
+                    sessionStorage.setItem('project-request-submitted', 'true');
+                } else {
+                    // If submission fails, redirect back to form
+                    const currentPath = window.location.pathname;
+                    const prevPage = currentPath.replace('_success.html', '_3.html');
+                    window.location.href = prevPage;
+                }
+            });
+        } else {
+            // Already submitted, just clear the flag and show success
+            console.log('Project request already submitted, showing success page');
+            sessionStorage.removeItem('project-request-submitted');
+        }
     }
 })();
 

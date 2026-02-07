@@ -259,9 +259,23 @@
         // Extract and save form data with correct keys for submission
         extractFormDataToSubmissionFormat();
         
-        // Get agency_id from URL and save it
+        // Get agency_id from URL or localStorage (like appliance form does)
         const urlParams = new URLSearchParams(window.location.search);
-        const agencyId = urlParams.get('agency_id');
+        const agencyId = urlParams.get('agency_id') || localStorage.getItem('form-agency-id');
+        
+        if (!agencyId) {
+          alert('Error: Agency ID not found. Please go back to the agency portfolio and click "Request Project" again.');
+          isSubmitting = false;
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+            submitButton.style.opacity = '1';
+            submitButton.style.cursor = 'pointer';
+          }
+          return false;
+        }
+        
+        // Save agency_id to localStorage to ensure it persists
         if (agencyId && typeof saveAgencyId === 'function') {
           saveAgencyId(agencyId);
         }
@@ -323,10 +337,18 @@
         console.log('📥 submitProjectRequest returned:', success);
         
         if (success) {
+          // Mark as submitted to prevent double submission on success page
+          sessionStorage.setItem('project-request-submitted', 'true');
+          
           // Clear the flag and navigate - DON'T reset flag before navigation
           console.log('✅ Submission successful, navigating to success page');
+          
+          // Preserve agency_id in URL when navigating to success page (like appliance form does)
+          const agencyId = getAgencyId();
+          const successUrl = agencyId ? `exterior_ext_success.html?agency_id=${agencyId}` : 'exterior_ext_success.html';
+          
           // Navigate immediately - don't reset flag (page will unload anyway)
-          window.location.href = 'exterior_ext_success.html';
+          window.location.href = successUrl;
           return; // Exit immediately
         } else {
           // Show error message

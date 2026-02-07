@@ -198,35 +198,54 @@
     </footer>
 
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener("DOMContentLoaded", async () => {
         console.log("JS LOADED");
         const grid = document.getElementById("teamMembersGrid");
         const searchInput = document.querySelector(".search-container input");
 
+        // Get agency ID from session
+        let agencyId = null;
+        try {
+          const sessionResponse = await fetch("../php/api/get-session-agency.php", {
+            credentials: 'include'
+          });
+          
+          if (sessionResponse.ok) {
+            const sessionData = await sessionResponse.json();
+            if (sessionData && sessionData.agency_id) {
+              agencyId = sessionData.agency_id;
+              console.log('Agency ID:', agencyId);
+            }
+          }
+        } catch (error) {
+          console.error('Error getting agency ID:', error);
+        }
+
         function renderTeamMembers(teamMembers) {
           grid.innerHTML = "";
 
-          if (teamMembers.length === 0) {
+          if (!teamMembers || teamMembers.length === 0) {
             grid.innerHTML = "<p>No team members found</p>";
             return;
           }
 
           teamMembers.forEach(teamMember => {
-            const fullName = `${teamMember.last_name} ${teamMember.first_name}`;
+            const fullName = `${teamMember.first_name} ${teamMember.last_name}`;
+            const profileImage = teamMember.profile_image_url || "../assets/job-appliance/user-pic.jpg";
             grid.innerHTML += `
               <article class="agency-card">
                 <div class="agency-card__arch" aria-hidden="true"></div>
                 <div class="agency-card__avatar-wrap">
                   <img
-                    src="../assets/job-appliance/user-pic.jpg"
+                    src="${profileImage}"
                     alt="${fullName} portrait"
                     class="agency-card__avatar"
                   />
                 </div>
                 <div class="agency-card__body">
                   <h3>${fullName}</h3>
-                  <p>${teamMember.role}</p>
-                  <a href="appliancepreview.html?id=${teamMember.id}" class="btn">
+                  <p>${teamMember.role || 'Team Member'}</p>
+                  <a href="architect-portfolio.html?architect_id=${teamMember.architect_id}" class="btn">
                     See more
                   </a>
                 </div>
@@ -235,19 +254,52 @@
           });
         }
 
-          function loadTeamMembers(query = "") {
-          fetch("/mimaria/php/api/search/team-members.php?query=" + query)
-            .then(res => res.json())
-            .then(data => renderTeamMembers(data))
-            .catch(err => console.error(err));
+        async function loadTeamMembers(query = "") {
+          try {
+            // Build URL with agency_id and optional query
+            let url = "../php/api/search/team-members.php";
+            const params = new URLSearchParams();
+            
+            if (agencyId) {
+              params.append('agency_id', agencyId);
+            }
+            if (query) {
+              params.append('query', query);
+            }
+            
+            if (params.toString()) {
+              url += '?' + params.toString();
+            }
+
+            const response = await fetch(url, {
+              credentials: 'include'
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Team members API result:', result);
+
+            // Handle the response format {success: true, data: [...]}
+            if (result.success && result.data) {
+              renderTeamMembers(result.data);
+            } else {
+              renderTeamMembers([]);
+            }
+          } catch (err) {
+            console.error('Error loading team members:', err);
+            grid.innerHTML = "<p>Error loading team members. Please try again later.</p>";
+          }
         }
 
         // load all team members on page load
-        loadTeamMembers();
+        await loadTeamMembers();
 
         // live search
         searchInput.addEventListener("input", () => {
-            loadTeamMembers(searchInput.value);
+          loadTeamMembers(searchInput.value);
         });
       });
     </script>

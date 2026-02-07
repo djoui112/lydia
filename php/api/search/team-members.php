@@ -31,6 +31,9 @@ try {
         exit;
     }
     
+    // Get search query if provided
+    $searchQuery = isset($_GET['query']) ? trim($_GET['query']) : '';
+    
     // Fetch team members (architects working for this agency) - return ALL active members
     $membersQuery = "SELECT 
                         tm.id,
@@ -48,11 +51,24 @@ try {
                      INNER JOIN architects a ON tm.architect_id = a.id
                      INNER JOIN users u ON a.id = u.id
                      WHERE tm.agency_id = :agency_id
-                     AND tm.is_active = 1
-                     ORDER BY tm.start_date DESC";
+                     AND tm.is_active = 1";
+    
+    // Add search filter if query is provided
+    if (!empty($searchQuery)) {
+        $membersQuery .= " AND (a.first_name LIKE :search OR a.last_name LIKE :search OR tm.role LIKE :search)";
+    }
+    
+    $membersQuery .= " ORDER BY tm.start_date DESC";
     
     $stmt = $db->prepare($membersQuery);
-    $stmt->execute([':agency_id' => $agencyId]);
+    $params = [':agency_id' => $agencyId];
+    
+    if (!empty($searchQuery)) {
+        $searchPattern = '%' . $searchQuery . '%';
+        $params[':search'] = $searchPattern;
+    }
+    
+    $stmt->execute($params);
     $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Format profile images

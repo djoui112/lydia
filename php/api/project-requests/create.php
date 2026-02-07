@@ -41,7 +41,7 @@ error_log("Project Request API - Session status: " . session_status());
 error_log("Project Request API - Session data: " . print_r($_SESSION, true));
 error_log("Project Request API - Cookies: " . print_r($_COOKIE, true));
 
-// Handle both JSON and FormData first to get email/phone for client lookup
+// Handle both JSON and FormData
 $input = [];
 if ($_SERVER['CONTENT_TYPE'] && strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false) {
     $input = $_POST;
@@ -52,15 +52,20 @@ if ($_SERVER['CONTENT_TYPE'] && strpos($_SERVER['CONTENT_TYPE'], 'multipart/form
 $userId = null;
 $userType = null;
 
-// Check if user is logged in
+// Check if user is logged in - prioritize session like applications API does
 if (isset($_SESSION['user_id'])) {
     $userId = (int)$_SESSION['user_id'];
     $userType = $_SESSION['user_type'] ?? null;
+    
+    error_log("Project Request API - User logged in: ID=$userId, Type=$userType");
     
     // Only clients can create project requests
     if ($userType !== 'client') {
         json_error('Only clients can submit project requests', 403);
     }
+    
+    // When logged in as client, use session user_id directly (like applications API)
+    // No need to look up or create client - we already have the user_id
 } else {
     // User not logged in - try to find or create client from form data
     $email = trim($input['email'] ?? '');
@@ -164,13 +169,16 @@ if (!in_array($serviceType, ['construction', 'renovation', 'design_only'])) {
 }
 
 try {
-    // Verify client exists
+    // Verify client exists (like applications API does for architects)
     $userModel = new User($pdo);
     $user = $userModel->findById($userId);
     
     if (!$user || $user['user_type'] !== 'client') {
+        error_log("Project Request API - Client verification failed: userId=$userId, user=" . print_r($user, true));
         json_error('Client profile not found', 404);
     }
+    
+    error_log("Project Request API - Client verified: userId=$userId, email=" . ($user['email'] ?? 'N/A'));
     
     $clientId = $userId; // In this system, client_id = user_id
     
@@ -183,62 +191,60 @@ try {
         json_error('Agency not found', 404);
     }
     
-    // Insert project request
-    try {
-        $stmt = $pdo->prepare(
-            'INSERT INTO project_requests (
-                client_id,
-                agency_id,
-                project_name,
-                project_type,
-                service_type,
-                project_location,
-                description,
-                min_budget,
-                max_budget,
-                preferred_timeline,
-                style_preference,
-                status,
-                created_at,
-                updated_at
-            ) VALUES (
-                :client_id,
-                :agency_id,
-                :project_name,
-                :project_type,
-                :service_type,
-                :project_location,
-                :description,
-                :min_budget,
-                :max_budget,
-                :preferred_timeline,
-                :style_preference,
-                :status,
-                NOW(),
-                NOW()
-            )'
-        );
-        
-        $stmt->execute([
-            'client_id' => $clientId,
-            'agency_id' => $agencyId,
-            'project_name' => $projectName,
-            'project_type' => $projectType,
-            'service_type' => $serviceType,
-            'project_location' => $projectLocation ?: null,
-            'description' => $description ?: null,
-            'min_budget' => isset($input['min_budget']) ? (float)$input['min_budget'] : null,
-            'max_budget' => isset($input['max_budget']) ? (float)$input['max_budget'] : null,
-            'preferred_timeline' => isset($input['preferred_timeline']) ? trim($input['preferred_timeline']) : null,
-            'style_preference' => isset($input['style_preference']) ? trim($input['style_preference']) : null,
-            'status' => 'pending',
-        ]);
-        
-        $requestId = (int)$pdo->lastInsertId();
-    } catch (PDOException $e) {
-        error_log("Database error inserting project request: " . $e->getMessage());
-        throw new Exception("Failed to save project request: " . $e->getMessage());
-    }
+    // Insert project request (like applications API does)
+    error_log("Project Request API - Inserting project request: clientId=$clientId, agencyId=$agencyId, projectName=$projectName");
+    
+    $stmt = $pdo->prepare(
+        'INSERT INTO project_requests (
+            client_id,
+            agency_id,
+            project_name,
+            project_type,
+            service_type,
+            project_location,
+            description,
+            min_budget,
+            max_budget,
+            preferred_timeline,
+            style_preference,
+            status,
+            created_at,
+            updated_at
+        ) VALUES (
+            :client_id,
+            :agency_id,
+            :project_name,
+            :project_type,
+            :service_type,
+            :project_location,
+            :description,
+            :min_budget,
+            :max_budget,
+            :preferred_timeline,
+            :style_preference,
+            :status,
+            NOW(),
+            NOW()
+        )'
+    );
+    
+    $stmt->execute([
+        'client_id' => $clientId,
+        'agency_id' => $agencyId,
+        'project_name' => $projectName,
+        'project_type' => $projectType,
+        'service_type' => $serviceType,
+        'project_location' => $projectLocation ?: null,
+        'description' => $description ?: null,
+        'min_budget' => isset($input['min_budget']) ? (float)$input['min_budget'] : null,
+        'max_budget' => isset($input['max_budget']) ? (float)$input['max_budget'] : null,
+        'preferred_timeline' => isset($input['preferred_timeline']) ? trim($input['preferred_timeline']) : null,
+        'style_preference' => isset($input['style_preference']) ? trim($input['style_preference']) : null,
+        'status' => 'pending',
+    ]);
+    
+    $requestId = (int)$pdo->lastInsertId();
+    error_log("Project Request API - Project request inserted successfully: requestId=$requestId");
     
     // Insert exterior details if project type is exterior or both
     if ($projectType === 'exterior' || $projectType === 'both') {
