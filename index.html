@@ -262,20 +262,60 @@ all in one place</pre>
                     // Get profile image from user data or use default
                     let profileImage = architect.profile_image || architect.profile_image_url || defaultImage;
                     
-                    // Fix path if needed - handle both relative and absolute paths
-                    if (profileImage && !profileImage.startsWith('http') && !profileImage.startsWith('assets/')) {
-                        // If it starts with /, remove it; if it's a relative path, ensure it's correct
-                        profileImage = profileImage.replace(/^\/+/, '');
-                        // If still doesn't start with assets/, use default
-                        if (!profileImage.startsWith('assets/') && !profileImage.startsWith('../')) {
-                            profileImage = defaultImage;
-                        }
-                    }
+                    console.log('Original profile image:', profileImage);
                     
                     // If profileImage is empty or null, use default
                     if (!profileImage || profileImage === '' || profileImage === 'null' || profileImage === 'undefined') {
                         profileImage = defaultImage;
+                    } else {
+                        // Handle different path formats
+                        if (profileImage.startsWith('http://') || profileImage.startsWith('https://')) {
+                            // Full URL from API - fix base URL if it's wrong
+                            const currentHost = window.location.origin;
+                            const currentPath = window.location.pathname.split('/').slice(0, -1).join('/') || '';
+                            
+                            // If URL has wrong base path, replace it with current base
+                            if (profileImage.includes('/mimaria/')) {
+                                // Replace /mimaria/ with current path
+                                profileImage = profileImage.replace(/\/mimaria\//, currentPath + '/');
+                                // Also fix the host if needed
+                                profileImage = profileImage.replace(/http:\/\/localhost\/mimaria/, currentHost + currentPath);
+                            } else if (profileImage.includes('localhost/') && !profileImage.includes(currentPath)) {
+                                // Extract the path part after localhost
+                                const urlMatch = profileImage.match(/localhost(\/.*)/);
+                                if (urlMatch) {
+                                    profileImage = currentHost + urlMatch[1];
+                                }
+                            }
+                            
+                            console.log('Fixed full URL:', profileImage);
+                        } else if (profileImage.startsWith('assets/')) {
+                            // Relative path starting with assets/ - use as is
+                            console.log('Using relative assets path:', profileImage);
+                        } else if (profileImage.startsWith('/')) {
+                            // Absolute path - use as is (browser will resolve from root)
+                            console.log('Using absolute path:', profileImage);
+                        } else if (profileImage.startsWith('uploads/')) {
+                            // Path starting with uploads/ - convert to assets/uploads/
+                            profileImage = 'assets/' + profileImage;
+                            console.log('Converted uploads path:', profileImage);
+                        } else {
+                            // Unknown format - try to construct path
+                            // If it looks like a filename, assume it's in assets/uploads/profile_images
+                            if (profileImage.includes('.') && !profileImage.includes('/')) {
+                                profileImage = 'assets/uploads/profile_images/' + profileImage;
+                            } else if (!profileImage.includes('://')) {
+                                // Not a URL, might be a relative path - try assets/uploads
+                                profileImage = 'assets/uploads/' + profileImage;
+                            } else {
+                                // Fallback to default
+                                profileImage = defaultImage;
+                            }
+                            console.log('Reconstructed path:', profileImage);
+                        }
                     }
+                    
+                    console.log('Final profile image path:', profileImage);
                     
                     const experience = architect.years_of_experience || 0;
                     

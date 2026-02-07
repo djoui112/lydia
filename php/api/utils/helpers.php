@@ -43,7 +43,35 @@ function buildFileUrl(string $path): string {
         return $path;
     }
     
-    $baseUrl = 'http://localhost/mimaria';
+    // Get the actual base URL dynamically from the request
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    
+    // Get the base path from REQUEST_URI
+    // Example: /suoper%20safe%20lydia/lydia/php/api/discover/featured_architect.php
+    // We want: /suoper%20safe%20lydia/lydia
+    $requestUri = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'] ?? '';
+    
+    // Remove query string
+    $requestUri = strtok($requestUri, '?');
+    
+    // Find the position of /php/ in the path to determine the base
+    $phpPos = strpos($requestUri, '/php/');
+    if ($phpPos !== false) {
+        $basePath = substr($requestUri, 0, $phpPos);
+    } else {
+        // Fallback: try to get from SCRIPT_NAME
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+        $phpPos = strpos($scriptName, '/php/');
+        if ($phpPos !== false) {
+            $basePath = substr($scriptName, 0, $phpPos);
+        } else {
+            // Last resort: use empty (root)
+            $basePath = '';
+        }
+    }
+    
+    $baseUrl = "$protocol://$host$basePath";
     $path = ltrim($path, '/');
     
     // If path already starts with 'assets/', use it directly
